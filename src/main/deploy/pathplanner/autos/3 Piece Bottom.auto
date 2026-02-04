@@ -1,0 +1,43 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoScoreF"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoIntake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoScoreC"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoIntake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoScoreD"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": false,
+  "folder": null,
+  "choreoAuto": false
+}
