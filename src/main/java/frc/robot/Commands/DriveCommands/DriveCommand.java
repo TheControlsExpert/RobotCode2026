@@ -48,7 +48,7 @@ public class DriveCommand extends Command {
         }
 
               // Calculate angular speed
-              double omega = MathUtil.applyDeadband(rotationSupplier.getAsDouble(), 0.1);
+              double omega = MathUtil.applyDeadband(rotationSupplier.getAsDouble(), 0.2);
 
          if (controller.rightStick().getAsBoolean()) {
              omega = omega / 12;

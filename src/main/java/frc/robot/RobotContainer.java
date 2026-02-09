@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -43,12 +44,14 @@ import frc.robot.Constants.SwerveConstants.Mod3;
 
 import frc.robot.Commands.DriveCommands.DriveCommand;
 import frc.robot.Commands.DriveCommands.FeedforwardCharacterization;
+import frc.robot.Commands.DriveCommands.IntakeCommand;
 import frc.robot.Commands.DriveCommands.StraightDriveCommand;
 import frc.robot.Commands.DriveCommands.WheelRadiusCharacterization;
-
+import frc.robot.Commands.DriveCommands.kACharacterization;
 import frc.robot.Subsystems.Drive.Drive;
 import frc.robot.Subsystems.Drive.GyroIOPigeon2;
 import frc.robot.Subsystems.Drive.ModuleIOTalonFX;
+import frc.robot.Subsystems.Intake.Intake;
 
 // import frc.robot.Subsystems.Superstructure.ElevatorIOKrakens;
 // import frc.robot.Subsystems.Superstructure.Superstructure;
@@ -64,6 +67,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
@@ -88,6 +92,7 @@ public class RobotContainer {
        
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
+  private final XboxController xbox = new XboxController(0);
   private final CommandXboxController controller2 = new CommandXboxController(1);
 
  
@@ -99,6 +104,7 @@ public class RobotContainer {
   
   
     private GyroIOPigeon2 gyro;
+    Intake intake = new Intake();
     
     //    private VisionSubsystem vision;
 
@@ -185,6 +191,8 @@ public class RobotContainer {
                 drive,
                 controller));
 
+        controller.x().whileTrue(FeedforwardCharacterization.feedforwardCommand(drive, xbox));
+        
        // controller.().whileTrue(new IntakeCommand(superstructure));
        //controller.rightTrigger().whileTrue(new EjectCommand(superstructure, drive, vision));
       //  controller.rightTrigger().whileTrue(new EjectCommand(superstructure, drive, vision).andThen(new ThirdPartAutoAlign(drive, vision, superstructure, controller)));
@@ -287,6 +295,8 @@ public class RobotContainer {
    controller.rightBumper().onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), Rotation2d.kZero)), drive)
                 .ignoringDisable(true));
 
+    controller.a().whileTrue(new IntakeCommand(intake))         ;   
+
    //seventeen.onTrue(Commands.runOnce(() -> {drive.resetGyro();}, drive).ignoringDisable(true));
       }
       
@@ -347,7 +357,11 @@ public class RobotContainer {
    // return new FullRun(drive, superstructure, vision);
    //return new StraightDriveCommand(1.4, drive);
    //return Commands.none();
-   return autoChooser.getSelected();
+   
+   return new PathPlannerAuto("3 Piece Top");
+  
+   
+   
    //return new FirstPartAutoAlign(drive,  superstructure, ScoringPosition.J).andThen(new SecondPartAutoAlign(drive, vision, superstructure)).andThen(new EjectCommand(superstructure, drive, vision)).andThen(new InstantCommand(() -> {drive.runVelocity(new ChassisSpeeds(-0.5, -2.5, 0));})).andThen(new WaitCommand(0.5)).andThen(new FirstPartAutoAlignSource(superstructure, drive)).andThen(new SecondPartAutoAlignSource(drive, superstructure)).andThen(new ThirdPartAutoAlignSource(drive, superstructure)).andThen(new FirstPartAutoAlign(drive, superstructure, ScoringPosition.K)).andThen(new SecondPartAutoAlign(drive, vision, superstructure)).andThen(new EjectCommand(superstructure, drive ,vision)).andThen(new InstantCommand(() -> {drive.runVelocity(new ChassisSpeeds(-0.5, 0, 0));})).andThen(new WaitUntilCommand(() -> (superstructure.current_state.equals(SuperstructureState.HOME_UP)))).andThen(new FirstPartAutoAlignSource(superstructure, drive)).andThen(new SecondPartAutoAlignSource(drive, superstructure));
 
 

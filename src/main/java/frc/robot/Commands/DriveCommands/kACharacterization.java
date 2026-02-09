@@ -10,15 +10,18 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.Subsystems.Drive.Drive;
 
-public class FeedforwardCharacterization  {
+public class kACharacterization  {
     
     private static final double FF_START_DELAY = 2;
     private static final double FF_RAMP_RATE = 0.1;
     
+    
         public static Command feedforwardCommand(Drive drive, XboxController controller) { 
             List<Double> velocitySamples = new LinkedList<>();
+            List<Double> accelerationSamples = new LinkedList<>();
             List<Double> voltageSamples = new LinkedList<>();
             Timer timer = new Timer();
     
@@ -44,10 +47,13 @@ public class FeedforwardCharacterization  {
             // Accelerate and gather data
             Commands.run(
                     () -> {
-                      double voltage = timer.get() * FF_RAMP_RATE;
+                      double voltage = 5;
                   drive.runCharacterization(voltage);
-                  if (controller.getXButton()) {
-                  velocitySamples.add(drive.getFFCharacterizationVelocity());
+                  SmartDashboard.putNumber("accel", drive.getFFCharacterizationAcceleration());
+                  if (controller.getXButton() && timer.hasElapsed(0.2) && !timer.hasElapsed(2) && Math.abs(drive.getFFCharacterizationAcceleration()) > 0.5) {
+                  
+                  velocitySamples.add(Math.abs(drive.getFFCharacterizationVelocity()));
+                  accelerationSamples.add(Math.abs(drive.getFFCharacterizationAcceleration()));
                   voltageSamples.add(voltage);
                   }
                 },
@@ -56,23 +62,21 @@ public class FeedforwardCharacterization  {
             // When cancelled, calculate and print results
             .finallyDo(
                 () -> {
-                  int n = velocitySamples.size();
-                  double sumX = 0.0;
-                  double sumY = 0.0;
-                  double sumXY = 0.0;
+                  int n = accelerationSamples.size();
+                  SmartDashboard.putNumber("n", n);
                   double sumX2 = 0.0;
+                
+                  double sumXY = 0.0;
+                 
                   for (int i = 0; i < n; i++) {
-                    sumX += velocitySamples.get(i);
-                    sumY += voltageSamples.get(i);
-                    sumXY += velocitySamples.get(i) * voltageSamples.get(i);
-                    sumX2 += velocitySamples.get(i) * velocitySamples.get(i);
+                    sumX2 += Math.pow(accelerationSamples.get(i), 2);
+                    sumXY += accelerationSamples.get(i) * (voltageSamples.get(i) - SwerveConstants.driveKS - velocitySamples.get(i) * SwerveConstants.driveKV);
+                    
                   }
-                  double kS = (sumY * sumX2 - sumX * sumXY) / (n * sumX2 - sumX * sumX);
-                  double kV = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-
                   
-                  SmartDashboard.putNumber("kS:", kS);
-                  SmartDashboard.putNumber("kV:", kV);
+                   double kA = sumXY / sumX2;
+
+                  SmartDashboard.putNumber("kA", kA);
                   
 
     }));

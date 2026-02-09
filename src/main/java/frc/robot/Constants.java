@@ -62,11 +62,12 @@ public final class Constants {
     public static final double driveKD = 0.0;
 
     /* Drive Motor Characterization Values From SYSID */
-    public static final double driveKS = 0.22; // TODO: This must be tuned to specific robot
-    public static final double driveKV = 0.66;
+    public static final double driveKS = 0.156; // TODO: This must be tuned to specific robot
+    public static final double driveKV = 0.60;
+    public static final double driveKA = 0.1;
 
     public static final Slot0Configs intrinsicsD =
-        new Slot0Configs().withKP(driveKP).withKD(driveKD).withKV(driveKV).withKS(driveKS);
+        new Slot0Configs().withKP(driveKP).withKD(driveKD).withKV(driveKV).withKS(driveKS).withKA(driveKA);
     public static final Slot0Configs instrinsicsS =
         new Slot0Configs().withKP(angleKP).withKD(angleKD).withKS(angleKS);
 
@@ -162,7 +163,7 @@ public final class Constants {
               invertSteer);
     }
 
-    public static final double trackWidth = 0.624557;
+    public static final double trackWidth = 0.632177;
     public static final double wheelBase = 0.62081;
     public static final SwerveDriveKinematics swerveKinematics =
         new SwerveDriveKinematics(

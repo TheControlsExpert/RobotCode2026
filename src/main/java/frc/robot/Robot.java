@@ -9,7 +9,8 @@ import org.littletonrobotics.junction.LoggedRobot;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-
+import com.pathplanner.lib.pathfinding.LocalADStar;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -43,6 +44,8 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void robotInit() {
+      Pathfinding.setPathfinder(new LocalADStar());
+
         
     }
   
