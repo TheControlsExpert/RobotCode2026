@@ -292,7 +292,7 @@ public class RobotContainer {
    // controller.b().whileTrue(pathfindingCommand)
 
    //JoystickButton seventeen = new JoystickButton(LevelsController, 6);
-   controller.rightBumper().onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), Rotation2d.kZero)), drive)
+   controller.rightBumper().onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), DriverStation.getAlliance().get().equals(Alliance.Blue) ? Rotation2d.kZero : Rotation2d.fromDegrees(180))), drive)
                 .ignoringDisable(true));
 
     controller.a().whileTrue(new IntakeCommand(intake))         ;   

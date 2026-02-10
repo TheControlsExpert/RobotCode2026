@@ -1,4 +1,4 @@
-package frc.robot.Commands.DriveCommands.AligningCommands;
+package frc.robot.Commands.DriveCommands.AligningCommands.AutomaticTrenching;
 
 import java.util.List;
 
@@ -40,7 +40,7 @@ public class AutomaticTrenching extends SequentialCommandGroup {
 
         Translation2d pathStart_blue_bottom = new Translation2d(5.807, 0.685);
 
-        if (DriverStation.getAlliance().equals(Alliance.Blue)) {
+        if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
                 double distance_bottom = currentPose.getTranslation().getDistance(pathStart_blue_bottom);
                 Translation2d pathStart_blue_top = FlipVertically_bottom_to_top(pathStart_blue_bottom);
                 double distance_top = currentPose.getTranslation().getDistance(pathStart_blue_top);
