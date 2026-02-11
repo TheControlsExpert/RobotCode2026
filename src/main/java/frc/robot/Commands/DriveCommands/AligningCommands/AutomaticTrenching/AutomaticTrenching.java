@@ -37,7 +37,7 @@ public class AutomaticTrenching {
         Pose2d currentPose = swerve.getEstimatedPosition();
         Translation2d pathEnd_blue_bottom;
 
-        if (currentPose.getX() > 4.574794 && currentPose.getX() < 2* (8.219694) - 4.574794) {
+        if (currentPose.getX() > 4.57454 && currentPose.getX() < 2* (8.219694) - 4.57454) {
             //going from middle to ends
 
          pathEnd_blue_bottom = new Translation2d(2.148, 0.685);
@@ -106,22 +106,22 @@ public class AutomaticTrenching {
         if (starting_from_middle) {
             if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
                 //we are on the end
-                return swerve.getEstimatedPosition().getX() < 4.574794;
+                return swerve.getEstimatedPosition().getX() < 3.977894;
             }
             else {
                 //we are on the end
-                return swerve.getEstimatedPosition().getX() > 2* (8.219694) - 4.574794;
+                return swerve.getEstimatedPosition().getX() > 2* (8.219694) - 3.977894;
             }
         }
 
         else {
             if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
                 //we are on the end
-                return swerve.getEstimatedPosition().getX() > 4.574794;
+                return swerve.getEstimatedPosition().getX() > 5.171694;
             }
             else {
                 //we are on the end
-                return swerve.getEstimatedPosition().getX() < 2* (8.219694) - 4.574794;
+                return swerve.getEstimatedPosition().getX() < 2* (8.219694) - 5.171694;
             }
         }
 
