@@ -2,6 +2,7 @@ package frc.robot.Commands.DriveCommands.AligningCommands.AutomaticTrenching;
 
 import java.util.List;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindThenFollowPath;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -18,27 +19,23 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Subsystems.Drive.Drive;
 
-public class AutomaticTrenching extends SequentialCommandGroup {
+public class AutomaticTrenching {
     Drive swerve;
 
     PathConstraints constraints;
 
-    public AutomaticTrenching(Drive swervy) {
+    public AutomaticTrenching(Drive swervy, PathConstraints constraints) {
         this.swerve = swervy;
-    
-        addRequirements(swervy);
-        
-        
+        this.constraints = constraints;
+
+         
     }
-
-
-
 
 
     public Pose2d getClosestPathingPose() {
         Pose2d currentPose = swerve.getEstimatedPosition();
 
-        Translation2d pathStart_blue_bottom = new Translation2d(5.807, 0.685);
+        Translation2d pathStart_blue_bottom = new Translation2d(2.148, 0.685);
 
         if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
                 double distance_bottom = currentPose.getTranslation().getDistance(pathStart_blue_bottom);
@@ -84,6 +81,11 @@ public class AutomaticTrenching extends SequentialCommandGroup {
         return new Translation2d( point.getX(), 2* (4.021328 - point.getY()) + point.getY()); 
      }
 
+     public Command getPathingCommand() {
+        Pose2d closestPose = getClosestPathingPose();
+        Command pathfinding = AutoBuilder.pathfindToPose(closestPose, constraints);
+        return pathfinding;
+     }
 
     
 }

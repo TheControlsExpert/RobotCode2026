@@ -8,6 +8,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.revrobotics.spark.SparkFlex;
@@ -77,51 +78,12 @@ public class Drive extends SubsystemBase {
   public Pose2d lastodometrypose = new Pose2d();
   ReentrantLock visionLock = new ReentrantLock();
 
+  PathConstraints constraints_auto = new PathConstraints(4, 3, 500, 500);
 
-
-  
-  
-
-  private TimeInterpolatableBuffer<Pose2d> poseBuffer = TimeInterpolatableBuffer.createBuffer(2);
-  private TimeInterpolatableBuffer<Double> SDBufferX = TimeInterpolatableBuffer.createDoubleBuffer(2);
-  private TimeInterpolatableBuffer<Double> SDBufferY = TimeInterpolatableBuffer.createDoubleBuffer(2);
-
-private double[] sampleTimestamps;
-private int sampleCount;
 private SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
 private SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
 
-private double accelX = 0;
-private double accely = 0;
-private double stdX_addition = 0.0;
-private double stdY_addition = 0.0;
 private Twist2d twist = new Twist2d();
-
-
-private double accelX_fieldO = 0;
-private double accelY_fieldO = 0;
-
-private double ratio = 1;
-
-private Pose2d odom_pose_at_time = new Pose2d();
-
-private Transform2d backwards_twist = new Transform2d();
-
-private Pose2d pose_at_time = new Pose2d();
-
-private double xval = 0;
-private double yval = 0;
-private Transform2d forwardTransform = new Transform2d();
-private double std_valx = 0;
-private double std_valy = 0;
-private double diff_x = 0;
-private double diff_y = 0;
-
-public double stdX = 100;
-public double stdY = 100;
-
-public double stdX_odom = 100;
-public double stdY_odom = 100;
 
 public double maxSpeed = 6;
 
@@ -252,37 +214,7 @@ private final Field2d m_field = new Field2d();
             new SysIdRoutine.Mechanism(
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
   }
-    // }
- 
-
-
- 
-
-
-
-
-
-        
-
-          
-          
-    
-          
-      
-          // Configure AutoBuilder for PathPlanner
      
-          // Configure SysId
-          // sysId =
-          //     new SysIdRoutine(
-          //         new SysIdRoutine.Config(
-          //             null,
-          //             null,
-          //             null,
-          //             (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
-          //         new SysIdRoutine.Mechanism(
-          //             (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
-        
-      
         @Override
         public void periodic() {
 
@@ -386,15 +318,6 @@ private final Field2d m_field = new Field2d();
   //   }
   //   return states;
   // }
-
-  public void resetGyro() {
-    int addOn = DriverStation.getAlliance().get().equals(Alliance.Red) ? 180 : 0;
-    gyroIO.resetGyro(Rotation2d.fromDegrees(addOn));
-  }
-
-  public void resetGyro(double degrees) {
-    gyroIO.resetGyro(Rotation2d.fromDegrees(degrees));
-  }
 
 
 
