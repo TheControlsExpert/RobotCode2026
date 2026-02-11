@@ -78,7 +78,7 @@ public class Drive extends SubsystemBase {
   public Pose2d lastodometrypose = new Pose2d();
   ReentrantLock visionLock = new ReentrantLock();
 
-  PathConstraints constraints_auto = new PathConstraints(4, 3, 500, 500);
+public PathConstraints constraints_auto = new PathConstraints(4, 3, 500, 500);
 
 private SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
 private SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];

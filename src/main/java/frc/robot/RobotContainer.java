@@ -48,6 +48,7 @@ import frc.robot.Commands.DriveCommands.IntakeCommand;
 import frc.robot.Commands.DriveCommands.StraightDriveCommand;
 import frc.robot.Commands.DriveCommands.WheelRadiusCharacterization;
 import frc.robot.Commands.DriveCommands.kACharacterization;
+import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticTrenching.AutomaticTrenching;
 import frc.robot.Subsystems.Drive.Drive;
 import frc.robot.Subsystems.Drive.GyroIOPigeon2;
 import frc.robot.Subsystems.Drive.ModuleIOTalonFX;
@@ -61,6 +62,7 @@ import frc.robot.Subsystems.Intake.Intake;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -94,6 +96,8 @@ public class RobotContainer {
   private final CommandXboxController controller = new CommandXboxController(0);
   private final XboxController xbox = new XboxController(0);
   private final CommandXboxController controller2 = new CommandXboxController(1);
+
+  AutomaticTrenching autoTrenching;
 
  
 
@@ -130,6 +134,8 @@ public class RobotContainer {
                         new ModuleIOTalonFX(Mod1.constants, 1),
                         new ModuleIOTalonFX(Mod2.constants, 2),
                         new ModuleIOTalonFX(Mod3.constants, 3));
+
+                autoTrenching = new AutomaticTrenching(drive, drive.constraints_auto);     
         
                 
         //       superstructure = new Superstructure(new WristIOKrakens(), new ElevatorIOKrakens());        
@@ -191,8 +197,14 @@ public class RobotContainer {
                 drive,
                 controller));
 
-        controller.x().whileTrue(FeedforwardCharacterization.feedforwardCommand(drive, xbox));
+        //controller.x().whileTrue(FeedforwardCharacterization.feedforwardCommand(drive, xbox));
+
+       controller.x().whileTrue(Commands.defer(() -> autoTrenching.getPathingCommand().until(
         
+       () -> (autoTrenching.passedTrench() && 
+       (Math.abs(controller.getLeftY()) > 0.1 || Math.abs(controller.getLeftX()) > 0.1 || Math.abs(controller.getRightX()) > 0.1))), Set.of(drive)));
+
+     
        // controller.().whileTrue(new IntakeCommand(superstructure));
        //controller.rightTrigger().whileTrue(new EjectCommand(superstructure, drive, vision));
       //  controller.rightTrigger().whileTrue(new EjectCommand(superstructure, drive, vision).andThen(new ThirdPartAutoAlign(drive, vision, superstructure, controller)));
@@ -295,7 +307,7 @@ public class RobotContainer {
    controller.rightBumper().onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), DriverStation.getAlliance().get().equals(Alliance.Blue) ? Rotation2d.kZero : Rotation2d.fromDegrees(180))), drive)
                 .ignoringDisable(true));
 
-    controller.a().whileTrue(new IntakeCommand(intake))         ;   
+    controller.a().whileTrue(new IntakeCommand(intake));   
 
    //seventeen.onTrue(Commands.runOnce(() -> {drive.resetGyro();}, drive).ignoringDisable(true));
       }
