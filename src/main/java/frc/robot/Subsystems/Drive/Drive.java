@@ -79,6 +79,7 @@ public class Drive extends SubsystemBase {
   ReentrantLock visionLock = new ReentrantLock();
 
 public PathConstraints constraints_auto = new PathConstraints(4, 3, 500, 500);
+public PathConstraints constraints_pathfinding = new PathConstraints(3, 3, 500, 500);
 
 private SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
 private SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
@@ -496,8 +497,17 @@ private final Field2d m_field = new Field2d();
   
     /** Returns the measured chassis speeds of the robot. */
     @AutoLogOutput(key = "SwerveChassisSpeeds/Measured")
-    private ChassisSpeeds getChassisSpeeds() {
+    public ChassisSpeeds getChassisSpeeds() {
       return kinematics.toChassisSpeeds(getModuleStates());
+    }
+
+    public ChassisSpeeds getFieldRelativeSpeeds() {
+      boolean isFlipped =
+                  DriverStation.getAlliance().isPresent()
+                      && DriverStation.getAlliance().get().equals(Alliance.Red);
+      return ChassisSpeeds.fromRobotRelativeSpeeds(getRobotRelativeSpeeds(), isFlipped ? getEstimatedPosition().getRotation().plus(Rotation2d.fromDegrees(180)) : getEstimatedPosition().getRotation());
+      
+      
     }
   
     /** Returns the position of each module in radians. */
