@@ -42,9 +42,11 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -54,7 +56,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
-
+import frc.robot.Robot;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.SwerveConstants;
 //import frc.robot.Subsystems.Superstructure.Superstructure;
@@ -73,6 +75,7 @@ public class Drive extends SubsystemBase {
   
 
   public LinearFilter filter = LinearFilter.movingAverage(10);
+  Rotation2d simRotation = new Rotation2d();
   public Pose2d estimatedPose = new Pose2d(0, 0, new Rotation2d());
   public Pose2d odometryPose = new Pose2d();
   public Pose2d lastodometrypose = new Pose2d();
@@ -137,6 +140,8 @@ private final Field2d m_field = new Field2d();
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
+
+  private double lastRotation = 0.0;
   //private final SysIdRoutine sysId;
   private final Alert gyroDisconnectedAlert =
       new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
@@ -233,12 +238,13 @@ private final Field2d m_field = new Field2d();
           }
 
          
-         m_field.setRobotPose(getEstimatedPosition());
+         m_field.setRobotPose(getEstimatedPosition());    
          
           SmartDashboard.putNumber("tester", tester);
           //SmartDashboard.putNumber("bop bop", numTimes);
           odometryLock.lock(); // Prevents odometry updates while reading data
           gyroIO.updateInputs(gyroInputs);
+         
           Logger.processInputs("Drive/Gyro", gyroInputs);
           for (var module : modules) {
             module.periodic();
@@ -247,7 +253,7 @@ private final Field2d m_field = new Field2d();
     
       
           // Stop moving when disabled
-          if (DriverStation.isDisabled()) {
+          if (DriverStation.isDisabled() && RobotBase.isReal()) {
             for (var module : modules) {
               module.stop();
             }
@@ -258,6 +264,8 @@ private final Field2d m_field = new Field2d();
             Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
             Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
           }
+
+          if (RobotBase.isReal()) {
       
           // Update odometry
           double[] sampleTimestamps =
@@ -283,29 +291,64 @@ private final Field2d m_field = new Field2d();
       
             twist = kinematics.toTwist2d(moduleDeltas);
     
-            if (gyroInputs.connected) {
+            if ( gyroInputs.connected) {
               // Use the real gyro angle
               rawGyroRotation = gyroInputs.odometryYawPositions[i];
               SmartDashboard.putNumber("gyro rediing", getEstimatedPosition().getRotation().getDegrees());
             } else {
               // Use the angle delta from the kinematics and module deltas
-            //  Twist2d twist = kinematics.toTwist2d(moduleDeltas);
-            //  rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
+             Twist2d twist = kinematics.toTwist2d(moduleDeltas);
+             rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
             }
-      
+          
+          
 
-         
+          
            visionLock.lock();
            SwervePoseEstimator.updateWithTime(sampleTimestamps[i],  rawGyroRotation, modulePositions);
            visionLock.unlock();
+        }
+      }
+
+          else {
+            double timestamp = Timer.getFPGATimestamp();
+             modulePositions = new SwerveModulePosition[4];
+            for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
+              modulePositions[moduleIndex] = modules[moduleIndex].getOdometryPositions()[0];
+         
+            moduleDeltas[moduleIndex] =
+                  new SwerveModulePosition(
+                      modulePositions[moduleIndex].distanceMeters 
+                          - lastModulePositions[moduleIndex].distanceMeters,
+                      modulePositions[moduleIndex].angle);
+              lastModulePositions[moduleIndex] = modulePositions[moduleIndex];
+          }
+      
+            twist = kinematics.toTwist2d(moduleDeltas);
+            SmartDashboard.putNumber("twist ", Units.radiansToDegrees(twist.dtheta / 0.02));
+            simRotation = simRotation.plus(new Rotation2d(0.02 * getAngularSpeed()));
+            
+
+
+            SwervePoseEstimator.updateWithTime(timestamp, simRotation, modulePositions);
+                      SmartDashboard.putNumber("Delta Time", Timer.getFPGATimestamp() - prevTime);
+
+            prevTime = Timer.getFPGATimestamp();
+      
+
+        
+
           SmartDashboard.putNumber("x", SwervePoseEstimator.getEstimatedPosition().getX());
           SmartDashboard.putNumber("y", SwervePoseEstimator.getEstimatedPosition().getY());
+          SmartDashboard.putNumber("Sim Rotation", simRotation.getRotations());
+          SmartDashboard.putNumber("Gyro speed", getAngularSpeed());
       }
   
       // Update gyro alert
       gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
   
   }
+
 
   public double[] getWheelRadiusCharacterizationPosition() {
     return Arrays.stream(modules).mapToDouble(Module::getPositionRadians).toArray();
@@ -410,6 +453,10 @@ private final Field2d m_field = new Field2d();
             m_field.getObject("path").setPoses(poses);
         });
     }
+
+    public double getAngularSpeed() {
+      return getRobotRelativeSpeeds().omegaRadiansPerSecond;
+    }
   
     /**
      * Stops the drive and turns the modules to an X arrangement to resist movement. The modules will
@@ -440,9 +487,14 @@ private final Field2d m_field = new Field2d();
     @AutoLogOutput(key = "SwerveStates/Measured")
     private SwerveModuleState[] getModuleStates() {
       SwerveModuleState[] states = new SwerveModuleState[4];
+      double totalSpeed = 0;
       for (int i = 0; i < 4; i++) {
         states[i] = modules[i].getState();
+        totalSpeed += states[i].speedMetersPerSecond;
       }
+      SmartDashboard.putNumber("avg motor speed", totalSpeed / 4);
+
+    
       return states;
     }
 

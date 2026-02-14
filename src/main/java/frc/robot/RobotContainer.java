@@ -50,7 +50,9 @@ import frc.robot.Commands.DriveCommands.WheelRadiusCharacterization;
 import frc.robot.Commands.DriveCommands.kACharacterization;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticTrenching.AutomaticTrenching;
 import frc.robot.Subsystems.Drive.Drive;
+
 import frc.robot.Subsystems.Drive.GyroIOPigeon2;
+import frc.robot.Subsystems.Drive.ModuleIOSim;
 import frc.robot.Subsystems.Drive.ModuleIOTalonFX;
 import frc.robot.Subsystems.Intake.Intake;
 
@@ -82,6 +84,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 public class RobotContainer {
   // Subsystems
   public final Drive drive;
+ // public final DriveSim drivesim;
 
   
  //private final PathConstraints constraints;
@@ -124,23 +127,46 @@ public class RobotContainer {
             //  SmartDashboard.putData("Auto Chooser", autoChooser);
     
             // this.intake = new Intake();
+            
               this.gyro = new GyroIOPigeon2();
             
                 // Real robot, instantiate hardware IO implementations
-                drive =
+
+                // drive =
+                //     new Drive(
+                //         gyro,
+                //         new ModuleIOTalonFX(Mod0.constants, 0),
+                //         new ModuleIOTalonFX(Mod1.constants, 1),
+                //         new ModuleIOTalonFX(Mod2.constants, 2),
+                //         new ModuleIOTalonFX(Mod3.constants, 3));
+                if (Robot.isReal()) {
+                           drive =
                     new Drive(
                         gyro,
                         new ModuleIOTalonFX(Mod0.constants, 0),
                         new ModuleIOTalonFX(Mod1.constants, 1),
                         new ModuleIOTalonFX(Mod2.constants, 2),
                         new ModuleIOTalonFX(Mod3.constants, 3));
+                }
+                
+                else {
+                    drive =
+                    new Drive(
+                        gyro,
+                        new ModuleIOSim(),
+                        new ModuleIOSim(),
+                        new ModuleIOSim(),
+                        new ModuleIOSim());
+                }
 
+                 // drivesim = new DriveSim(new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim());
+                
                 autoTrenching = new AutomaticTrenching(drive, drive.constraints_auto);     
-        
+      
                 
         //       superstructure = new Superstructure(new WristIOKrakens(), new ElevatorIOKrakens());        
                
-        
+        //        vision = new VisionSubsystem(new VisionIO_Limelight(), drive);
          //        vision = new VisionSubsystem(new VisionIO_Limelight(), drive);
     
         //     constraints = new PathConstraints(
@@ -178,6 +204,7 @@ public class RobotContainer {
       //  SmartDashboard.putData(autoChooser);
 
       }
+    
     
      
     

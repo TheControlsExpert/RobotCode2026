@@ -8,69 +8,40 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Subsystems.Drive.ModuleIO.ModuleIOInputs;
 
 import org.littletonrobotics.junction.Logger;
 
-public class Module {
-  private final ModuleIO io;
+public class ModuleSim {
+  private final ModuleIOSim io;
   private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
-  private final int index;
-  private final SwerveConstants.SwerveModuleConstants constants;
 
-  private final Alert driveDisconnectedAlert;
-  private final Alert turnDisconnectedAlert;
-  private final Alert turnEncoderDisconnectedAlert;
-  private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
+  private SwerveModulePosition odometryPosition = new SwerveModulePosition();
 
-  public Module(
-      ModuleIO io,
-      int index, SwerveConstants.SwerveModuleConstants constants) {
+  public ModuleSim(
+      ModuleIOSim io) {
     this.io = io;
-    this.index = index;
-    this.constants = constants;
-    driveDisconnectedAlert =
-        new Alert(
-            "Disconnected drive motor on module " + Integer.toString(index) + ".",
-            AlertType.kError);
-    turnDisconnectedAlert =
-        new Alert(
-            "Disconnected turn motor on module " + Integer.toString(index) + ".", AlertType.kError);
-    turnEncoderDisconnectedAlert =
-        new Alert(
-            "Disconnected turn encoder on module " + Integer.toString(index) + ".",
-            AlertType.kError);
+ 
   }
 
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
+   
 
     // Calculate positions for odometry
-    if (RobotBase.isReal()) {
-    int sampleCount = inputs.odometryTimestamps.length; // All signals are sampled together
-    odometryPositions = new SwerveModulePosition[sampleCount];
-    for (int i = 0; i < sampleCount; i++) {
-      double positionMeters = inputs.odometryDrivePositionsRad[i] * SwerveConstants.WheelRadius;
-      Rotation2d angle = inputs.odometryTurnPositions[i];
-      odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
-    }
-   }
+  
+    odometryPosition = new SwerveModulePosition();
 
-   else {
-      double positionMeters = inputs.drivePositionRad * SwerveConstants.WheelRadius;
+      double positionMeters = inputs.drivePositionRad * SwerveConstants.WheelRadius ;
       Rotation2d angle = inputs.turnAbsolutePosition;
-      odometryPositions = new SwerveModulePosition[] {new SwerveModulePosition(positionMeters, angle)};
+      odometryPosition = new SwerveModulePosition(positionMeters, angle);
    }
 
     // Update alerts
-    driveDisconnectedAlert.set(!inputs.driveConnected);
-    turnDisconnectedAlert.set(!inputs.turnConnected);
-    turnEncoderDisconnectedAlert.set(!inputs.turnEncoderConnected);
-  }
+   
+  
 
   /** Runs the module with the specified setpoint state. Mutates the state to optimize it. */
   public void runSetpoint(SwerveModuleState state) {
@@ -126,8 +97,8 @@ public class Module {
   }
 
   /** Returns the module positions received this cycle. */
-  public SwerveModulePosition[] getOdometryPositions() {
-    return odometryPositions;
+  public SwerveModulePosition getOdometryPositions() {
+    return odometryPosition;
   }
 
   /** Returns the timestamps of the samples received this cycle. */
