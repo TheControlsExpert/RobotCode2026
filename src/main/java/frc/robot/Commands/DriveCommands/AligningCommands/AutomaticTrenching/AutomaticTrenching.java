@@ -21,6 +21,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -127,7 +128,7 @@ public class AutomaticTrenching {
         double totalDistanceX = Math.abs(closestPoses[0].getX() - swerve.getEstimatedPosition().getX()); //finds the absolute x distance between the robot and goal point
         double cos_theta = totalDistanceX/distance; //cos theta = adjacent/hypotenuse |||| x distance/total distance
         double hypot_other = Math.abs(closestPoses[1].getX() - closestPoses[0].getX())/ cos_theta; //goal to waypoint section of hypotenuse
-        double hypot_actual = distance - hypot_other; // robot to waypoint distance section of hypotenuse
+        double hypot_actual = Math.abs(distance - hypot_other); // robot to waypoint distance section of hypotenuse
             
         // if our velocity path can achieve max velocity |||| becomes a trapezoidal profile
         //we know we are far enough to reach cruise velocity
@@ -263,8 +264,18 @@ public class AutomaticTrenching {
         if ((cs.vxMetersPerSecond * cs.vxMetersPerSecond + cs.vyMetersPerSecond * cs.vyMetersPerSecond) < 0.25 * 0.25) {
             
             var diff = target.getTranslation().minus(swerve.getEstimatedPosition().getTranslation());
-            
+       
+           
             return (diff.getNorm() < 0.01) ? target.getRotation() : diff.getAngle();//.rotateBy(Rotation2d.k180deg);
+        }
+
+        if (cs.vxMetersPerSecond == 0) {
+            cs.vxMetersPerSecond = 0.00001;
+            
+        }
+
+        if (cs.vyMetersPerSecond == 0) {
+            cs.vyMetersPerSecond = 0.00001;
         }
 
 

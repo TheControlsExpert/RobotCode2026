@@ -203,7 +203,7 @@ private final Field2d m_field = new Field2d();
              // Method that will drive the robot gn ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
              new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
                     new PIDConstants(3, 0.0, 0.3), // Translation PID constants
-                    new PIDConstants(1.65, 0.0, 0.0) // Rotation PID constants
+                    new PIDConstants(0.000000001, 0.0, 0.0) // Rotation PID constants
              ),
              config, // The robot configuration
              () -> {return false;},
@@ -326,7 +326,7 @@ private final Field2d m_field = new Field2d();
       
             twist = kinematics.toTwist2d(moduleDeltas);
             SmartDashboard.putNumber("twist ", Units.radiansToDegrees(twist.dtheta / 0.02));
-            simRotation = simRotation.plus(new Rotation2d(0.02 * getAngularSpeed()));
+            simRotation = simRotation.plus(new Rotation2d(0.02 * getAngularSpeed() / 180 * Math.PI));
             
 
 
