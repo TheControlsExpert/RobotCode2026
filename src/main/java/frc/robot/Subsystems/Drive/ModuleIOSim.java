@@ -84,7 +84,7 @@ public class ModuleIOSim implements ModuleIO {
   @Override
   public void setDriveVelocity(double output) {
     driveController.setSetpoint(output);
-    driveFFVolts = output * SwerveConstants.driveKV;
+    driveFFVolts = output * 0.1;
   }
 
   public void setTurnPosition(Rotation2d rotation) {
