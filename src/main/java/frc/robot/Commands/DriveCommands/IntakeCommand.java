@@ -21,3 +21,9 @@ public class IntakeCommand extends Command{
     }
     
 }
+
+
+
+boolean setpointisUp = true; 
+
+

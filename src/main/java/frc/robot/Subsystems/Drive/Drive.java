@@ -89,6 +89,8 @@ public PathConstraints constraints_pathfinding = new PathConstraints(5, 3, 500, 
 
 private SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
 private SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
+Transform2d simulatedLL = new Transform2d(new Translation2d(SwerveConstants.wheelBase / 2, -SwerveConstants.trackWidth / 2), Rotation2d.fromDegrees(-160));
+
 
 
 private Twist2d twist = new Twist2d();
@@ -228,8 +230,7 @@ private final Field2d m_field = new Field2d();
  
  @Override
  public void periodic() {
- getModuleStates();
-
+ 
  if (DriverStation.isAutonomous() && PathPlannerAuto.currentPathName != null) {
  PathPlannerLogging.setLogActivePathCallback((poses) -> {
  // Do whatever you want with the poses here
@@ -245,6 +246,13 @@ private final Field2d m_field = new Field2d();
 
  
  m_field.setRobotPose(SwervePoseEstimator.getEstimatedPosition()); 
+ Pose2d cameraPoseSim = getEstimatedPosition().transformBy(simulatedLL);
+ Pose2d cameraPoseLeftSim = new Pose2d(cameraPoseSim.getTranslation(), cameraPoseSim.getRotation().plus(Rotation2d.fromDegrees(59.6/2)));
+ Pose2d cameraPoseRightSim = new Pose2d(cameraPoseSim.getTranslation(), cameraPoseSim.getRotation().minus(Rotation2d.fromDegrees(59.6/2)));
+
+ 
+
+
  
  SmartDashboard.putNumber("tester", tester);
  //SmartDashboard.putNumber("bop bop", numTimes);
