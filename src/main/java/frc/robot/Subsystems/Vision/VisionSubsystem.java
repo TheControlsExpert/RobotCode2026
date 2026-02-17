@@ -9,14 +9,16 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.LimelightConstants;
 import frc.robot.Subsystems.Drive.Drive;
 import frc.robot.Subsystems.Vision.VisionIO.VisionIOInputs;
 
-public class VisionSubsystem extends SubsystemBase{
+public class VisionSubsystem extends SubsystemBase {
    //Field2d field = new Field2d();
 
 
@@ -29,16 +31,38 @@ public class VisionSubsystem extends SubsystemBase{
     private double minTranslation = 10000.0; 
     public record VisionMeasurement(Pose2d pose, Rotation2d rotation, double timestamp, double[] std) {}
     ArrayList<VisionMeasurement> visionMeasurements = new ArrayList<>();
+
+    public Servo servy; //makes a servo motor
+    public servoState currentServoState; // rotational state of the servo
  
+
+
+    
       
-    public VisionSubsystem(VisionIO io, Drive drive) {
+    public VisionSubsystem(VisionIO io, Drive drive) { 
+        this.io = io;
+        this.drive = drive;
+        //SmartDashboard.putData("field", field);
+    }
+
     
-                    this.io = io;
-                    this.drive = drive;
-                   //SmartDashboard.putData("field", field);
-    
-        }
-    
+
+
+
+    public enum servoState { //creates three possible rotational states for the servo motor
+        forward,
+        backward,
+        sideways
+    }
+
+    public void changeServoState(servoState goalServoState) { //changes the current servo rotational state to the inputted one from the parameter
+        currentServoState = goalServoState;
+    }
+
+
+
+
+
     @Override
     public void periodic() {
         io.updateInputs(inputs);
@@ -46,20 +70,23 @@ public class VisionSubsystem extends SubsystemBase{
         if (inputs.isNew_LL4 && inputs.isConnected_LL4) {
              double std_LL4 = (inputs.avgDistance_LL4 * 0.02 ) / inputs.tagCount_LL4;
              double[] stds_LL4 = {std_LL4, std_LL4};
-
             if (std_LL4 < 0.1) {
-               visionMeasurements.add(inputs.MT2pose_LL4, inputs.)
-
+               visionMeasurements.add(inputs.MT2pose_LL4, inputs);
             }
         }
 
-        
+        //these if statements determine how to move the servo based on it's state
+        if (currentServoState == servoState.forward) { //if the servo's in the forward state
+            servy.setAngle(LimelightConstants.climbLeftAngle);
 
+        } else if (currentServoState == servoState.backward) { //if the servo's in the backward state
+            servy.setAngle(LimelightConstants.climbRightAngle);
 
+        } else if (currentServoState == servoState.sideways) { //if the servo's in the sideways state
+            servy.setAngle(LimelightConstants.normalAngle);
 
-
-           
-        }
+        }      
+    }
     
     
         public double[] times(double multiplier, double[] list) {
@@ -77,4 +104,5 @@ public class VisionSubsystem extends SubsystemBase{
             drive.addVision(pose, timestamp, std);
 
     }
-    }
+}
+    
