@@ -33,11 +33,10 @@ public class VisionSubsystem extends SubsystemBase {
     ArrayList<VisionMeasurement> visionMeasurements = new ArrayList<>();
 
     public Servo servy; //makes a servo motor
-    public servoState currentServoState; // rotational state of the servo
+    public ServoState currentServoState; // rotational state of the servo
  
 
 
-    
       
     public VisionSubsystem(VisionIO io, Drive drive) { 
         this.io = io;
@@ -49,15 +48,24 @@ public class VisionSubsystem extends SubsystemBase {
 
 
 
-    public enum servoState { //creates three possible rotational states for the servo motor
-        forward,
-        backward,
-        sideways
+
+    public enum ServoState { //creates three possible rotational states for the servo motor
+        forward(LimelightConstants.climbLeftAngle),
+        backward(LimelightConstants.climbRightAngle),
+        sideways(LimelightConstants.normalAngle);
+
+        public double position;
+
+        private ServoState(double position) {
+            this.position = position;
+        }
     }
 
-    public void changeServoState(servoState goalServoState) { //changes the current servo rotational state to the inputted one from the parameter
+
+    public void changeServoState(ServoState goalServoState) { //changes the current servo rotational state to the inputted one from the parameter
         currentServoState = goalServoState;
     }
+
 
 
 
@@ -75,30 +83,22 @@ public class VisionSubsystem extends SubsystemBase {
             }
         }
 
-        //these if statements determine how to move the servo based on it's state
-        if (currentServoState == servoState.forward) { //if the servo's in the forward state
-            servy.setAngle(LimelightConstants.climbLeftAngle);
-
-        } else if (currentServoState == servoState.backward) { //if the servo's in the backward state
-            servy.setAngle(LimelightConstants.climbRightAngle);
-
-        } else if (currentServoState == servoState.sideways) { //if the servo's in the sideways state
-            servy.setAngle(LimelightConstants.normalAngle);
-
-        }      
+        servy.setAngle(currentServoState.position);    
     }
     
+
+
+
     
         public double[] times(double multiplier, double[] list) {
             for (int i = 0; i < list.length; i++) {
                 list[i] = list[i] * multiplier;
             }
-    
-            return list;
-    
+            return list;  
         }
     
     
+
         public void addVisionMeasurement(Pose2d pose, double timestamp, double[] std) {
             SmartDashboard.putBoolean("adding vision", true);
             drive.addVision(pose, timestamp, std);
