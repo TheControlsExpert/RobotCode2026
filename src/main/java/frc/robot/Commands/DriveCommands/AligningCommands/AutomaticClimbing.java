@@ -28,7 +28,7 @@ public class AutomaticClimbing {
     double translationalMOE = 0.25;
     boolean hasReachedFirstPose = false;
     boolean isClimbingRight = false;
-    double moving_setpoint_time = 0.35;
+    double moving_setpoint_time = 0.15;
     StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault()
   .getStructTopic("Target for Climbing", Pose2d.struct).publish(); 
 
@@ -83,30 +83,32 @@ public class AutomaticClimbing {
     public Pose2d[] getClosestClimbPoses() {
         SmartDashboard.putBoolean("isClimbingRight", isClimbingRight);
         Pose2d blueRight = ClimbConstants.RightPoseBlue;
+        Pose2d blueLeft = FlipVertically_bottom_to_top(blueRight);
         
         if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
-            Pose2d blueLeft = FlipVertically_bottom_to_top(blueRight);
+           
 
             if (drive.getEstimatedPosition().getTranslation().getDistance(blueRight.getTranslation()) < drive.getEstimatedPosition().getTranslation().getDistance(blueLeft.getTranslation())) {
                 isClimbingRight = true;
 
-                return new Pose2d[]{blueRight, blueRight.plus(new Transform2d(0,0.65,Rotation2d.fromDegrees(0)))};
+                return new Pose2d[]{blueRight, blueRight.plus(new Transform2d(0.06,0.65,Rotation2d.fromDegrees(0)))};
             } else {
                 isClimbingRight = false;
-                return new Pose2d[]{blueLeft, blueLeft.plus(new Transform2d(0,0.65,Rotation2d.fromDegrees(0)))};
+                return new Pose2d[]{blueLeft, blueLeft.plus(new Transform2d(-0.06,0.65,Rotation2d.fromDegrees(0)))};
             }
         }
 
         else {
-            Pose2d redLeft = FlipHorizontally_BtoR(blueRight);
-            Pose2d redRight = FlipVertically_bottom_to_top(redLeft);
+            
+            Pose2d redRight = FlipVertically_bottom_to_top_halfpoint(FlipHorizontally_BtoR(blueRight));
+            Pose2d redLeft = FlipVertically_bottom_to_top_halfpoint(FlipHorizontally_BtoR(blueLeft));
 
             if (drive.getEstimatedPosition().getTranslation().getDistance(redRight.getTranslation()) < drive.getEstimatedPosition().getTranslation().getDistance(redLeft.getTranslation())) {
                 isClimbingRight = true;
-                return new Pose2d[]{redRight, redRight.plus(new Transform2d(0,1.5,Rotation2d.fromDegrees(0)))};
+                return new Pose2d[]{redRight, redRight.plus(new Transform2d(0.06, 0.65,Rotation2d.fromDegrees(0)))};
             } else {
                 isClimbingRight = false;
-                return new Pose2d[]{redLeft, redLeft.plus(new Transform2d(0,-1.5,Rotation2d.fromDegrees(0)))};
+                return new Pose2d[]{redLeft, redLeft.plus(new Transform2d(-0.06, 0.65, Rotation2d.fromDegrees(0)))};
             }
         }
 
@@ -122,6 +124,11 @@ public class AutomaticClimbing {
     //flips translation2d from bottom of blue to top of blue
     public Pose2d FlipVertically_bottom_to_top(Pose2d point) {
         return new Pose2d(new Translation2d( point.getX(), 2* (3.745611 - point.getY()) + point.getY()), point.getRotation().plus(Rotation2d.fromDegrees(180))); 
+     }
+
+    public Pose2d FlipVertically_bottom_to_top_halfpoint(Pose2d point) {
+        return new Pose2d(new Translation2d( point.getX(), 2* (4.021328 - point.getY()) + point.getY()), point.getRotation().plus(Rotation2d.fromDegrees(180))); 
+
      }
 
 

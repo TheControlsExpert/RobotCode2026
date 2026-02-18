@@ -47,8 +47,8 @@ public class AutoAlign {
     private ChassisSpeeds robotSpeed = new ChassisSpeeds();
 
 
-    private final double PID_PROFILE_MAX_VELOCITY = 4; // m/s
-    private final double PID_PROFILE_MAX_ACCELERATION = 5; // m/s^2
+    private final double PID_PROFILE_MAX_VELOCITY = 5; // m/s
+    private final double PID_PROFILE_MAX_ACCELERATION = 4; // m/s^2
 
 
     public AutoAlign(double kPtranslation, double kProtation, double translationMarge, double rotationMarge){
