@@ -50,9 +50,9 @@ public class VisionSubsystem extends SubsystemBase {
 
 
     public enum ServoState { //creates three possible rotational states for the servo motor
-        forward(LimelightConstants.climbLeftAngle),
-        backward(LimelightConstants.climbRightAngle),
-        sideways(LimelightConstants.normalAngle);
+        CLIMB_LEFT(LimelightConstants.climbLeftAngle),
+        CLIMB_RIGHT(LimelightConstants.climbRightAngle),
+        NORMAL(LimelightConstants.normalAngle);
 
         public double position;
 

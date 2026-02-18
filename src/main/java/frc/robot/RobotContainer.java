@@ -36,7 +36,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants.FieldConstants;
+
 import frc.robot.Constants.SwerveConstants.Mod0;
 import frc.robot.Constants.SwerveConstants.Mod1;
 import frc.robot.Constants.SwerveConstants.Mod2;
@@ -47,13 +47,16 @@ import frc.robot.Commands.DriveCommands.FeedforwardCharacterization;
 import frc.robot.Commands.DriveCommands.StraightDriveCommand;
 import frc.robot.Commands.DriveCommands.WheelRadiusCharacterization;
 import frc.robot.Commands.DriveCommands.kACharacterization;
+import frc.robot.Commands.DriveCommands.AligningCommands.AutoAlign;
+import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticClimbing;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticTrenching;
 import frc.robot.Subsystems.Drive.Drive;
 
 import frc.robot.Subsystems.Drive.GyroIOPigeon2;
 import frc.robot.Subsystems.Drive.ModuleIOSim;
 import frc.robot.Subsystems.Drive.ModuleIOTalonFX;
-
+import frc.robot.Subsystems.Vision.VisionIOLimelight;
+import frc.robot.Subsystems.Vision.VisionSubsystem;
 
 // import frc.robot.Subsystems.Superstructure.ElevatorIOKrakens;
 // import frc.robot.Subsystems.Superstructure.Superstructure;
@@ -100,6 +103,7 @@ public class RobotContainer {
   private final CommandXboxController controller2 = new CommandXboxController(1);
 
   AutomaticTrenching autoTrenching;
+  AutomaticClimbing autoClimbing;
 
  
 
@@ -111,7 +115,7 @@ public class RobotContainer {
   
     private GyroIOPigeon2 gyro;
    
-    //    private VisionSubsystem vision;
+        private VisionSubsystem vision;
 
 
             
@@ -160,11 +164,13 @@ public class RobotContainer {
                  // drivesim = new DriveSim(new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim());
                 
                 autoTrenching = new AutomaticTrenching(drive, drive.constraints_auto);     
+                autoClimbing = new AutomaticClimbing(drive, new AutoAlign(2.5, 0.08, 0.01, 1), vision);
       
                 
         //       superstructure = new Superstructure(new WristIOKrakens(), new ElevatorIOKrakens());        
                
-        //        vision = new VisionSubsystem(new VisionIO_Limelight(), drive);
+                vision = new VisionSubsystem(new VisionIOLimelight(), drive);
+
          //        vision = new VisionSubsystem(new VisionIO_Limelight(), drive);
     
         //     constraints = new PathConstraints(
@@ -231,6 +237,7 @@ public class RobotContainer {
 
       
      
+       controller.y().whileTrue(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
        // controller.().whileTrue(new IntakeCommand(superstructure));
        //controller.rightTrigger().whileTrue(new EjectCommand(superstructure, drive, vision));
       //  controller.rightTrigger().whileTrue(new EjectCommand(superstructure, drive, vision).andThen(new ThirdPartAutoAlign(drive, vision, superstructure, controller)));

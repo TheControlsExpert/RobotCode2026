@@ -21,11 +21,11 @@ public class ProfiledPIDCommand extends Command {
     Drive drive;
     Supplier<Pose2d> target;
     
-    public ProfiledPIDCommand(AutoAlign autoAlign, Drive drive, Supplier<Pose2d> target, double rotationMOE, double translationMOE) {
+    public ProfiledPIDCommand(AutoAlign autoAlign, Drive drive, Supplier<Pose2d> target) {
         this.autoAlign = autoAlign;
         this.drive = drive;
-        this.rotationMOE = rotationMOE;
-        this.translationMOE = translationMOE;
+        this.rotationMOE = autoAlign.rotationMarge;
+        this.translationMOE = autoAlign.translationMarge;
         this.target = target;
 
         addRequirements(drive);

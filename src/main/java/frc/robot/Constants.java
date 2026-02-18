@@ -196,7 +196,7 @@ public final class Constants {
   }
 
   public static class ClimbConstants {
-    public static Pose2d RightPoseBlue = new Pose2d();
+    public static Pose2d RightPoseBlue = new Pose2d(1.293, 2.859, Rotation2d.fromDegrees(180));
   }
 
 
