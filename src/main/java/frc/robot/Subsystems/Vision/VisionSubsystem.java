@@ -32,8 +32,8 @@ public class VisionSubsystem extends SubsystemBase {
     public record VisionMeasurement(Pose2d pose, double rotationDegreees, double timestamp, double[] std, int numTags, double avgDistance) {}
     ArrayList<VisionMeasurement> visionMeasurements = new ArrayList<>();
 
-    public Servo servy; //makes a servo motor
-    public ServoState currentServoState; // rotational state of the servo
+    public Servo servy = new Servo(0); //makes a servo motor
+    public ServoState currentServoState = ServoState.NORMAL; // rotational state of the servo
  
 
             
@@ -110,7 +110,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         visionMeasurements.clear();
 
-        if (!bestmeasurement.equals(null)) {
+        if (bestmeasurement != null) {
             addVisionMeasurement(bestmeasurement);
         }
       //needs to be adjusted for 180 degrees      

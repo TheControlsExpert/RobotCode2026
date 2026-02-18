@@ -162,14 +162,14 @@ public class RobotContainer {
                 }
 
                  // drivesim = new DriveSim(new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim());
-                
+                vision = new VisionSubsystem(new VisionIOLimelight(), drive);
                 autoTrenching = new AutomaticTrenching(drive, drive.constraints_auto);     
                 autoClimbing = new AutomaticClimbing(drive, new AutoAlign(2.5, 0.08, 0.01, 1), vision);
       
                 
         //       superstructure = new Superstructure(new WristIOKrakens(), new ElevatorIOKrakens());        
                
-                vision = new VisionSubsystem(new VisionIOLimelight(), drive);
+                
 
          //        vision = new VisionSubsystem(new VisionIO_Limelight(), drive);
     

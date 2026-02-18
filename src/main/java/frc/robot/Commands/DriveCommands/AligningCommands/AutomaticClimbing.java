@@ -1,13 +1,16 @@
 package frc.robot.Commands.DriveCommands.AligningCommands;
 
-import static edu.wpi.first.units.Units.derive;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -22,9 +25,12 @@ public class AutomaticClimbing {
     AutoAlign autoAlign;
     VisionSubsystem vision;
 
-    double translationalMOE = 0.3;
+    double translationalMOE = 0.25;
     boolean hasReachedFirstPose = false;
     boolean isClimbingRight = false;
+    double moving_setpoint_time = 0.35;
+    StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault()
+  .getStructTopic("Target for Climbing", Pose2d.struct).publish(); 
 
     Timer timer = new Timer();
 
@@ -42,6 +48,7 @@ public class AutomaticClimbing {
         Pose2d[] climbPoses = getClosestClimbPoses();
         
         hasReachedFirstPose = false;
+ 
 
         return new InstantCommand(() -> {
             if (isClimbingRight) {
@@ -55,13 +62,16 @@ public class AutomaticClimbing {
 
         () -> {
         if (!hasReachedFirstPose) {
+            publisher.set(climbPoses[1]);
             if (drive.getEstimatedPosition().getTranslation().getDistance(climbPoses[1].getTranslation()) < translationalMOE) {
                 hasReachedFirstPose = true;
                 timer.restart();
             }
             return climbPoses[1];
         } else {
-            return climbPoses[0].minus(climbPoses[1]);
+            publisher.set(climbPoses[1].transformBy(climbPoses[0].minus(climbPoses[1]).times(MathUtil.clamp(timer.get() / moving_setpoint_time, 0, 1))));
+            
+            return climbPoses[1].transformBy(climbPoses[0].minus(climbPoses[1]).times(MathUtil.clamp(timer.get() / moving_setpoint_time, 0, 1)));
         }
     }));
 
@@ -71,6 +81,7 @@ public class AutomaticClimbing {
     }
 
     public Pose2d[] getClosestClimbPoses() {
+        SmartDashboard.putBoolean("isClimbingRight", isClimbingRight);
         Pose2d blueRight = ClimbConstants.RightPoseBlue;
         
         if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
@@ -78,10 +89,11 @@ public class AutomaticClimbing {
 
             if (drive.getEstimatedPosition().getTranslation().getDistance(blueRight.getTranslation()) < drive.getEstimatedPosition().getTranslation().getDistance(blueLeft.getTranslation())) {
                 isClimbingRight = true;
-                return new Pose2d[]{blueRight, blueRight.plus(new Transform2d(0,-1.5,Rotation2d.fromDegrees(0)))};
+
+                return new Pose2d[]{blueRight, blueRight.plus(new Transform2d(0,0.65,Rotation2d.fromDegrees(0)))};
             } else {
                 isClimbingRight = false;
-                return new Pose2d[]{blueLeft, blueLeft.plus(new Transform2d(0,1.5,Rotation2d.fromDegrees(0)))};
+                return new Pose2d[]{blueLeft, blueLeft.plus(new Transform2d(0,0.65,Rotation2d.fromDegrees(0)))};
             }
         }
 
@@ -109,7 +121,7 @@ public class AutomaticClimbing {
 
     //flips translation2d from bottom of blue to top of blue
     public Pose2d FlipVertically_bottom_to_top(Pose2d point) {
-        return new Pose2d(new Translation2d( point.getX(), 2* (4.021328 - point.getY()) + point.getY()), point.getRotation().plus(Rotation2d.fromDegrees(180))); 
+        return new Pose2d(new Translation2d( point.getX(), 2* (3.745611 - point.getY()) + point.getY()), point.getRotation().plus(Rotation2d.fromDegrees(180))); 
      }
 
 
