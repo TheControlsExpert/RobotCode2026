@@ -44,7 +44,6 @@ import frc.robot.Constants.SwerveConstants.Mod3;
 
 import frc.robot.Commands.DriveCommands.DriveCommand;
 import frc.robot.Commands.DriveCommands.FeedforwardCharacterization;
-import frc.robot.Commands.DriveCommands.IntakeCommand;
 import frc.robot.Commands.DriveCommands.StraightDriveCommand;
 import frc.robot.Commands.DriveCommands.WheelRadiusCharacterization;
 import frc.robot.Commands.DriveCommands.kACharacterization;
@@ -54,7 +53,7 @@ import frc.robot.Subsystems.Drive.Drive;
 import frc.robot.Subsystems.Drive.GyroIOPigeon2;
 import frc.robot.Subsystems.Drive.ModuleIOSim;
 import frc.robot.Subsystems.Drive.ModuleIOTalonFX;
-import frc.robot.Subsystems.Intake.Intake;
+
 
 // import frc.robot.Subsystems.Superstructure.ElevatorIOKrakens;
 // import frc.robot.Subsystems.Superstructure.Superstructure;
@@ -111,8 +110,7 @@ public class RobotContainer {
   
   
     private GyroIOPigeon2 gyro;
-    Intake intake = new Intake();
-    
+   
     //    private VisionSubsystem vision;
 
 
@@ -231,6 +229,7 @@ public class RobotContainer {
        () -> (autoTrenching.passedTrench() && 
        (Math.abs(controller.getLeftY()) > 0.1 || Math.abs(controller.getLeftX()) > 0.1 || Math.abs(controller.getRightX()) > 0.1))), Set.of(drive)));
 
+      
      
        // controller.().whileTrue(new IntakeCommand(superstructure));
        //controller.rightTrigger().whileTrue(new EjectCommand(superstructure, drive, vision));
@@ -334,7 +333,7 @@ public class RobotContainer {
    controller.rightBumper().onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), DriverStation.getAlliance().get().equals(Alliance.Blue) ? Rotation2d.kZero : Rotation2d.fromDegrees(180))), drive)
                 .ignoringDisable(true));
 
-    controller.a().whileTrue(new IntakeCommand(intake));   
+    
 
    //seventeen.onTrue(Commands.runOnce(() -> {drive.resetGyro();}, drive).ignoringDisable(true));
       }

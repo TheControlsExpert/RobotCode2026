@@ -43,6 +43,15 @@ public final class Constants {
     REPLAY
   }
 
+
+  public static class LimelightConstants {
+    public static final double climbLeftAngle = 45;
+    public static final double climbRightAngle = 90;
+    public static final double normalAngle = 135;
+  }
+
+
+
   public static class SwerveConstants {
 
     // Gear Ratio
