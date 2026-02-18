@@ -50,7 +50,7 @@ public class VisionIOLimelight implements VisionIO {
         inputs.isNew_LL4 = !inputs.MT2pose_LL4.getTranslation().equals(oldposeLL4.getTranslation()) && data_LL4.value[7] > 0;
         oldposeLL4 = inputs.MT2pose_LL4;
         inputs.time_LL4 = timestamp_LL4;
-        inputs.tagCount_LL4 = data_LL4.value[7];
+        inputs.tagCount_LL4 = (int) data_LL4.value[7];
         inputs.rotation_LL4 = rotation_LL4.value[5];
 
         
@@ -64,7 +64,7 @@ public class VisionIOLimelight implements VisionIO {
         inputs.isNew_LL3GS = !inputs.MT2pose_LL3GS.getTranslation().equals(oldposeLL3GS.getTranslation()) && data_LL3GS.value[7] > 0;
         oldposeLL3GS = inputs.MT2pose_LL3GS;
         inputs.time_LL3GS = timestamp_LL3GS;
-        inputs.tagCount_LL3GS = data_LL3GS.value[7];
+        inputs.tagCount_LL3GS = (int) data_LL3GS.value[7];
         inputs.rotation_LL3GS = rotation_LL3GS.value[5];
        
     }   

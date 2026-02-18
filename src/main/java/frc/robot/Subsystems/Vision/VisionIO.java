@@ -6,19 +6,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 
 public interface VisionIO {
 
-    enum TurretPosition {
-        LEFT_CLIMB,
-        RIGHT_CLIMB,
-        TRENCH
-    }
-
 
     @AutoLog
     public class VisionIOInputs {
        
         public double time_LL3GS = 0;
         public Pose2d MT2pose_LL3GS = new Pose2d();
-        public double tagCount_LL3GS = 0;    
+        public int tagCount_LL3GS = 0;    
         public double avgDistance_LL3GS = 0;
         public double rotation_LL3GS = 0.0;
         public boolean isNew_LL3GS = false;
@@ -27,11 +21,11 @@ public interface VisionIO {
 
         public double time_LL4 = 0;
         public Pose2d MT2pose_LL4 = new Pose2d();
-        public double tagCount_LL4 = 0;    
+        public int tagCount_LL4 = 0;    
         public double avgDistance_LL4 = 0;
         public double rotation_LL4 = 0.0;
         public boolean isNew_LL4 = false;
-       public boolean isConnected_LL4 = false;r  
+       public boolean isConnected_LL4 = false; 
 
        
     }

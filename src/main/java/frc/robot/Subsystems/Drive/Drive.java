@@ -63,6 +63,7 @@ import frc.robot.Robot;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.SwerveConstants;
 //import frc.robot.Subsystems.Superstructure.Superstructure;
+import frc.robot.Subsystems.Vision.VisionSubsystem.VisionMeasurement;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -78,6 +79,7 @@ public class Drive extends SubsystemBase {
  
 
  public LinearFilter filter = LinearFilter.movingAverage(10);
+ Timer gyroResetTimer = new Timer();
  public Rotation2d simRotation = new Rotation2d();
  public Pose2d estimatedPose = new Pose2d(0, 0, new Rotation2d());
  public Pose2d odometryPose = new Pose2d();
@@ -199,6 +201,8 @@ private final Field2d m_field = new Field2d();
  // Handle exception as needed
  e.printStackTrace();
  }
+
+ gyroResetTimer.start();
 
 // // Configure AutoBuilder last
  AutoBuilder.configure(
@@ -589,13 +593,22 @@ private final Field2d m_field = new Field2d();
  }
  
 
- public void addVision(Pose2d pose, double timestamp, double[] visionstds) {
- SmartDashboard.putBoolean("what the sigma", true);
- Vector<N3> stds = VecBuilder.fill(visionstds[0], visionstds[1], 9999999);
+ public void addVision(VisionMeasurement measurement) {
+ Vector<N3> stds = VecBuilder.fill(measurement.std()[0], measurement.std()[1], 9999999);
  visionLock.lock();
- SwervePoseEstimator.addVisionMeasurement(new Pose2d(pose.getTranslation(), SwervePoseEstimator.getEstimatedPosition().getRotation()), timestamp, stds);
+
+ if (Math.abs(gyroInputs.rollDegrees) < 2 && Math.abs(gyroInputs.pitchDegrees) < 2 && getGyroSpeed() < 180 && getTranslationalSpeed() < 3) {
+
+ SwervePoseEstimator.addVisionMeasurement(measurement.pose(), measurement.timestamp(), stds);
+
+ if (gyroResetTimer.hasElapsed(10) && getGyroSpeed() < 5 && getTranslationalSpeed() < 1 && measurement.numTags() >= 2 && measurement.avgDistance() < 3) {
+ SwervePoseEstimator.resetRotation(Rotation2d.fromDegrees(measurement.rotationDegreees()));
+ gyroResetTimer.reset();
+ }
+
+ }
+ 
  visionLock.unlock();
- //Vector<N2> estimation = ()
  }
 
  public Pose2d getEstimatedPosition() {
@@ -649,6 +662,10 @@ private final Field2d m_field = new Field2d();
  return SwervePoseEstimator.getEstimatedPosition().getRotation();
  }
 
+ public double getTranslationalSpeed() {
+    return Math.hypot(getChassisSpeeds().vxMetersPerSecond, getChassisSpeeds().vyMetersPerSecond);
+ }
+
  /** Resets the current odometry pose. */
  // public void setPose(Pose2d pose) {
  // poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
@@ -698,6 +715,6 @@ private final Field2d m_field = new Field2d();
 
 
  public double getGyroSpeed() {
- return gyroIO.getRate();
+ return Math.abs(Units.radiansToDegrees(gyroInputs.yawVelocityRadPerSec));
  }
 }
