@@ -47,7 +47,7 @@ import frc.robot.Commands.DriveCommands.FeedforwardCharacterization;
 import frc.robot.Commands.DriveCommands.StraightDriveCommand;
 import frc.robot.Commands.DriveCommands.WheelRadiusCharacterization;
 import frc.robot.Commands.DriveCommands.kACharacterization;
-import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticTrenching.AutomaticTrenching;
+import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticTrenching;
 import frc.robot.Subsystems.Drive.Drive;
 
 import frc.robot.Subsystems.Drive.GyroIOPigeon2;
