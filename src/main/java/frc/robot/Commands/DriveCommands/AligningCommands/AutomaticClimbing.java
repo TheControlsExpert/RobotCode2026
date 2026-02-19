@@ -25,7 +25,7 @@ public class AutomaticClimbing {
     AutoAlign autoAlign;
     VisionSubsystem vision;
 
-    double translationalMOE = 0.25;
+    double translationalMOE = 0.1;
     boolean hasReachedFirstPose = false;
     boolean isClimbingRight = false;
     double moving_setpoint_time = 0.15;
