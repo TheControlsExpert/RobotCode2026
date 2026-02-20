@@ -60,6 +60,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.Robot.ShootingState;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.SwerveConstants;
 //import frc.robot.Subsystems.Superstructure.Superstructure;
@@ -144,6 +145,9 @@ private final Field2d m_field = new Field2d();
  double prevTime = 0;
 
  static final Lock odometryLock = new ReentrantLock();
+
+
+public static final double kP_rotation = 0;
  
  private final GyroIO gyroIO;
  private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -368,7 +372,7 @@ private final Field2d m_field = new Field2d();
  }
  
  // Update gyro alert
- gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
+ gyroDisconnectedAlert.set(!gyroInputs.connected);
  
  }
 
@@ -480,7 +484,60 @@ private final Field2d m_field = new Field2d();
  public double getAngularSpeed() {
  return getRobotRelativeSpeeds().omegaRadiansPerSecond;
  }
+
+ public Translation2d calculateShootingPosition() {
+        if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
+            if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
+                return new Translation2d(4.626, 4.034);
+            }
+
+            else {
+                return FlipHorizontally_BtoR(new Translation2d(4.626, 4.034));
+            }
+        }
+
+        else {
+            Translation2d bottomBlue = new Translation2d(1.78, 0.685);
+
+           if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
+                Translation2d topBlue = FlipVertically_bottom_to_top(bottomBlue);
+
+                double distanceBottom = bottomBlue.getDistance(getEstimatedPosition().getTranslation());
+                double distanceTop = topBlue.getDistance(getEstimatedPosition().getTranslation());
+                if (distanceBottom < distanceTop) {
+                    return bottomBlue;
+                } else {
+                    return topBlue;
+                }
+            }
+
+            else {
+                Translation2d bottomRed = FlipHorizontally_BtoR(new Translation2d(1.78, 0.685));
+                Translation2d topRed = FlipVertically_bottom_to_top(bottomRed);
+
+                double distanceBottom = bottomRed.getDistance(getEstimatedPosition().getTranslation());
+                double distanceTop = topRed.getDistance(getEstimatedPosition().getTranslation());
+                if (distanceBottom < distanceTop) {
+                    return bottomRed;
+                } else {
+                    return topRed;
+                }
+            }
+           
+        }
+    }
+
+
  
+    public static Translation2d FlipHorizontally_BtoR(Translation2d point) {
+        return new Translation2d( 2* (8.219694 - point.getX()) + point.getX(), point.getY()); 
+    }
+
+     public Translation2d FlipVertically_bottom_to_top(Translation2d point) {
+        return new Translation2d( point.getX(), 2* (4.021328 - point.getY()) + point.getY()); 
+     }
+
+
  /**
  * Stops the drive and turns the modules to an X arrangement to resist movement. The modules will
  * return to their normal orientations the next time a nonzero velocity is requested.

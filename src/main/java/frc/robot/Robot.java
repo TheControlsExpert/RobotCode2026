@@ -12,6 +12,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.pathfinding.LocalADStar;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -35,6 +36,7 @@ public class Robot extends LoggedRobot {
 
   //private final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
   private final RobotContainer m_robotContainer;
+  public static ShootingState shootingState = ShootingState.SHOOTING;
 
   
     public Robot() {
@@ -115,5 +117,13 @@ public class Robot extends LoggedRobot {
 
   
 
+  public enum ShootingState {
+    PASSING,
+    SHOOTING
+  }
+
+  
+
+    
   
 }

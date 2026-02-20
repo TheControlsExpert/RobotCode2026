@@ -1,9 +1,16 @@
 package frc.robot.Subsystems.Shooter;
 
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Rotations;
+
 import org.littletonrobotics.junction.AutoLog;
 
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -12,17 +19,29 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import frc.robot.Constants.ShooterConstants;
 
 public class ShooterIO {
+
     TalonFX shooterLeft = new TalonFX(18);
     TalonFX shooterRight = new TalonFX(19);
     TalonFXS shooterPivot = new TalonFXS(20);
+    TalonFX feeder = new TalonFX(21);
 
     VelocityVoltage shooterLeftVoltage = new VelocityVoltage(0);
     VelocityVoltage shooterRightVoltage = new VelocityVoltage(0);
     PositionVoltage shooterPivotVoltage = new PositionVoltage(0);
+    DutyCycleOut shooterPivotDutyCycle = new DutyCycleOut(0);
+    DutyCycleOut feederDutyCycle = new DutyCycleOut(0);
 
-
+    StatusSignal<AngularVelocity> shooterLeftVelocity;
+    StatusSignal<AngularVelocity> shooterRightVelocity;
+    StatusSignal<Angle> shooterPivotPosition;
+    StatusSignal<AngularVelocity> feederVelocity;
+    
+  
     public ShooterIO() {
         TalonFXConfiguration shooterL = new TalonFXConfiguration();
 
@@ -65,13 +84,60 @@ public class ShooterIO {
         pivot.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         shooterPivot.getConfigurator().apply(pivot);
-    
+
+        TalonFXConfiguration feederConfig = new TalonFXConfiguration();
+        feederConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        feederConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        feederConfig.CurrentLimits.SupplyCurrentLimit = ShooterConstants.feederSupplyCurrentLimit;
+
+
+        feeder.getConfigurator().apply(feederConfig);
+
+        shooterLeftVelocity = shooterLeft.getVelocity();
+        shooterRightVelocity = shooterRight.getVelocity();
+        shooterPivotPosition = shooterPivot.getPosition();
+        feederVelocity = feeder.getVelocity();
+
+
     }
 
     @AutoLog
-    public class ShooterIOInputs {
-        
+    public static class ShooterIOInputs {
+        public boolean isConnected = true;
+        public double shooterLeftVelocityRPM = 0.0;
+        public double shooterRightVelocityRPM = 0.0;
+        public double shooterPivotEncoderRotations = 0.0;
+        public double feederVelocityRPM = 0.0;
          
     }
-    
-}
+
+
+    public void updateInputs(ShooterIOInputs inputs) {
+        inputs.isConnected = BaseStatusSignal.refreshAll(shooterLeftVelocity, shooterRightVelocity, shooterPivotPosition, feederVelocity).equals(StatusCode.OK);
+        
+        inputs.shooterLeftVelocityRPM = shooterLeftVelocity.getValue().in(RPM);
+        inputs.shooterRightVelocityRPM = shooterRightVelocity.getValue().in(RPM);
+        inputs.shooterPivotEncoderRotations = shooterPivotPosition.getValue().in(Rotations);    
+        inputs.feederVelocityRPM = feederVelocity.getValue().in(RPM);
+  }
+
+  public void setOutputPivot(double dutycycle) {
+    shooterPivot.setControl(shooterPivotDutyCycle.withOutput(dutycycle));
+  }
+
+  public void setPivotPosition(double position) {
+    shooterPivot.setControl(shooterPivotVoltage.withPosition(position));
+  }
+
+  public void setFeederVelocity(double velocity) {
+    feeder.setControl(feederDutyCycle.withOutput(velocity));
+  }
+
+  public void setVelocityShooter(double velocity) {
+    shooterLeft.setControl(shooterLeftVoltage.withVelocity(velocity));
+    shooterRight.setControl(shooterRightVoltage.withVelocity(velocity));
+  }
+
+
+
+}  

@@ -197,9 +197,61 @@ public final class Constants {
 
   public static class ClimbConstants {
     public static Pose2d RightPoseBlue = new Pose2d(1.293, 2.859, Rotation2d.fromDegrees(180));
+
+    public static double supplyCurrentLimit = 0;
+    public static double supplyCurrentLowerLimit = 0;
+    public static double supplyCurrentLowerLimit_time = 0.0;
+
+
   }
 
+  public static class ShooterConstants {
 
+    public static final double shooterL_kV = 0;
+    public static final double shooterL_kS = 0;
+    public static final double shooterL_kP = 0;
+    public static final double shooterL_kD = 0;
+
+    public static final double shooterR_kV = 0;
+    public static final double shooterR_kS = 0;
+    public static final double shooterR_kP = 0;
+    public static final double shooterR_kD = 0;
+ 
+    public static final double supplyCurrentLimit = 0;
+    public static final double supplyCurrentLowerLimit = 0;
+    public static final double supplyCurrentLowerLimit_time = 0.0;
+    
+
+    public static final boolean shooterL_inverted = false;
+    public static final boolean shooterR_inverted = false;
+
+    public static final double shooterPivot_kP = 0.0;
+    public static final double shooterPivot_kD = 0.0;
+    public static final double HOME = 0;
+    public static final double Pivot_HOME = 0;
+    public static final double YawAngleTolerance = 0;
+    public static final double ShooterVelocityTolerance = 0;
+    public static final double ShooterPivotTolerance = 0;
+    public static final double feederSupplyCurrentLimit = 0;
+
+  }
+
+  public static class IntakeConstants {
+    public static final double pivot_kP = 0.0;
+    public static final double pivot_kG = 0.0;
+    public static final double offset = 0.0;
+    public static final double PivotGearRatio = 0.0;
+
+    public static final double intakeSupplyCurrentLimit = 0;
+    public static final double intakeSupplyCurrentLowerLimit = 0;
+    public static final double intakeSupplyCurrentLowerLimit_time = 0.0;
+  }
+
+  public static class IndexerConstants {
+    public static final double supplyCurrentLimit = 0;
+    public static final double supplyCurrentLowerLimit = 0;
+    public static final double supplyCurrentLowerTime = 0.0;
+  }
 
 
 }
