@@ -29,11 +29,12 @@ public class VisionSubsystem extends SubsystemBase {
         
     double lastUsedTimestamp = -1000;
     private double minTranslation = 10000.0;   
+    double velocity_of_servo = 0.0;
     public record VisionMeasurement(Pose2d pose, double rotationDegreees, double timestamp, double[] std, int numTags, double avgDistance) {}
     ArrayList<VisionMeasurement> visionMeasurements = new ArrayList<>();
 
-    public Servo servy; //makes a servo motor
-    public ServoState currentServoState; // rotational state of the servo
+    public Servo servy = new Servo(0); //makes a servo motor
+    public ServoState currentServoState = ServoState.CLIMB_LEFT; // rotational state of the servo
  
 
             
@@ -50,9 +51,11 @@ public class VisionSubsystem extends SubsystemBase {
 
 
     public enum ServoState { //creates three possible rotational states for the servo motor
-        forward(LimelightConstants.climbLeftAngle),
-        backward(LimelightConstants.climbRightAngle),
-        sideways(LimelightConstants.normalAngle);
+        CLIMB_LEFT(LimelightConstants.climbLeftAngle),
+        CLIMB_RIGHT(LimelightConstants.climbRightAngle);
+       // MIDDLE_FIELD(LimelightConstants.middleFieldAngle),
+
+
 
         public double position;
 
@@ -74,6 +77,8 @@ public class VisionSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateInputs(inputs);
+
+        //servy.setA();
 
         if (inputs.isNew_LL4 && inputs.isConnected_LL4 && inputs.tagCount_LL4 > 0) {
             double std_LL4 = (inputs.avgDistance_LL4 * 0.02 ) / inputs.tagCount_LL4;
@@ -110,7 +115,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         visionMeasurements.clear();
 
-        if (!bestmeasurement.equals(null)) {
+        if (bestmeasurement != null) {
             addVisionMeasurement(bestmeasurement);
         }
       //needs to be adjusted for 180 degrees      

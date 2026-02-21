@@ -195,93 +195,63 @@ public final class Constants {
 
   }
 
+  public static class ClimbConstants {
+    public static Pose2d RightPoseBlue = new Pose2d(1.293, 2.859, Rotation2d.fromDegrees(180));
 
-  public static class FieldConstants {
-    //BLUE
+    public static double supplyCurrentLimit = 0;
+    public static double supplyCurrentLowerLimit = 0;
+    public static double supplyCurrentLowerLimit_time = 0.0;
 
-   
+
+  }
+
+  public static class ShooterConstants {
+
+    public static final double shooterL_kV = 0;
+    public static final double shooterL_kS = 0;
+    public static final double shooterL_kP = 0;
+    public static final double shooterL_kD = 0;
+
+    public static final double shooterR_kV = 0;
+    public static final double shooterR_kS = 0;
+    public static final double shooterR_kP = 0;
+    public static final double shooterR_kD = 0;
+ 
+    public static final double supplyCurrentLimit = 0;
+    public static final double supplyCurrentLowerLimit = 0;
+    public static final double supplyCurrentLowerLimit_time = 0.0;
     
-    public static final Pose2d RightSource_BLUE = new Pose2d(1.34, 7.18, Rotation2d.fromDegrees(130));
-    //public static final Pose2d LeftSource_BLUE = new Pose2d(1.277, 1.053, Rotation2d.fromDegrees(-130));
 
-    //public static final Pose2d RightSource_RED = new Pose2d(16.54, 7.076, Rotation2d.fromDegrees(50));
-    public static final Pose2d LeftSource_RED  = new Pose2d(16.45, 1.33 , Rotation2d.fromDegrees(-50));
+    public static final boolean shooterL_inverted = false;
+    public static final boolean shooterR_inverted = false;
 
-    public static final double REEF_Y_OFFSET = 0.15;
-    public static final double REEF_X_OFFSET = 0.33;
-
-    public static final double REEF_Y_OFFSET_ALGAE = 0;
-    public static final double REEF_X_OFFSET_ALGAE = 0.33;
-
-    public static final double REEF_Y_OFFSET_STEPBACK = 0;
-    public static final double REEF_X_OFFSET_STEPBACK = 1;
-
-
-
-
+    public static final double shooterPivot_kP = 0.0;
+    public static final double shooterPivot_kD = 0.0;
+    public static final double HOME = 0;
+    public static final double Pivot_HOME = 0;
+    public static final double YawAngleTolerance = 0;
+    public static final double ShooterVelocityTolerance = 0;
+    public static final double ShooterPivotTolerance = 0;
+    public static final double feederSupplyCurrentLimit = 0;
 
   }
-
-
-  public static class ElevatorConstants {
-    public static final double kP = 0.1;
-    public static final double kI = 0.0;
-    public static final double kD = 0.0;
-    public static final double kV = 0.0;
-    public static final double kA = 0.0;
-    public static final double kS = 0.0;
-    public static final double kG = 0.0;
-    public static final double TargetAcceleration = 0;
-    public static final double TargetVelocity = 0;
-    //left when looking from back side (intake side)
-    public static final int IDLeft = 14;
-    public static final int IDRight = 13;
-    public static final double toleranceElevator = 1;
-
-    public static final double maxHeightAccel = 2;
-    public static final double maxHeight = 25;
-
-    public static final double maxHeightAccel2 = 1;
-    public static final double maxHeight2 = 43;
-
-
-
-
-
-    public static final double minHeightAccel = 4.5;
-    public static final double minHeight = 0.5;
-    public static final double minHeightforL4Pivot = 0;
-    public static final double minHeightAboveHome = 0;
-
-
-  }
-
-  
-
-  public static class WristConstants {
-    public static final int ID_Intake = 0;
-    public static final int ID_Pivot = 1;
-    public static final int ID_Wrist = 2;
-    public static final double rotorToSensorRatio = 0;
-    public static final double offsetPivot = 0;
-    public static final double AccelerationMotionMagic = 0;
-    public static final double CruisingVelocityMotionMagic = 0;
-
-    public static final double kP = 0;
-    public static final double kG = 0;
-    public static final double kV = 0;
-    public static final double kA = 0;
-    public static final double kP_wrist = 0;
-    public static final double tolerancePivot = 1;
-    public static final double toleranceWrist = 1;
-
-
-  }
-
 
   public static class IntakeConstants {
+    public static final double pivot_kP = 0.0;
+    public static final double pivot_kG = 0.0;
+    public static final double offset = 0.0;
+    public static final double PivotGearRatio = 0.0;
 
-    public static final double currentMax = 0;
-
+    public static final double intakeSupplyCurrentLimit = 0;
+    public static final double intakeSupplyCurrentLowerLimit = 0;
+    public static final double intakeSupplyCurrentLowerLimit_time = 0.0;
   }
+
+  public static class IndexerConstants {
+    public static final double supplyCurrentLimit = 0;
+    public static final double supplyCurrentLowerLimit = 0;
+    public static final double supplyCurrentLowerTime = 0.0;
+  }
+
+
 }

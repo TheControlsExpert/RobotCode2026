@@ -1,4 +1,4 @@
-package frc.robot.Commands.DriveCommands.AligningCommands.AutomaticTrenching;
+package frc.robot.Commands.DriveCommands.AligningCommands;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -27,9 +27,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Commands.DriveCommands.AligningCommands.AutoAlign;
-import frc.robot.Commands.DriveCommands.AligningCommands.AutoAlignCommand;
-import frc.robot.Commands.DriveCommands.AligningCommands.AutoPID;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Subsystems.Drive.Drive;
 

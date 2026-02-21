@@ -30,7 +30,7 @@ public class WheelRadiusCharacterization extends Command {
   
   private final SlewRateLimiter omegaLimiter = new SlewRateLimiter(1.0);
 
-  private double lastGyroYawRads = 0.0;
+  private double lastGyroYawRads = 0.0; 
   private double accumGyroYawRads = 0.0;
 
   private double[] startWheelPositions;
