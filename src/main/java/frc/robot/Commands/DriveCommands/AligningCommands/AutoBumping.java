@@ -34,6 +34,8 @@ public class AutoBumping extends Command {
     double trench_start_x = 4.57454;
     double half_x_field = 8.219694;
     double deltaRotationABS = 99999;
+
+    double maxAllowedSpeed = 3;
     private final IntakeSubsystem intake;
 
     public AutoBumping(Drive drive, IntakeSubsystem intake, DoubleSupplier xSupplier, DoubleSupplier ySupplier, double kP_rotation, CommandXboxController controller) {
@@ -109,14 +111,18 @@ public class AutoBumping extends Command {
         else {
             linearVelocity =
                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+            
+        
 
         }
+        linearVelocity = linearVelocity.times(drive.getMaxLinearSpeedMetersPerSec());
+        linearVelocity = linearVelocity.times(linearVelocity.getNorm() > maxAllowedSpeed ? maxAllowedSpeed / linearVelocity.getNorm() : 1);
 
                // Convert to field relative speeds & send command
               ChassisSpeeds speeds =
                   new ChassisSpeeds(
-                      linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec() * 0.5,
-                      linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec() * 0.5,
+                      linearVelocity.getX(),
+                      linearVelocity.getY(),
                    MathUtil.clamp(omega, -drive.getMaxAngularSpeedRadPerSec(), drive.getMaxAngularSpeedRadPerSec()));
               boolean isFlipped =
                   DriverStation.getAlliance().isPresent()
@@ -145,10 +151,7 @@ public class AutoBumping extends Command {
         .getTranslation();
   }
 
-  @Override
-  public boolean isFinished() {
-      return deltaRotationABS < 5;
-  }
+
 
 
   

@@ -127,6 +127,8 @@ public class RobotContainer {
    
         private VisionSubsystem vision;
 
+        IntakeSubsystem intake = new IntakeSubsystem(new IntakeIO());
+
  
 
             
@@ -251,7 +253,7 @@ public class RobotContainer {
        (Math.abs(controller.getLeftY()) > 0.1 || Math.abs(controller.getLeftX()) > 0.1 || Math.abs(controller.getRightX()) > 0.1))), Set.of(drive))));
 
       
-     
+       controller.a().whileTrue(new AutoBumping(drive, intake, () -> -controller.getLeftY(), () -> -controller.getLeftX(), 0.08, controller));
        controller.y().whileTrue(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
       //  controller.b().whileTrue(new Shooting(new Shooter(new ShooterIO()), drive, new Indexer(new IndexerIO()), controller,  () -> -controller.getLeftY(),
       //           () -> -controller.getLeftX(), 0.08));

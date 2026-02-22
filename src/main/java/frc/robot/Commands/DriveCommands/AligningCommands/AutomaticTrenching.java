@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -38,6 +39,7 @@ public class AutomaticTrenching extends Command {
     Drive swerve;
     AutoPID aligner;
 
+    InterpolatingDoubleTreeMap distanceToVel_map = new InterpolatingDoubleTreeMap();
     PathConstraints constraints;
     boolean starting_from_middle = false;
     private final DoubleSupplier xSupplier;
@@ -60,6 +62,9 @@ public class AutomaticTrenching extends Command {
         this.controller = controller;
         aligner = new AutoPID(2.5, 0.08);
         addRequirements(swervy);   
+
+        distanceToVel_map.put(4.021328, 0.0);
+        distanceToVel_map.put(0.0, 1.0);
     }
 
     @Override
@@ -92,13 +97,15 @@ public class AutomaticTrenching extends Command {
 
         }
 
-        if (Math.abs(swerve.getEstimatedPosition().getY() - 4.021328*2) < 0.5 || Math.abs(swerve.getEstimatedPosition().getY()) < 0.5) {
-            linearVelocity = new Translation2d(linearVelocity.getX(), 0);
-        }
+        // if (Math.abs(swerve.getEstimatedPosition().getY() - 4.021328*2) < 0.5 || Math.abs(swerve.getEstimatedPosition().getY()) < 0.5) {
+        //     linearVelocity = new Translation2d(linearVelocity.getX(), 0);
+        // }
 
-        else {
-            linearVelocity = linearVelocity.times(0.5);
-        }
+
+        // else {
+            linearVelocity = new Translation2d(linearVelocity.getX() * 0.3, linearVelocity.getY() * distanceToVel_map.get(Math.abs(swerve.getEstimatedPosition().getY() - 4.021328)));
+           // linearVelocity = linearVelocity.times(distanceToVel_map.get(Math.abs(swerve.getEstimatedPosition().getY() - 4.021328)));
+        //}
 
                // Convert to field relative speeds & send command
               ChassisSpeeds speeds =
@@ -134,7 +141,7 @@ public class AutomaticTrenching extends Command {
 
   @Override
   public boolean isFinished() {
-      return deltaRotationABS < 10;
+      return deltaRotationABS < 5;
   }
 
 
@@ -432,7 +439,7 @@ public class AutomaticTrenching extends Command {
 
 
      private Rotation2d getPathVelocityHeading(ChassisSpeeds cs, Pose2d target){
-        if ((cs.vxMetersPerSecond * cs.vxMetersPerSecond + cs.vyMetersPerSecond * cs.vyMetersPerSecond) < 0.5 * 0.5) {
+        if ((cs.vxMetersPerSecond * cs.vxMetersPerSecond + cs.vyMetersPerSecond * cs.vyMetersPerSecond) < 1 * 1) {
             
             var diff = target.getTranslation().minus(swerve.getEstimatedPosition().getTranslation());
        
