@@ -246,6 +246,7 @@ public final class Constants {
     public static final double intakeSupplyCurrentLimit = 40;
     public static final double HOME_Position = 0;
     public static final double INTAKING_Position = 0;
+    public static final double BUMPING_Position = 0;
   }
 
   public static class IndexerConstants {

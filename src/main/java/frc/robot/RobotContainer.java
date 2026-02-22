@@ -176,7 +176,7 @@ public class RobotContainer {
 
                  // drivesim = new DriveSim(new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim());
                 vision = new VisionSubsystem(new VisionIOLimelight(), drive);
-                autoTrenching = new AutomaticTrenching(drive, drive.constraints_auto);     
+                autoTrenching = new AutomaticTrenching(drive, drive.constraints_auto, () -> -controller.getLeftY(), () -> -controller.getLeftX(), 0.08, controller);     
                 autoClimbing = new AutomaticClimbing(drive, new AutoAlign(2.5, 0.08, 0.01, 1), vision);
       
                 
@@ -243,10 +243,12 @@ public class RobotContainer {
 
         //controller.x().whileTrue(FeedforwardCharacterization.feedforwardCommand(drive, xbox));
 
-       controller.x().whileTrue(Commands.defer(() -> autoTrenching.getPathingCommand().until(
+       controller.x().whileTrue(autoTrenching.andThen(
+        
+      Commands.defer(() -> autoTrenching.getPathingCommand().until(
         
        () -> (autoTrenching.passedTrench() && 
-       (Math.abs(controller.getLeftY()) > 0.1 || Math.abs(controller.getLeftX()) > 0.1 || Math.abs(controller.getRightX()) > 0.1))), Set.of(drive)));
+       (Math.abs(controller.getLeftY()) > 0.1 || Math.abs(controller.getLeftX()) > 0.1 || Math.abs(controller.getRightX()) > 0.1))), Set.of(drive))));
 
       
      
@@ -263,8 +265,8 @@ public class RobotContainer {
         }}));  
         
         
-      controller.a().whileTrue(new AutoBumping(drive,  () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(), 0.08, controller));
+      // controller.a().whileTrue(new AutoBumping(drive,  () -> -controller.getLeftY(),
+      //           () -> -controller.getLeftX(), 0.08, controller));
 
        // controller.().whileTrue(new IntakeCommand(superstructure));
        //controller.rightTrigger().whileTrue(new EjectCommand(superstructure, drive, vision));

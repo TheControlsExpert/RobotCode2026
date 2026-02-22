@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Subsystems.Drive.Drive;
+import frc.robot.Subsystems.Intake.IntakeSubsystem;
 
 public class AutoBumping extends Command {
     private final Drive drive;
@@ -33,19 +34,23 @@ public class AutoBumping extends Command {
     double trench_start_x = 4.57454;
     double half_x_field = 8.219694;
     double deltaRotationABS = 99999;
+    private final IntakeSubsystem intake;
 
-    public AutoBumping(Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, double kP_rotation, CommandXboxController controller) {
+    public AutoBumping(Drive drive, IntakeSubsystem intake, DoubleSupplier xSupplier, DoubleSupplier ySupplier, double kP_rotation, CommandXboxController controller) {
         this.drive = drive;
+        this.intake = intake;
         this.xSupplier = xSupplier;
         this.ySupplier = ySupplier;
         this.controller = controller;
         this.kP_rotation = kP_rotation;
-        addRequirements(drive);
+        addRequirements(drive, intake);
     }
 
 
     @Override
     public void initialize() {
+        intake.retractBump();
+
         deltaRotationABS = 99999;
         double currentAngle = drive.getEstimatedPosition().getRotation().getRadians() + (DriverStation.getAlliance().get().equals(Alliance.Red) ? Math.PI : 0);
 
@@ -110,8 +115,8 @@ public class AutoBumping extends Command {
                // Convert to field relative speeds & send command
               ChassisSpeeds speeds =
                   new ChassisSpeeds(
-                      linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                      linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                      linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec() * 0.5,
+                      linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec() * 0.5,
                    MathUtil.clamp(omega, -drive.getMaxAngularSpeedRadPerSec(), drive.getMaxAngularSpeedRadPerSec()));
               boolean isFlipped =
                   DriverStation.getAlliance().isPresent()
@@ -144,6 +149,9 @@ public class AutoBumping extends Command {
   public boolean isFinished() {
       return deltaRotationABS < 5;
   }
+
+
+  
 
   
 
