@@ -31,6 +31,10 @@ public class VisionIOLimelight implements VisionIO {
     DoubleArraySubscriber Limelight_3GS = NetworkTableInstance.getDefault().getTable("limelight-threegs").getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[11], PubSubOption.keepDuplicates(true));
     DoubleArraySubscriber ll3gs_rotation = NetworkTableInstance.getDefault().getTable("limelight-threegs").getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[11], PubSubOption.keepDuplicates(true));
     DoubleSubscriber connected3gs = NetworkTableInstance.getDefault().getTable("limelight-threegs").getDoubleTopic("tv").subscribe(-1, PubSubOption.keepDuplicates(true));
+
+    DoubleArraySubscriber Limelight_3GF = NetworkTableInstance.getDefault().getTable("limelight-threegf").getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[11], PubSubOption.keepDuplicates(true));
+    DoubleArraySubscriber ll3gf_rotation = NetworkTableInstance.getDefault().getTable("limelight-threegf").getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[11], PubSubOption.keepDuplicates(true));
+    DoubleSubscriber connected3gf = NetworkTableInstance.getDefault().getTable("limelight-threegf").getDoubleTopic("tv").subscribe(-1, PubSubOption.keepDuplicates(true));
     
   
     
@@ -69,6 +73,19 @@ public class VisionIOLimelight implements VisionIO {
         inputs.tagCount_LL3GS = (int) data_LL3GS.value[7];
         inputs.isConnected_LL3GS = connected3gs.get() != -1;
         inputs.rotation_LL3GS = rotation_LL3GS.value[5];
+
+        TimestampedDoubleArray data_LL3GF = Limelight_3GF.getAtomic();
+        TimestampedDoubleArray rotation_LL3GF = ll3gf_rotation.getAtomic();
+
+        double timestamp_LL3GF = data_LL3GF.serverTime/1000000.0 - data_LL3GF.value[6]/1000.0;
+        inputs.MT2pose_LL3GF = new Pose2d(new Translation2d(data_LL3GF.value[0], data_LL3GF.value[1]), Rotation2d.fromDegrees(data_LL3GF.value[5]));
+        inputs.avgDistance_LL3GF = data_LL3GF.value[9];
+        inputs.isNew_LL3GF = !inputs.MT2pose_LL3GF.getTranslation().equals(oldposeLL3GF.getTranslation()) && data_LL3GF.value[7] > 0;
+        oldposeLL3GF = inputs.MT2pose_LL3GF;
+        inputs.time_LL3GF = timestamp_LL3GF;
+        inputs.tagCount_LL3GF = (int) data_LL3GF.value[7];
+        inputs.isConnected_LL3GF = connected3gf.get() != -1;
+        inputs.rotation_LL3GF = rotation_LL3GF.value[5];
        
     }   
 }

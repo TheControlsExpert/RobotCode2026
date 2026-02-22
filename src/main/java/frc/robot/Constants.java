@@ -172,6 +172,7 @@ public final class Constants {
               invertSteer);
     }
 
+    public static final int pigeonID = 13;
     public static final double trackWidth = 0.5647;
     public static final double wheelBase = 0.5647;
     public static final SwerveDriveKinematics swerveKinematics =

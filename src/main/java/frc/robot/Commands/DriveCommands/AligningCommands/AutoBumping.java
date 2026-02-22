@@ -153,8 +153,15 @@ public class AutoBumping extends Command {
 
 
 
+  @Override
+  public void end(boolean interrupted) {
+      intake.Extend();
+  }
 
-  
+
+
+
+
 
   
 
