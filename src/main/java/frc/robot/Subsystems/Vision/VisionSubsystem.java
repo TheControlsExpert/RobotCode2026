@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LimelightConstants;
+import frc.robot.Robot;
 import frc.robot.Subsystems.Drive.Drive;
 import frc.robot.Subsystems.Vision.VisionIO.VisionIOInputs;
 
@@ -35,9 +36,11 @@ public class VisionSubsystem extends SubsystemBase {
 
     public Servo servy = new Servo(0); //makes a servo motor
     public ServoState currentServoState = ServoState.CLIMB_LEFT; // rotational state of the servo
+
+    boolean wasDisconnected_LL4 = false;
+    boolean wasDisconnected_LL3GS = false;
  
 
-            
             
     public VisionSubsystem(VisionIO io, Drive drive) {
                     this.io = io;
@@ -77,8 +80,28 @@ public class VisionSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateInputs(inputs);
+        
+        if (!wasDisconnected_LL4 &&!inputs.isConnected_LL4) {
+            Robot.reportDisconnection("Limelight 4");
+            wasDisconnected_LL4 = true;
+        }
 
-        //servy.setA();
+        if (!wasDisconnected_LL3GS && !inputs.isConnected_LL3GS) {
+            Robot.reportDisconnection("Limelight 3GS");
+            wasDisconnected_LL3GS = true;
+    
+        }
+
+        if (wasDisconnected_LL3GS && inputs.isConnected_LL3GS) {
+            Robot.removeDisconnection("Limelight 3GS");
+            wasDisconnected_LL3GS = false;
+        }
+
+        if (wasDisconnected_LL4 && inputs.isConnected_LL4) {
+            Robot.removeDisconnection("Limelight 4");
+            wasDisconnected_LL4 = false;
+        }
+
 
         if (inputs.isNew_LL4 && inputs.isConnected_LL4 && inputs.tagCount_LL4 > 0) {
             double std_LL4 = (inputs.avgDistance_LL4 * 0.02 ) / inputs.tagCount_LL4;

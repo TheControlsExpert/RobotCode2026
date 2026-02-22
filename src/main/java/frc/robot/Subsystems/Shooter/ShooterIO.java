@@ -57,6 +57,9 @@ public class ShooterIO {
         shooterL.CurrentLimits.SupplyCurrentLowerLimit = ShooterConstants.supplyCurrentLowerLimit;
         shooterL.CurrentLimits.SupplyCurrentLowerTime = ShooterConstants.supplyCurrentLowerLimit_time;
 
+        shooterL.CurrentLimits.StatorCurrentLimit = ShooterConstants.statorCurrentLimit;
+        
+
         shooterLeft.getConfigurator().apply(shooterL);
 
         TalonFXConfiguration shooterR = new TalonFXConfiguration();
@@ -71,6 +74,8 @@ public class ShooterIO {
         shooterR.CurrentLimits.SupplyCurrentLimit = ShooterConstants.supplyCurrentLimit;
         shooterR.CurrentLimits.SupplyCurrentLowerLimit = ShooterConstants.supplyCurrentLowerLimit;
         shooterR.CurrentLimits.SupplyCurrentLowerTime = ShooterConstants.supplyCurrentLowerLimit_time;
+
+        shooterR.CurrentLimits.StatorCurrentLimit = ShooterConstants.statorCurrentLimit;
 
         shooterRight.getConfigurator().apply(shooterR);
 
@@ -103,7 +108,11 @@ public class ShooterIO {
 
     @AutoLog
     public static class ShooterIOInputs {
-        public boolean isConnected = true;
+        public boolean isConnectedLeftShooter = false;
+        public boolean isConnectedRightShooter = false;
+        public boolean isConnectedPivot = false;
+        public boolean isConnectedFeeder = false;
+
         public double shooterLeftVelocityRPM = 0.0;
         public double shooterRightVelocityRPM = 0.0;
         public double shooterPivotEncoderRotations = 0.0;
@@ -113,7 +122,10 @@ public class ShooterIO {
 
 
     public void updateInputs(ShooterIOInputs inputs) {
-        inputs.isConnected = BaseStatusSignal.refreshAll(shooterLeftVelocity, shooterRightVelocity, shooterPivotPosition, feederVelocity).equals(StatusCode.OK);
+        inputs.isConnectedLeftShooter = BaseStatusSignal.refreshAll(shooterLeftVelocity).equals(StatusCode.OK);
+        inputs.isConnectedRightShooter = BaseStatusSignal.refreshAll(shooterRightVelocity).equals(StatusCode.OK);
+        inputs.isConnectedPivot = BaseStatusSignal.refreshAll(shooterPivotPosition).equals(StatusCode.OK);
+        inputs.isConnectedFeeder = BaseStatusSignal.refreshAll(feederVelocity).equals(StatusCode.OK);
         
         inputs.shooterLeftVelocityRPM = shooterLeftVelocity.getValue().in(RPM);
         inputs.shooterRightVelocityRPM = shooterRightVelocity.getValue().in(RPM);

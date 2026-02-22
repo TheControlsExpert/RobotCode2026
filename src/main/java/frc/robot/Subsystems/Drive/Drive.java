@@ -168,7 +168,7 @@ public static final double kP_rotation = 0;
  new SwerveModulePosition()
  };
  private SwerveDrivePoseEstimator SwervePoseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d(0, 0, new Rotation2d()), VecBuilder.fill(0.005,0.005, Radians.convertFrom(5, Degrees)), VecBuilder.fill(0.05, 0.05, 999999999) );
- 
+ private boolean wasGyroDisconnected = false;
  SysIdRoutine routine;
  
  
@@ -238,6 +238,15 @@ public static final double kP_rotation = 0;
  
  @Override
  public void periodic() {
+
+ if (!gyroInputs.connected && !wasGyroDisconnected) {
+    Robot.reportDisconnection("Gyro");
+    wasGyroDisconnected = true;
+ }
+ if (wasGyroDisconnected && gyroInputs.connected) {
+    Robot.removeDisconnection("Gyro");
+    wasGyroDisconnected = false;
+ }
  
  if (DriverStation.isAutonomous() && PathPlannerAuto.currentPathName != null) {
  PathPlannerLogging.setLogActivePathCallback((poses) -> {

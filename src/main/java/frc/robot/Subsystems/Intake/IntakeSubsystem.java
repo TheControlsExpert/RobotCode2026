@@ -1,14 +1,30 @@
 package frc.robot.Subsystems.Intake;
 
+import java.util.ArrayList;
+
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Subsystems.Intake.IntakeIO.IntakeIOInputs;
 
 public class IntakeSubsystem extends SubsystemBase {
     
     private final IntakeIO io;
     private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
-    Alert intakeDisconnectedAlert = new Alert("Intake subsystem is disconnected!", Alert.AlertType.kError);
+    ArrayList<Double> IntakeFullHistory = new ArrayList<>();
+    ArrayList<Double> ReadyToCloseHistory = new ArrayList<>();
+
+    double averageIntakeFull = 0;   
+    double averageReadyToClose = 0;
+
+    //disconnection tracking
+    private boolean wasDisconnected_Intake = false;
+    private boolean wasDisconnected_Pivot = false;
+  
+
 
     public IntakeSubsystem(IntakeIO io) {
         this.io = io;
@@ -17,7 +33,40 @@ public class IntakeSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateInputs(inputs);
-        intakeDisconnectedAlert.set(!inputs.isConnected);
+        SmartDashboard.putBoolean("Hopper Full?", isHopperFull());
+
+        if (IntakeFullHistory.size() > 20) {
+            IntakeFullHistory.remove(0);
+            ReadyToCloseHistory.remove(0);
+        }
+
+        IntakeFullHistory.add(inputs.hopperFull ? 1.0 : 0.0);
+        ReadyToCloseHistory.add(inputs.readyToClose ? 1.0 : 0.0);
+
+        averageIntakeFull = IntakeFullHistory.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+        averageReadyToClose = ReadyToCloseHistory.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+
+            if (!inputs.isConnectedIntake && !wasDisconnected_Intake) {
+                Robot.reportDisconnection("Intake Motor");
+                wasDisconnected_Intake = true;
+                
+
+            }
+            
+            if (wasDisconnected_Intake && inputs.isConnectedIntake) {
+                Robot.removeDisconnection("Intake Motor");
+                wasDisconnected_Intake = false;
+            }
+
+            if (!inputs.isConnectedPivot && !wasDisconnected_Pivot) {
+                    Robot.reportDisconnection("Intake Pivot");
+                    wasDisconnected_Pivot = true;
+            }
+
+            if (wasDisconnected_Pivot && inputs.isConnectedPivot) {
+                    Robot.removeDisconnection("Intake Pivot");
+                    wasDisconnected_Pivot = false;
+            }
     }
 
     public void setIntakeDutyCycle(double dutyCycle) {
@@ -31,5 +80,22 @@ public class IntakeSubsystem extends SubsystemBase {
     public void resetPivotPosition() {
         io.resetPosition();
  }
+
+   public void Retract() {
+        io.setPosition(IntakeConstants.HOME_Position);
+    }
+
+    public void Extend() {
+        io.setPosition(IntakeConstants.INTAKING_Position);
+    }
+
+    public boolean isReadyToClose() {
+        return averageReadyToClose > 0.75;
+    }
+
+    public boolean isHopperFull() {
+        return averageIntakeFull > 0.9;
+    }
+
 
 }

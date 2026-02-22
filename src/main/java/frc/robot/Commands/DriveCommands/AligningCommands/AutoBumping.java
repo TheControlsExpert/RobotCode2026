@@ -19,6 +19,7 @@ public class AutoBumping extends Command {
     private final Drive drive;
     double angle1 = Math.toRadians(45);
     double angle2 = Math.toRadians(135);
+
     double angle3 = Math.toRadians(225);
     double angle4 = Math.toRadians(315);
 
@@ -28,6 +29,10 @@ public class AutoBumping extends Command {
     private final DoubleSupplier xSupplier;
     private final DoubleSupplier ySupplier;
     private final CommandXboxController controller;
+
+    double trench_start_x = 4.57454;
+    double half_x_field = 8.219694;
+    double deltaRotationABS = 99999;
 
     public AutoBumping(Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, double kP_rotation, CommandXboxController controller) {
         this.drive = drive;
@@ -41,12 +46,16 @@ public class AutoBumping extends Command {
 
     @Override
     public void initialize() {
-        double currentAngle = drive.getEstimatedPosition().getRotation().getRadians();
-        
+        deltaRotationABS = 99999;
+        double currentAngle = drive.getEstimatedPosition().getRotation().getRadians() + (DriverStation.getAlliance().get().equals(Alliance.Red) ? Math.PI : 0);
+
         double smallestAngle = -1;
         double deltaRot = 0;
 
-        for (double angle : new double[]{angle1, angle2, angle3, angle4}) {
+        if ((DriverStation.getAlliance().get().equals(Alliance.Blue) && drive.getEstimatedPosition().getX() > trench_start_x) ||
+            (DriverStation.getAlliance().get().equals(Alliance.Red) && drive.getEstimatedPosition().getX() <  2 * half_x_field - trench_start_x)) {
+
+        for (double angle : new double[]{angle2, angle3}) {
             double delta = MathUtil.angleModulus(angle - currentAngle);
             if (smallestAngle == -1 || Math.abs(delta) < Math.abs(deltaRot)) {
                 smallestAngle = angle;
@@ -55,7 +64,23 @@ public class AutoBumping extends Command {
 
         }
 
-        angle_to_chase = smallestAngle;
+
+        angle_to_chase = smallestAngle + (DriverStation.getAlliance().get().equals(Alliance.Red) ? Math.PI : 0);
+        }
+
+        else {
+            for (double angle : new double[]{angle1, angle4}) {
+                double delta = MathUtil.angleModulus(angle - currentAngle);
+                if (smallestAngle == -1 || Math.abs(delta) < Math.abs(deltaRot)) {
+                    smallestAngle = angle;
+                    deltaRot = delta;
+                }
+    
+            }
+    
+    
+            angle_to_chase = smallestAngle + (DriverStation.getAlliance().get().equals(Alliance.Red) ? Math.PI : 0);
+        }
         
     }
 
@@ -67,6 +92,7 @@ public class AutoBumping extends Command {
         double delta = MathUtil.angleModulus(angle_to_chase - currentAngle);
         double deltaDegrees = Math.toDegrees(delta);
         double omega = kP_rotation * deltaDegrees;
+        deltaRotationABS = Math.abs(deltaDegrees);
 
         Translation2d linearVelocity;
 
@@ -114,13 +140,16 @@ public class AutoBumping extends Command {
         .getTranslation();
   }
 
+  @Override
+  public boolean isFinished() {
+      return deltaRotationABS < 5;
+  }
+
+  
 
     
 
-     @Override
-     public void end(boolean interrupted) {
-        drive.runVelocity(new ChassisSpeeds());
-     }
+    
       
     
 }

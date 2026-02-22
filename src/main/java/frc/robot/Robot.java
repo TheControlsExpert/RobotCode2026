@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+
 import org.littletonrobotics.junction.LoggedRobot;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -37,6 +39,7 @@ public class Robot extends LoggedRobot {
   //private final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
   private final RobotContainer m_robotContainer;
   public static ShootingState shootingState = ShootingState.SHOOTING;
+  public static ArrayList<String> DisconnectedMotorNames = new ArrayList<String>();
 
   
     public Robot() {
@@ -93,11 +96,13 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopPeriodic() {
-
-
-  
+    String fullList_disconnections = "";
+    for (String motorName : DisconnectedMotorNames) {
+        fullList_disconnections += motorName + ", " + "\n";
+    }
+    SmartDashboard.putString("Disconnected Motors", fullList_disconnections);
   }
-
+  
   @Override
   public void teleopExit() {}
 
@@ -114,6 +119,14 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void testExit() {}
+
+  public static void reportDisconnection(String motorName) {
+    DisconnectedMotorNames.add(motorName);
+  }
+
+  public static void removeDisconnection(String motorName) {
+    DisconnectedMotorNames.remove(motorName);
+  }
 
   
 

@@ -52,6 +52,8 @@ import frc.robot.Commands.DriveCommands.AligningCommands.AutoBumping;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticClimbing;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticTrenching;
 import frc.robot.Commands.ShootingCommands.Shooting;
+import frc.robot.Subsystems.Climb.Climb;
+import frc.robot.Subsystems.Climb.ClimbIO;
 import frc.robot.Subsystems.Drive.Drive;
 
 import frc.robot.Subsystems.Drive.GyroIOPigeon2;
@@ -59,6 +61,8 @@ import frc.robot.Subsystems.Drive.ModuleIOSim;
 import frc.robot.Subsystems.Drive.ModuleIOTalonFX;
 import frc.robot.Subsystems.Indexer.Indexer;
 import frc.robot.Subsystems.Indexer.IndexerIO;
+import frc.robot.Subsystems.Intake.IntakeIO;
+import frc.robot.Subsystems.Intake.IntakeSubsystem;
 import frc.robot.Subsystems.Shooter.Shooter;
 import frc.robot.Subsystems.Shooter.ShooterIO;
 import frc.robot.Subsystems.Vision.VisionIOLimelight;
@@ -123,6 +127,7 @@ public class RobotContainer {
    
         private VisionSubsystem vision;
 
+ 
 
             
           
@@ -137,6 +142,8 @@ public class RobotContainer {
             // this.intake = new Intake();
             
               this.gyro = new GyroIOPigeon2();
+               IntakeSubsystem intake = new IntakeSubsystem(new IntakeIO());
+   
             
                 // Real robot, instantiate hardware IO implementations
 
@@ -244,8 +251,8 @@ public class RobotContainer {
       
      
        controller.y().whileTrue(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
-       controller.b().whileTrue(new Shooting(new Shooter(new ShooterIO()), drive, new Indexer(new IndexerIO()), controller,  () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(), 0.08));
+      //  controller.b().whileTrue(new Shooting(new Shooter(new ShooterIO()), drive, new Indexer(new IndexerIO()), controller,  () -> -controller.getLeftY(),
+      //           () -> -controller.getLeftX(), 0.08));
 
       controller.leftBumper().onFalse(new InstantCommand(() -> {
         if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
@@ -258,6 +265,7 @@ public class RobotContainer {
         
       controller.a().whileTrue(new AutoBumping(drive,  () -> -controller.getLeftY(),
                 () -> -controller.getLeftX(), 0.08, controller));
+
        // controller.().whileTrue(new IntakeCommand(superstructure));
        //controller.rightTrigger().whileTrue(new EjectCommand(superstructure, drive, vision));
       //  controller.rightTrigger().whileTrue(new EjectCommand(superstructure, drive, vision).andThen(new ThirdPartAutoAlign(drive, vision, superstructure, controller)));

@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.Robot;
 import frc.robot.Subsystems.Drive.ModuleIO.ModuleIOInputs;
 
 import org.littletonrobotics.junction.Logger;
@@ -21,9 +22,10 @@ public class Module {
   private final int index;
   private final SwerveConstants.SwerveModuleConstants constants;
 
-  private final Alert driveDisconnectedAlert;
-  private final Alert turnDisconnectedAlert;
-  private final Alert turnEncoderDisconnectedAlert;
+  private boolean wasDisconnectedDrive = false;
+  private boolean wasDisconnectedTurn = false;
+  private boolean wasDisconnectedTurnEncoder = false;
+
   private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
 
   public Module(
@@ -32,17 +34,7 @@ public class Module {
     this.io = io;
     this.index = index;
     this.constants = constants;
-    driveDisconnectedAlert =
-        new Alert(
-            "Disconnected drive motor on module " + Integer.toString(index) + ".",
-            AlertType.kError);
-    turnDisconnectedAlert =
-        new Alert(
-            "Disconnected turn motor on module " + Integer.toString(index) + ".", AlertType.kError);
-    turnEncoderDisconnectedAlert =
-        new Alert(
-            "Disconnected turn encoder on module " + Integer.toString(index) + ".",
-            AlertType.kError);
+  
   }
 
   public void periodic() {
@@ -67,9 +59,31 @@ public class Module {
    }
 
     // Update alerts
-    driveDisconnectedAlert.set(!inputs.driveConnected);
-    turnDisconnectedAlert.set(!inputs.turnConnected);
-    turnEncoderDisconnectedAlert.set(!inputs.turnEncoderConnected);
+      if (!wasDisconnectedDrive && !inputs.driveConnected) {
+        Robot.reportDisconnection("Drive Motor " + index);
+        wasDisconnectedDrive = true;
+      }
+
+      if (wasDisconnectedDrive && inputs.driveConnected) {
+        Robot.removeDisconnection("Drive Motor " + index);
+        wasDisconnectedDrive = false;
+      }
+      if (!wasDisconnectedTurn && !inputs.turnConnected) {
+        Robot.reportDisconnection("Turn Motor " + index);
+        wasDisconnectedTurn = true;
+      }
+      if (wasDisconnectedTurn && inputs.turnConnected) {
+        Robot.removeDisconnection("Turn Motor " + index);
+        wasDisconnectedTurn = false;
+      }
+      if (!wasDisconnectedTurnEncoder && !inputs.turnEncoderConnected) {
+        Robot.reportDisconnection("CANCoder " + index);
+        wasDisconnectedTurnEncoder = true;
+      }
+      if (wasDisconnectedTurnEncoder && inputs.turnEncoderConnected) {
+        Robot.removeDisconnection("CANCoder " + index);
+        wasDisconnectedTurnEncoder = false;
+      }
   }
 
   /** Runs the module with the specified setpoint state. Mutates the state to optimize it. */

@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoubleArrayTopic;
+import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.PubSubOption;
@@ -25,10 +26,11 @@ public class VisionIOLimelight implements VisionIO {
 
     DoubleArraySubscriber Limelight_4 = NetworkTableInstance.getDefault().getTable("limelight-four").getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[11], PubSubOption.keepDuplicates(true));
     DoubleArraySubscriber ll4_rotation = NetworkTableInstance.getDefault().getTable("limelight-four").getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[11], PubSubOption.keepDuplicates(true));
-    
+    DoubleSubscriber connected4 = NetworkTableInstance.getDefault().getTable("limelight-four").getDoubleTopic("tv").subscribe(-1, PubSubOption.keepDuplicates(true));
+
     DoubleArraySubscriber Limelight_3GS = NetworkTableInstance.getDefault().getTable("limelight-threegs").getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[11], PubSubOption.keepDuplicates(true));
     DoubleArraySubscriber ll3gs_rotation = NetworkTableInstance.getDefault().getTable("limelight-threegs").getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[11], PubSubOption.keepDuplicates(true));
-
+    DoubleSubscriber connected3gs = NetworkTableInstance.getDefault().getTable("limelight-threegs").getDoubleTopic("tv").subscribe(-1, PubSubOption.keepDuplicates(true));
     
   
     
@@ -52,7 +54,7 @@ public class VisionIOLimelight implements VisionIO {
         inputs.time_LL4 = timestamp_LL4;
         inputs.tagCount_LL4 = (int) data_LL4.value[7];
         inputs.rotation_LL4 = rotation_LL4.value[5];
-
+        inputs.isConnected_LL4 = connected4.get() != -1;
         
         TimestampedDoubleArray data_LL3GS = Limelight_3GS.getAtomic();
         TimestampedDoubleArray rotation_LL3GS = ll3gs_rotation.getAtomic();
@@ -65,6 +67,7 @@ public class VisionIOLimelight implements VisionIO {
         oldposeLL3GS = inputs.MT2pose_LL3GS;
         inputs.time_LL3GS = timestamp_LL3GS;
         inputs.tagCount_LL3GS = (int) data_LL3GS.value[7];
+        inputs.isConnected_LL3GS = connected3gs.get() != -1;
         inputs.rotation_LL3GS = rotation_LL3GS.value[5];
        
     }   

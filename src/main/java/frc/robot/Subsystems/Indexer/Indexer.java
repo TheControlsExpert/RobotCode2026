@@ -3,12 +3,16 @@ package frc.robot.Subsystems.Indexer;
 import java.lang.Character.Subset;
 
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 
 public class Indexer extends SubsystemBase {
     private final IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
     private final IndexerIO io;
-    Alert indexerDisconnectedAlert = new Alert("Indexer subsystem is disconnected!", Alert.AlertType.kError);
+
+    private boolean wasDisconnected_Indexer = false;
+   
 
 
     public Indexer(IndexerIO io) {
@@ -19,8 +23,19 @@ public class Indexer extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateInputs(inputs);
-        indexerDisconnectedAlert.set(!inputs.isConnected);
-       
+
+        SmartDashboard.putBoolean("indexer is connected?", inputs.isConnected);
+        SmartDashboard.putBoolean("is indexer was disconnected", wasDisconnected_Indexer);
+
+        if (!wasDisconnected_Indexer && !inputs.isConnected) {
+            Robot.reportDisconnection("Indexer");
+            wasDisconnected_Indexer = true;
+        }
+        if (wasDisconnected_Indexer && inputs.isConnected) {
+            Robot.removeDisconnection("Indexer");
+            wasDisconnected_Indexer = false;
+        }
+      
     }
 
     public void setIndexerDutyCycle(double dutyCycle) {
