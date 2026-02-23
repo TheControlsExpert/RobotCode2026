@@ -27,6 +27,13 @@ public interface VisionIO {
         public boolean isNew_LL4 = false;
        public boolean isConnected_LL4 = false; 
 
+        public double time_LL3GF = 0;
+        public Pose2d MT2pose_LL3GF = new Pose2d();
+        public int tagCount_LL3GF = 0;    
+        public double avgDistance_LL3GF = 0;
+        public double rotation_LL3GF = 0.0;
+        public boolean isNew_LL3GF = false;
+        public boolean isConnected_LL3GF = false;
        
     }
 

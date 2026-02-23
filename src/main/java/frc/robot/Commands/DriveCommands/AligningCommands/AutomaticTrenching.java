@@ -157,16 +157,18 @@ public class AutomaticTrenching extends Command {
         if ((DriverStation.getAlliance().get().equals(Alliance.Blue) && currentPose.getX() > trench_start_x) ||
             (DriverStation.getAlliance().get().equals(Alliance.Red) && currentPose.getX() <  2 * half_x_field - trench_start_x)) {
             starting_from_middle = true;
-            pathEnd_blue_bottom = new Translation2d(3.5, 0.685); //sets the goal point for blue bottom
+            pathEnd_blue_bottom = new Translation2d(1.1, 0.685); //sets the goal point for blue bottom
             pathWaypoint_blue_bottom = new Translation2d(trench_start_x * 2 - 3.5, 0.685); //sets the waypoint point for blue bottom
          
         }
 
         // ?????????????????????????????
-        else {
+        else
+        
+        {
             starting_from_middle = false;
-            pathEnd_blue_bottom = new Translation2d(trench_start_x * 2 - 3.1, 0.685);
-            pathWaypoint_blue_bottom = new Translation2d(3.1, 0.685);
+            pathEnd_blue_bottom = new Translation2d(trench_start_x * 2 - 1.1, 0.685);
+            pathWaypoint_blue_bottom = new Translation2d(3.5, 0.685);
 
         }
         

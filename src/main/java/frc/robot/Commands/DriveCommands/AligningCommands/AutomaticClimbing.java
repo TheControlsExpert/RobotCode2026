@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.ClimbConstants;
 import frc.robot.Subsystems.Drive.Drive;
 import frc.robot.Subsystems.Vision.VisionSubsystem;
-import frc.robot.Subsystems.Vision.VisionSubsystem.ServoState;
 
 public class AutomaticClimbing {
     Drive drive;
@@ -50,12 +49,7 @@ public class AutomaticClimbing {
         hasReachedFirstPose = false;
  
 
-        return new InstantCommand(() -> {
-            if (isClimbingRight) {
-            vision.changeServoState(ServoState.CLIMB_RIGHT);
-            } else {
-            vision.changeServoState(ServoState.CLIMB_LEFT);
-            };}).andThen(
+        return 
                 
             
         new ProfiledPIDCommand(autoAlign, drive,
@@ -73,7 +67,7 @@ public class AutomaticClimbing {
             
             return climbPoses[1].transformBy(climbPoses[0].minus(climbPoses[1]).times(MathUtil.clamp(timer.get() / moving_setpoint_time, 0, 1)));
         }
-    }));
+    });
 
 
 
