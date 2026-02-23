@@ -51,6 +51,7 @@ public class AutomaticTrenching extends Command {
     double trench_start_x = 4.57454;
     double half_x_field = 8.219694;
     double inverted_distance = 0.35;
+    double rotationSetpoint = 0;
     private final CommandXboxController controller;
 
     public AutomaticTrenching(Drive swervy, PathConstraints constraints, DoubleSupplier xSupplier, DoubleSupplier ySupplier, double kP_rotation, CommandXboxController controller) {
@@ -64,12 +65,21 @@ public class AutomaticTrenching extends Command {
         addRequirements(swervy);   
 
         distanceToVel_map.put(4.021328, 0.0);
-        distanceToVel_map.put(0.0, 1.0);
+        distanceToVel_map.put(0.0, 0.75);
     }
 
     @Override
     public void initialize() {
         deltaRotationABS = 99999;
+
+        double rotationDelta1 = Math.abs(MathUtil.angleModulus(Math.PI - swerve.getEstimatedPosition().getRotation().getRadians()));
+        double rotationDelta2 = Math.abs(MathUtil.angleModulus(0 - swerve.getEstimatedPosition().getRotation().getRadians()));
+
+        if (rotationDelta1 < rotationDelta2) {
+            rotationSetpoint = Math.PI;
+        } else {
+            rotationSetpoint = 0;
+        }
     }
 
 
@@ -79,7 +89,7 @@ public class AutomaticTrenching extends Command {
         Pose2d[] closestPoses = getClosestPathingPoses();
 
         double currentAngle = swerve.getEstimatedPosition().getRotation().getRadians();
-        double delta = MathUtil.angleModulus(closestPoses[1].getRotation().getRadians() - currentAngle);
+        double delta = MathUtil.angleModulus(rotationSetpoint - currentAngle);
         double deltaDegrees = Math.toDegrees(delta);
         double omega =  kp * deltaDegrees;
         deltaRotationABS = Math.abs(deltaDegrees);
@@ -288,12 +298,12 @@ public class AutomaticTrenching extends Command {
             // creates the first PathPlannerPath with the first path waypoints, starting state, and end state
             PathPlannerPath firstPath = new PathPlannerPath(firstPath_Waypoints, constraints, 
             new IdealStartingState(ChassisSpeeds_to_Speed(swerve.getFieldRelativeSpeeds()), swerve.getEstimatedPosition().getRotation()), 
-            new GoalEndState(vel_at_waypoint, closestPoses[1].getRotation()));
+            new GoalEndState(vel_at_waypoint, Rotation2d.fromRadians(rotationSetpoint)));
 
             // creates the second PathPlannerPat, with the second path waypoings, starting state, and end state
             PathPlannerPath secondPath = new PathPlannerPath(secondPath_Waypoints, constraints,
-            new IdealStartingState(vel_at_waypoint, closestPoses[1].getRotation()),
-            new GoalEndState(0, closestPoses[0].getRotation()));
+            new IdealStartingState(vel_at_waypoint, Rotation2d.fromRadians(rotationSetpoint)),
+            new GoalEndState(0, Rotation2d.fromRadians(rotationSetpoint)));
 
             //?????????????????????????????
             firstPath.preventFlipping = true;
@@ -344,12 +354,12 @@ public class AutomaticTrenching extends Command {
             // creates the first PathPlannerPath with the first path waypoints, starting state, and end state
             PathPlannerPath firstPath = new PathPlannerPath(firstPath_Waypoints, constraints, 
             new IdealStartingState(ChassisSpeeds_to_Speed(swerve.getFieldRelativeSpeeds()), swerve.getEstimatedPosition().getRotation()), 
-            new GoalEndState(vel_at_waypoint, closestPoses[1].getRotation()));
+            new GoalEndState(vel_at_waypoint, Rotation2d.fromRadians(rotationSetpoint)));
 
             // creates the second PathPlannerPat, with the second path waypoings, starting state, and end state
             PathPlannerPath secondPath = new PathPlannerPath(secondPath_Waypoints, constraints,
-            new IdealStartingState(vel_at_waypoint, closestPoses[1].getRotation()),
-            new GoalEndState(0, closestPoses[0].getRotation()));
+            new IdealStartingState(vel_at_waypoint, Rotation2d.fromRadians(rotationSetpoint)),
+            new GoalEndState(0, Rotation2d.fromRadians(rotationSetpoint)));
 
             //?????????????????????????????
             firstPath.preventFlipping = true;
@@ -391,12 +401,11 @@ public class AutomaticTrenching extends Command {
 
             PathPlannerPath firstPath = new PathPlannerPath(firstPath_Waypoints, constraints, 
             new IdealStartingState(ChassisSpeeds_to_Speed(swerve.getFieldRelativeSpeeds()), swerve.getEstimatedPosition().getRotation()), 
-            new GoalEndState(vel_at_waypoint, closestPoses[1].getRotation()));
+            new GoalEndState(vel_at_waypoint, Rotation2d.fromRadians(rotationSetpoint)));
 
             PathPlannerPath secondPath = new PathPlannerPath(secondPath_Waypoints, constraints,
-            new IdealStartingState(vel_at_waypoint, closestPoses[1].getRotation()),
-            new GoalEndState(0, closestPoses[0].getRotation()));
-
+            new IdealStartingState(vel_at_waypoint, Rotation2d.fromRadians(rotationSetpoint)),
+            new GoalEndState(0, Rotation2d.fromRadians(rotationSetpoint)));
             firstPath.preventFlipping = true;
             secondPath.preventFlipping = true;
 
