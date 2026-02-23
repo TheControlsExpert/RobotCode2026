@@ -5,14 +5,16 @@ import frc.robot.Subsystems.Indexer.Indexer;
 import frc.robot.Subsystems.Intake.IntakeSubsystem;
 import frc.robot.Subsystems.Shooter.Shooter;
 
-public class Shuffle extends Command {
+public class Jam extends Command {
     private final Indexer indexer;
     private final Shooter shooter;
+    private final IntakeSubsystem intake;
 
-    public Shuffle(Indexer indexer, Shooter shooter) {
+    public Jam(Indexer indexer, Shooter shooter, IntakeSubsystem intake) {
         this.indexer = indexer;
         this.shooter = shooter;
-        addRequirements(indexer, shooter);
+        this.intake = intake;
+        addRequirements(indexer, shooter, intake);
     }
 
 
@@ -20,6 +22,7 @@ public class Shuffle extends Command {
     public void initialize() {
         indexer.setIndexerDutyCycle(-0.4);
         shooter.setFeederVelocity(-0.8);
+        intake.setIntakeDutyCycle(-0.2);
  
     }
 
@@ -27,6 +30,7 @@ public class Shuffle extends Command {
     public void end(boolean interrupted) {
         indexer.setIndexerDutyCycle(0);
         shooter.setFeederVelocity(0);
+        intake.setIntakeDutyCycle(0);
     }
     
 }

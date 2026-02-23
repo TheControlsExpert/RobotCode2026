@@ -11,11 +11,15 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Commands.IntakeCommands.ShuffleCommand;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Subsystems.Drive.Drive;
 import frc.robot.Subsystems.Indexer.Indexer;
+import frc.robot.Subsystems.Intake.IntakeSubsystem;
 import frc.robot.Subsystems.Shooter.Shooter;
 
 public class Shooting extends Command {
@@ -27,9 +31,12 @@ public class Shooting extends Command {
     CommandXboxController controller;
     double kP_rotation;
     boolean readyToShoot = false;
+    ShuffleCommand shuffle;
+    IntakeSubsystem intake;
+    boolean hasShuffled = false;
+    boolean waiting = false;
 
-
-    public Shooting(Shooter shooter, Drive drive, Indexer indexer, CommandXboxController controller, DoubleSupplier xSupplier, DoubleSupplier ySupplier, double kP_rotation) {
+    public Shooting(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, CommandXboxController controller, DoubleSupplier xSupplier, DoubleSupplier ySupplier, double kP_rotation, ShuffleCommand shuffle) {
         this.shooter = shooter;
         this.drive = drive;
         this.indexer = indexer;
@@ -37,6 +44,8 @@ public class Shooting extends Command {
         this.ySupplier = ySupplier;
         this.controller = controller;
         this.kP_rotation = kP_rotation;
+        this.shuffle = shuffle;
+        this.intake = intake;
         addRequirements(shooter, drive, indexer);
         
     }
@@ -44,7 +53,10 @@ public class Shooting extends Command {
     @Override
     public void initialize() {
         readyToShoot = false;
+        hasShuffled = false;
+        waiting = false;
     }
+
 
     @Override
     public void execute() {
@@ -97,7 +109,17 @@ public class Shooting extends Command {
     //
     if (!readyToShoot && shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance) && Math.abs(deltaRotation) < ShooterConstants.YawAngleTolerance) {
         readyToShoot = true;
+        SmartDashboard.putBoolean("Shooter is at Velocity", true);
         
+    }
+
+    if (shooter.isShooterVelocityLow(distance) && readyToShoot) {
+        readyToShoot = false;
+        waiting = true;
+    }
+
+    if (!readyToShoot) {
+        SmartDashboard.putBoolean("Shooter is at Velocity", false);
     }
 
 
@@ -105,6 +127,17 @@ public class Shooting extends Command {
         indexer.setIndexerDutyCycle(1);
         shooter.setFeederVelocity(0.6);
     }
+
+    else if (waiting){
+        indexer.setIndexerDutyCycle(-0.5);
+        shooter.setFeederVelocity(-0.5);
+    }
+
+    if (!intake.isHopperFull() && intake.isReadyToClose() && !hasShuffled && DriverStation.isAutonomous()) {
+        CommandScheduler.getInstance().schedule(shuffle.getShuffleCommand());
+        hasShuffled = true;
+    }
+
 }  
 
 
@@ -124,11 +157,6 @@ public class Shooting extends Command {
 
 
   
-
-
-
-
-    
 @Override
 public void end(boolean interrupted) {
     shooter.setShooterVelocity(0);

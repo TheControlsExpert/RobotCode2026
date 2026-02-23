@@ -3,6 +3,7 @@ package frc.robot.Commands.DriveCommands.AligningCommands;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.DoubleSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindThenFollowPath;
@@ -18,7 +19,9 @@ import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -27,27 +30,120 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Subsystems.Drive.Drive;
 
 
-public class AutomaticTrenching {
+public class AutomaticTrenching extends Command {
     Drive swerve;
     AutoPID aligner;
 
+    InterpolatingDoubleTreeMap distanceToVel_map = new InterpolatingDoubleTreeMap();
     PathConstraints constraints;
     boolean starting_from_middle = false;
+    private final DoubleSupplier xSupplier;
+    private final DoubleSupplier ySupplier;
+    double kp;
+    double deltaRotationABS = 99999;
 
     //these define the trench x distance, and the distance to the middle of the field in the x direction
     double trench_start_x = 4.57454;
     double half_x_field = 8.219694;
     double inverted_distance = 0.35;
-    public AutomaticTrenching(Drive swervy, PathConstraints constraints) {
+    private final CommandXboxController controller;
+
+    public AutomaticTrenching(Drive swervy, PathConstraints constraints, DoubleSupplier xSupplier, DoubleSupplier ySupplier, double kP_rotation, CommandXboxController controller) {
         this.swerve = swervy;
-        this.constraints = constraints;     
+        this.constraints = constraints;    
+        this.xSupplier = xSupplier;
+        this.ySupplier = ySupplier;
+        this.kp = kP_rotation;
+        this.controller = controller;
         aligner = new AutoPID(2.5, 0.08);
+        addRequirements(swervy);   
+
+        distanceToVel_map.put(4.021328, 0.0);
+        distanceToVel_map.put(0.0, 1.0);
+    }
+
+    @Override
+    public void initialize() {
+        deltaRotationABS = 99999;
+    }
+
+
+
+    @Override
+    public void execute() {
+        Pose2d[] closestPoses = getClosestPathingPoses();
+
+        double currentAngle = swerve.getEstimatedPosition().getRotation().getRadians();
+        double delta = MathUtil.angleModulus(closestPoses[1].getRotation().getRadians() - currentAngle);
+        double deltaDegrees = Math.toDegrees(delta);
+        double omega =  kp * deltaDegrees;
+        deltaRotationABS = Math.abs(deltaDegrees);
+
+        Translation2d linearVelocity;
+
+        if (controller.rightStick().getAsBoolean()) {
+          linearVelocity =
+                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble() / 12, ySupplier.getAsDouble() / 12);
+        }
+
+        else {
+            linearVelocity =
+                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+
+        }
+
+        // if (Math.abs(swerve.getEstimatedPosition().getY() - 4.021328*2) < 0.5 || Math.abs(swerve.getEstimatedPosition().getY()) < 0.5) {
+        //     linearVelocity = new Translation2d(linearVelocity.getX(), 0);
+        // }
+
+
+        // else {
+            linearVelocity = new Translation2d(linearVelocity.getX() * 0.3, linearVelocity.getY() * distanceToVel_map.get(Math.abs(swerve.getEstimatedPosition().getY() - 4.021328)));
+           // linearVelocity = linearVelocity.times(distanceToVel_map.get(Math.abs(swerve.getEstimatedPosition().getY() - 4.021328)));
+        //}
+
+               // Convert to field relative speeds & send command
+              ChassisSpeeds speeds =
+                  new ChassisSpeeds(
+                      linearVelocity.getX() * swerve.getMaxLinearSpeedMetersPerSec(),
+                      linearVelocity.getY() * swerve.getMaxLinearSpeedMetersPerSec(),
+                   MathUtil.clamp(omega, -swerve.getMaxAngularSpeedRadPerSec(), swerve.getMaxAngularSpeedRadPerSec()));
+              boolean isFlipped =
+                  DriverStation.getAlliance().isPresent()
+                      && DriverStation.getAlliance().get() == Alliance.Red;
+              swerve.runVelocity(
+                  ChassisSpeeds.fromFieldRelativeSpeeds(
+                      speeds,
+                      isFlipped
+                          ? swerve.getEstimatedPosition().getRotation().plus(new Rotation2d(Math.PI))
+                          : swerve.getEstimatedPosition().getRotation()));
     
     }
+
+     private static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
+    // Apply deadband
+    double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), 0.1);
+    Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
+
+    // Square magnitude for more precise control
+    linearMagnitude = linearMagnitude * linearMagnitude;
+
+    // Return new linear velocity
+    return new Pose2d(new Translation2d(), linearDirection)
+        .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+        .getTranslation();
+  }
+
+  @Override
+  public boolean isFinished() {
+      return deltaRotationABS < 5;
+  }
+
 
     
     //This method finds the closest goal-point out of the 4 on the field: red, blue, top bottom
@@ -61,16 +157,18 @@ public class AutomaticTrenching {
         if ((DriverStation.getAlliance().get().equals(Alliance.Blue) && currentPose.getX() > trench_start_x) ||
             (DriverStation.getAlliance().get().equals(Alliance.Red) && currentPose.getX() <  2 * half_x_field - trench_start_x)) {
             starting_from_middle = true;
-            pathEnd_blue_bottom = new Translation2d(3.5, 0.685); //sets the goal point for blue bottom
+            pathEnd_blue_bottom = new Translation2d(1.1, 0.685); //sets the goal point for blue bottom
             pathWaypoint_blue_bottom = new Translation2d(trench_start_x * 2 - 3.5, 0.685); //sets the waypoint point for blue bottom
          
         }
 
         // ?????????????????????????????
-        else {
+        else
+        
+        {
             starting_from_middle = false;
-            pathEnd_blue_bottom = new Translation2d(trench_start_x * 2 - 3.1, 0.685);
-            pathWaypoint_blue_bottom = new Translation2d(3.1, 0.685);
+            pathEnd_blue_bottom = new Translation2d(trench_start_x * 2 - 1.1, 0.685);
+            pathWaypoint_blue_bottom = new Translation2d(3.5, 0.685);
 
         }
         
@@ -150,23 +248,23 @@ public class AutomaticTrenching {
         // we now begin to work in the trapezoidal velocity plane
 
          Rotation2d addon = starting_from_middle ? new Rotation2d() : new Rotation2d(Math.PI);
-        if (closestPoses[1].getTranslation().minus(swerve.getEstimatedPosition().getTranslation()).getNorm() < 1) {
+        // if (closestPoses[1].getTranslation().minus(swerve.getEstimatedPosition().getTranslation()).getNorm() < 1) {
 
-            Command autoalign = new AutoAlignCommand(aligner, swerve, closestPoses[1],5,0.15);
+        //     Command autoalign = new AutoAlignCommand(aligner, swerve, closestPoses[1],5,0.15);
 
-            List<Waypoint> secondPath_Waypoints = PathPlannerPath.waypointsFromPoses( // creating a list of the two points specific to the second path
-                 new Pose2d(closestPoses[1].getTranslation(), closestPoses[1].getRotation().plus(addon)),// waypoint
-                 new Pose2d(closestPoses[0].getTranslation(), closestPoses[1].getRotation().plus(addon)) // goal point
-            );
+        //     List<Waypoint> secondPath_Waypoints = PathPlannerPath.waypointsFromPoses( // creating a list of the two points specific to the second path
+        //          new Pose2d(closestPoses[1].getTranslation(), closestPoses[1].getRotation().plus(addon)),// waypoint
+        //          new Pose2d(closestPoses[0].getTranslation(), closestPoses[1].getRotation().plus(addon)) // goal point
+        //     );
 
-            PathPlannerPath secondPath = new PathPlannerPath(secondPath_Waypoints, constraints,
-            new IdealStartingState(0, closestPoses[1].getRotation()),
-            new GoalEndState(0, closestPoses[0].getRotation()));
+        //     PathPlannerPath secondPath = new PathPlannerPath(secondPath_Waypoints, constraints,
+        //     new IdealStartingState(0, closestPoses[1].getRotation()),
+        //     new GoalEndState(0, closestPoses[0].getRotation()));
 
-             secondPath.preventFlipping = true;
+        //      secondPath.preventFlipping = true;
 
-             return autoalign.andThen(AutoBuilder.followPath(secondPath));
-        }
+        //      return autoalign.andThen(AutoBuilder.followPath(secondPath));
+        // }
 
 
 
@@ -343,7 +441,7 @@ public class AutomaticTrenching {
 
 
      private Rotation2d getPathVelocityHeading(ChassisSpeeds cs, Pose2d target){
-        if ((cs.vxMetersPerSecond * cs.vxMetersPerSecond + cs.vyMetersPerSecond * cs.vyMetersPerSecond) < 0.5 * 0.5) {
+        if ((cs.vxMetersPerSecond * cs.vxMetersPerSecond + cs.vyMetersPerSecond * cs.vyMetersPerSecond) < 1 * 1) {
             
             var diff = target.getTranslation().minus(swerve.getEstimatedPosition().getTranslation());
        

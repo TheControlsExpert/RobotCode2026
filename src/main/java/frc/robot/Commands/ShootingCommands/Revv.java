@@ -3,6 +3,7 @@ package frc.robot.Commands.ShootingCommands;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Robot;
@@ -32,6 +33,7 @@ public class Revv extends Command {
         double distance = drive.getEstimatedPosition().getTranslation().getDistance(drive.calculateShootingPosition());
 
         shooter.LookupTable_Shooting(distance);
+        SmartDashboard.putBoolean("Shooter is at Velocity", shooter.isAtShootingVelocity(distance));
     }
 
     @Override

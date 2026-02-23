@@ -51,7 +51,11 @@ import frc.robot.Commands.DriveCommands.AligningCommands.AutoAlign;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutoBumping;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticClimbing;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticTrenching;
+import frc.robot.Commands.IntakeCommands.IntakeCommand;
+import frc.robot.Commands.IntakeCommands.Jam;
 import frc.robot.Commands.ShootingCommands.Shooting;
+import frc.robot.Subsystems.Climb.Climb;
+import frc.robot.Subsystems.Climb.ClimbIO;
 import frc.robot.Subsystems.Drive.Drive;
 
 import frc.robot.Subsystems.Drive.GyroIOPigeon2;
@@ -59,6 +63,8 @@ import frc.robot.Subsystems.Drive.ModuleIOSim;
 import frc.robot.Subsystems.Drive.ModuleIOTalonFX;
 import frc.robot.Subsystems.Indexer.Indexer;
 import frc.robot.Subsystems.Indexer.IndexerIO;
+import frc.robot.Subsystems.Intake.IntakeIO;
+import frc.robot.Subsystems.Intake.IntakeSubsystem;
 import frc.robot.Subsystems.Shooter.Shooter;
 import frc.robot.Subsystems.Shooter.ShooterIO;
 import frc.robot.Subsystems.Vision.VisionIOLimelight;
@@ -123,6 +129,14 @@ public class RobotContainer {
    
         private VisionSubsystem vision;
 
+        IntakeSubsystem intake = new IntakeSubsystem(new IntakeIO());
+        Shooter shooter = new Shooter(new ShooterIO());
+        Indexer indexer = new Indexer(new IndexerIO());
+        Climb climb = new Climb(new ClimbIO());
+
+
+
+ 
 
             
           
@@ -137,6 +151,8 @@ public class RobotContainer {
             // this.intake = new Intake();
             
               this.gyro = new GyroIOPigeon2();
+
+   
             
                 // Real robot, instantiate hardware IO implementations
 
@@ -169,8 +185,8 @@ public class RobotContainer {
 
                  // drivesim = new DriveSim(new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim());
                 vision = new VisionSubsystem(new VisionIOLimelight(), drive);
-                autoTrenching = new AutomaticTrenching(drive, drive.constraints_auto);     
-                autoClimbing = new AutomaticClimbing(drive, new AutoAlign(2.5, 0.08, 0.01, 1), vision);
+                autoTrenching = new AutomaticTrenching(drive, drive.constraints_auto, () -> -controller.getLeftY(), () -> -controller.getLeftX(), 0.08, controller);     
+                autoClimbing = new AutomaticClimbing(drive, new AutoAlign(2.5, drive.rotationkP, 0.01, 1), vision);
       
                 
         //       superstructure = new Superstructure(new WristIOKrakens(), new ElevatorIOKrakens());        
@@ -234,30 +250,50 @@ public class RobotContainer {
                 drive,
                 controller));
 
-        //controller.x().whileTrue(FeedforwardCharacterization.feedforwardCommand(drive, xbox));
 
-       controller.x().whileTrue(Commands.defer(() -> autoTrenching.getPathingCommand().until(
+
+       controller.x().whileTrue(autoTrenching.andThen(
+        
+      Commands.defer(() -> autoTrenching.getPathingCommand().until(
         
        () -> (autoTrenching.passedTrench() && 
-       (Math.abs(controller.getLeftY()) > 0.1 || Math.abs(controller.getLeftX()) > 0.1 || Math.abs(controller.getRightX()) > 0.1))), Set.of(drive)));
+       (Math.abs(controller.getLeftY()) > 0.1 || Math.abs(controller.getLeftX()) > 0.1 || Math.abs(controller.getRightX()) > 0.1))), Set.of(drive))));
 
       
-     
+       controller.a().whileTrue(new AutoBumping(drive, intake, () -> -controller.getLeftY(), () -> -controller.getLeftX(), 0.08, controller));
        controller.y().whileTrue(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
-       controller.b().whileTrue(new Shooting(new Shooter(new ShooterIO()), drive, new Indexer(new IndexerIO()), controller,  () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(), 0.08));
-
-      controller.leftBumper().onFalse(new InstantCommand(() -> {
-        if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
+       controller.leftBumper().whileTrue(new IntakeCommand(intake));
+       controller.rightBumper().onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), DriverStation.getAlliance().get().equals(Alliance.Blue) ? Rotation2d.kZero : Rotation2d.fromDegrees(180))), drive)
+                .ignoringDisable(true));
+       
+       controller2.rightTrigger().whileTrue((new InstantCommand(() -> {intake.Retract();}, intake)
+               .andThen(new WaitCommand(0.7))
+               .andThen(new InstantCommand(() -> {intake.Extend();}, intake))
+               .andThen(new WaitCommand(0.5))).repeatedly());
+       
+       controller2.leftTrigger().whileTrue(new StartEndCommand(() -> {intake.Retract();}, () -> {intake.Extend();}, intake));
+       controller2.rightBumper().whileTrue(new Jam(indexer, shooter, intake));
+       controller2.leftBumper().onTrue(new InstantCommand(() -> {
+        if (Robot.shootingState.equals(ShootingState.PASSING)) {
+          Robot.shootingState = ShootingState.SHOOTING;
+        }
+        else {
           Robot.shootingState = ShootingState.PASSING;
         }
-         else {
-          Robot.shootingState = ShootingState.SHOOTING;
-        }}));  
+       }));
+
+       controller2.y().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.US;}));
+       controller2.a().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.ENEMY;}));
+       controller2.b().onTrue(new InstantCommand(() -> {intake.resetPivotPosition();}));
+       //put controller command for reseting pivot of shooter
+       
+       
+
+    
         
-        
-      controller.a().whileTrue(new AutoBumping(drive,  () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(), 0.08, controller));
+      // controller.a().whileTrue(new AutoBumping(drive,  () -> -controller.getLeftY(),
+      //           () -> -controller.getLeftX(), 0.08, controller));
+
        // controller.().whileTrue(new IntakeCommand(superstructure));
        //controller.rightTrigger().whileTrue(new EjectCommand(superstructure, drive, vision));
       //  controller.rightTrigger().whileTrue(new EjectCommand(superstructure, drive, vision).andThen(new ThirdPartAutoAlign(drive, vision, superstructure, controller)));

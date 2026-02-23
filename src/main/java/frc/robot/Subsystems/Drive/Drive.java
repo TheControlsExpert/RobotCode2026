@@ -86,7 +86,8 @@ public class Drive extends SubsystemBase {
  public Pose2d odometryPose = new Pose2d();
  public Pose2d lastodometrypose = new Pose2d();
  ReentrantLock visionLock = new ReentrantLock();
-
+public final double translationkP = 2.5;
+public final double rotationkP = 0.08;
 public PathConstraints constraints_auto = new PathConstraints(6, 4, 13, 26);
 public PathConstraints constraints_pathfinding = new PathConstraints(5, 3, 500, 500);
 
@@ -147,7 +148,7 @@ private final Field2d m_field = new Field2d();
  static final Lock odometryLock = new ReentrantLock();
 
 
-public static final double kP_rotation = 0;
+
  
  private final GyroIO gyroIO;
  private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -168,7 +169,7 @@ public static final double kP_rotation = 0;
  new SwerveModulePosition()
  };
  private SwerveDrivePoseEstimator SwervePoseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d(0, 0, new Rotation2d()), VecBuilder.fill(0.005,0.005, Radians.convertFrom(5, Degrees)), VecBuilder.fill(0.05, 0.05, 999999999) );
- 
+ private boolean wasGyroDisconnected = false;
  SysIdRoutine routine;
  
  
@@ -216,8 +217,8 @@ public static final double kP_rotation = 0;
  (speeds, feedforwards) -> runVelocity(speeds),
  // Method that will drive the robot gn ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
  new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
- new PIDConstants(3, 0.0, 0.3), // Translation PID constants
- new PIDConstants(0.3, 0.0, 0.0) // Rotation PID constants
+ new PIDConstants(translationkP, 0.0, 0.3), // Translation PID constants
+ new PIDConstants(rotationkP, 0.0, 0.0) // Rotation PID constants
  ),
  
  config, // The robot configuration
@@ -238,6 +239,15 @@ public static final double kP_rotation = 0;
  
  @Override
  public void periodic() {
+
+ if (!gyroInputs.connected && !wasGyroDisconnected) {
+    Robot.reportDisconnection("Gyro");
+    wasGyroDisconnected = true;
+ }
+ if (wasGyroDisconnected && gyroInputs.connected) {
+    Robot.removeDisconnection("Gyro");
+    wasGyroDisconnected = false;
+ }
  
  if (DriverStation.isAutonomous() && PathPlannerAuto.currentPathName != null) {
  PathPlannerLogging.setLogActivePathCallback((poses) -> {

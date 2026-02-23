@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LimelightConstants;
+import frc.robot.Robot;
 import frc.robot.Subsystems.Drive.Drive;
 import frc.robot.Subsystems.Vision.VisionIO.VisionIOInputs;
 import edu.wpi.first.cameraserver.CameraServer;
@@ -34,11 +35,12 @@ public class VisionSubsystem extends SubsystemBase {
     public record VisionMeasurement(Pose2d pose, double rotationDegreees, double timestamp, double[] std, int numTags, double avgDistance) {}
     ArrayList<VisionMeasurement> visionMeasurements = new ArrayList<>();
 
-    public Servo servy = new Servo(0); //makes a servo motor
-    public ServoState currentServoState = ServoState.CLIMB_LEFT; // rotational state of the servo
+
+    boolean wasDisconnected_LL4 = false;
+    boolean wasDisconnected_LL3GS = false;
+    boolean wasDisconnected_LL3GF = false;
  
 
-            
             
     public VisionSubsystem(VisionIO io, Drive drive) {
                     this.io = io;
@@ -54,38 +56,42 @@ public class VisionSubsystem extends SubsystemBase {
     
     
 
-
-
-
-    public enum ServoState { //creates three possible rotational states for the servo motor
-        CLIMB_LEFT(LimelightConstants.climbLeftAngle),
-        CLIMB_RIGHT(LimelightConstants.climbRightAngle);
-       // MIDDLE_FIELD(LimelightConstants.middleFieldAngle),
-
-
-
-        public double position;
-
-        private ServoState(double position) {
-            this.position = position;
-        }
-    }
-
-
-    public void changeServoState(ServoState goalServoState) { //changes the current servo rotational state to the inputted one from the parameter
-        currentServoState = goalServoState;
-    }
-
-
-
-
-
     
     @Override
     public void periodic() {
         io.updateInputs(inputs);
+        
+        if (!wasDisconnected_LL4 &&!inputs.isConnected_LL4) {
+            Robot.reportDisconnection("Limelight 4");
+            wasDisconnected_LL4 = true;
+        }
 
-        //servy.setA();
+        if (!wasDisconnected_LL3GS && !inputs.isConnected_LL3GS) {
+            Robot.reportDisconnection("Limelight 3GS");
+            wasDisconnected_LL3GS = true;
+    
+        }
+
+        if (!wasDisconnected_LL3GF && !inputs.isConnected_LL3GF) {
+            Robot.reportDisconnection("Limelight 3GF");
+            wasDisconnected_LL3GF = true;
+        }
+
+        if (wasDisconnected_LL3GF && inputs.isConnected_LL3GF) {
+            Robot.removeDisconnection("Limelight 3GF");
+            wasDisconnected_LL3GF = false;
+        }
+
+        if (wasDisconnected_LL3GS && inputs.isConnected_LL3GS) {
+            Robot.removeDisconnection("Limelight 3GS");
+            wasDisconnected_LL3GS = false;
+        }
+
+        if (wasDisconnected_LL4 && inputs.isConnected_LL4) {
+            Robot.removeDisconnection("Limelight 4");
+            wasDisconnected_LL4 = false;
+        }
+
 
         if (inputs.isNew_LL4 && inputs.isConnected_LL4 && inputs.tagCount_LL4 > 0) {
             double std_LL4 = (inputs.avgDistance_LL4 * 0.02 ) / inputs.tagCount_LL4;
@@ -101,6 +107,14 @@ public class VisionSubsystem extends SubsystemBase {
             if (std_LL3GS < 0.1) {
                visionMeasurements.add(new VisionMeasurement(inputs.MT2pose_LL3GS, inputs.rotation_LL3GS, inputs.time_LL3GS, stds_LL3GS, inputs.tagCount_LL3GS, inputs.avgDistance_LL3GS));
             }
+        }
+
+        if (inputs.isNew_LL3GF && inputs.isConnected_LL3GF && inputs.tagCount_LL3GF > 0) {
+                double std_LL3GF = (inputs.avgDistance_LL3GF * 0.02 ) / inputs.tagCount_LL3GF;
+                double[] stds_LL3GF = {std_LL3GF, std_LL3GF};
+                if (std_LL3GF < 0.1) {
+                visionMeasurements.add(new VisionMeasurement(inputs.MT2pose_LL3GF, inputs.rotation_LL3GF, inputs.time_LL3GF, stds_LL3GF, inputs.tagCount_LL3GF, inputs.avgDistance_LL3GF));
+                }
         }
 
         VisionMeasurement bestmeasurement = null;
@@ -124,9 +138,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         if (bestmeasurement != null) {
             addVisionMeasurement(bestmeasurement);
-        }
-      //needs to be adjusted for 180 degrees      
-        servy.setAngle(currentServoState.position);    
+        }  
         }
     
     

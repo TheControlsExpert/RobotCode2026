@@ -172,8 +172,9 @@ public final class Constants {
               invertSteer);
     }
 
-    public static final double trackWidth = 0.632177;
-    public static final double wheelBase = 0.62081;
+    public static final int pigeonID = 13;
+    public static final double trackWidth = 0.5647;
+    public static final double wheelBase = 0.5647;
     public static final SwerveDriveKinematics swerveKinematics =
         new SwerveDriveKinematics(
             new Translation2d(wheelBase / 2.0, trackWidth / 2.0),
@@ -185,24 +186,15 @@ public final class Constants {
         Math.sqrt(wheelBase * wheelBase / 4 + trackWidth * trackWidth / 4);
     public static final double WheelRadius = 0.0508;
     //public static final double WheelRadius = 0.0477;
-    public static final LinearVelocity MaxFreeSpeed = null;
-    public static final double odometryConstant = 0;
-    public static final double maxAccel = 0;
-    public static final double maxJerk = 1.2;
-    public static final double collisionMultiplier = 0.1;
-    public static final double kAccel = 0.05;
-    public static final double kMovement = 0.45;
 
   }
 
   public static class ClimbConstants {
     public static Pose2d RightPoseBlue = new Pose2d(1.293, 2.859, Rotation2d.fromDegrees(180));
 
-    public static double supplyCurrentLimit = 0;
-    public static double supplyCurrentLowerLimit = 0;
-    public static double supplyCurrentLowerLimit_time = 0.0;
-
-
+    public static double supplyCurrentLimit = 60;
+    public static double supplyCurrentLowerLimit = 40;
+    public static double supplyCurrentLowerLimit_time = 0.25;
   }
 
   public static class ShooterConstants {
@@ -217,22 +209,30 @@ public final class Constants {
     public static final double shooterR_kP = 0;
     public static final double shooterR_kD = 0;
  
-    public static final double supplyCurrentLimit = 0;
-    public static final double supplyCurrentLowerLimit = 0;
-    public static final double supplyCurrentLowerLimit_time = 0.0;
+    public static final double supplyCurrentLimit = 60;
+    public static final double supplyCurrentLowerLimit = 50;
+    public static final double supplyCurrentLowerLimit_time = 0.2;
+    public static final double statorCurrentLimit = 80;
     
+    //from looking from intake to shooter
 
-    public static final boolean shooterL_inverted = false;
+    public static final boolean shooterL_inverted = true;
     public static final boolean shooterR_inverted = false;
 
     public static final double shooterPivot_kP = 0.0;
     public static final double shooterPivot_kD = 0.0;
-    public static final double HOME = 0;
+
     public static final double Pivot_HOME = 0;
-    public static final double YawAngleTolerance = 0;
-    public static final double ShooterVelocityTolerance = 0;
+    public static final double YawAngleTolerance = 1;
+    public static final double ShooterVelocityTolerance = 100;
+
+    //note that this value has to be MUCH higher bcs the shooter velocity drops by 200rpm+ when a ball is shot
+    public static final double ShooterVelocity_NoGo_Tolerance = 1160000;
+
+    //TODO: find corresponding encoder values for pivot that we can figure out what a good tolerance is
+
     public static final double ShooterPivotTolerance = 0;
-    public static final double feederSupplyCurrentLimit = 0;
+    public static final double feederSupplyCurrentLimit = 50;
 
   }
 
@@ -240,17 +240,19 @@ public final class Constants {
     public static final double pivot_kP = 0.0;
     public static final double pivot_kG = 0.0;
     public static final double offset = 0.0;
-    public static final double PivotGearRatio = 0.0;
+    public static final double PivotGearRatio = 5;
+    public static final boolean pivot_inverted = false;
+    public static final boolean intake_inverted = false;
 
-    public static final double intakeSupplyCurrentLimit = 0;
-    public static final double intakeSupplyCurrentLowerLimit = 0;
-    public static final double intakeSupplyCurrentLowerLimit_time = 0.0;
+    public static final double intakeSupplyCurrentLimit = 40;
+    public static final double HOME_Position = 0;
+    public static final double INTAKING_Position = 0;
+    public static final double BUMPING_Position = 0;
   }
 
   public static class IndexerConstants {
-    public static final double supplyCurrentLimit = 0;
-    public static final double supplyCurrentLowerLimit = 0;
-    public static final double supplyCurrentLowerTime = 0.0;
+    public static final double supplyCurrentLimit = 40;
+
   }
 
 

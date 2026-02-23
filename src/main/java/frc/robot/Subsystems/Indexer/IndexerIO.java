@@ -20,8 +20,6 @@ public class IndexerIO  {
             indexerConfig.MotorOutput.NeutralMode = com.ctre.phoenix6.signals.NeutralModeValue.Coast;
 
             indexerConfig.CurrentLimits.SupplyCurrentLimit = IndexerConstants.supplyCurrentLimit;
-            indexerConfig.CurrentLimits.SupplyCurrentLowerLimit = IndexerConstants.supplyCurrentLowerLimit;
-            indexerConfig.CurrentLimits.SupplyCurrentLowerTime = IndexerConstants.supplyCurrentLowerTime;
 
             indexerMotor.getConfigurator().apply(indexerConfig);
 

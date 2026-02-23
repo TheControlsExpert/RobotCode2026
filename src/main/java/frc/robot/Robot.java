@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+
 import org.littletonrobotics.junction.LoggedRobot;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -26,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.ActivePeriodTracker.ShiftInfo;
 import frc.robot.RobotContainer.ScoringPosition;
 import frc.robot.Subsystems.Drive.GyroIOPigeon2;
 import frc.robot.Subsystems.Drive.PhoenixOdometryThread;
@@ -37,6 +40,8 @@ public class Robot extends LoggedRobot {
   //private final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
   private final RobotContainer m_robotContainer;
   public static ShootingState shootingState = ShootingState.SHOOTING;
+  public static AutoWinner autoWinner = AutoWinner.US;
+  public static ArrayList<String> DisconnectedMotorNames = new ArrayList<String>();
 
   
     public Robot() {
@@ -56,6 +61,12 @@ public class Robot extends LoggedRobot {
 
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
+
+         String fullList_disconnections = "";
+    for (String motorName : DisconnectedMotorNames) {
+        fullList_disconnections += motorName + ", " + "\n";
+    }
+    SmartDashboard.putString("Disconnected Motors", fullList_disconnections);
     }
 
   
@@ -74,35 +85,45 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+
+    ActivePeriodTracker.initialize();
+
   }
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+        ShiftInfo shiftInfo = ActivePeriodTracker.getOfficialShiftInfo();
+        SmartDashboard.putString("Current Shift", shiftInfo.currentShift().name() + "\n" + String.format("%.1f", shiftInfo.remainingTime()));
+  }
 
   @Override
   public void autonomousExit() {}
 
   @Override
   public void teleopInit() {
+   
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
 
-   // m_robotContainer.superstructure.setDesiredState(SuperstructureState.HOME_UP);
+    ActivePeriodTracker.initialize();
+
   }
 
   @Override
   public void teleopPeriodic() {
-
-
-  
+   
+    ShiftInfo shiftInfo = ActivePeriodTracker.getOfficialShiftInfo();
+      SmartDashboard.putString("Current Shift", (shiftInfo.active() ? "ACTIVE: " : "INACTIVE:")  + "\n" + shiftInfo.currentShift().name() + "\n" + String.format("%.1f", shiftInfo.remainingTime()));
   }
-
+  
   @Override
   public void teleopExit() {}
 
   @Override
   public void testInit() {
+  
+    ActivePeriodTracker.getOfficialShiftInfo();
     CommandScheduler.getInstance().cancelAll();
 
     
@@ -115,11 +136,24 @@ public class Robot extends LoggedRobot {
   @Override
   public void testExit() {}
 
+  public static void reportDisconnection(String motorName) {
+    DisconnectedMotorNames.add(motorName);
+  }
+
+  public static void removeDisconnection(String motorName) {
+    DisconnectedMotorNames.remove(motorName);
+  }
+
   
 
   public enum ShootingState {
     PASSING,
     SHOOTING
+  }
+
+  public enum AutoWinner {
+    ENEMY,
+    US
   }
 
   
