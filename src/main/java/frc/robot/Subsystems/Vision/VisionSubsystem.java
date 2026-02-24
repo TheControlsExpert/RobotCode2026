@@ -18,6 +18,7 @@ import frc.robot.Constants.LimelightConstants;
 import frc.robot.Robot;
 import frc.robot.Subsystems.Drive.Drive;
 import frc.robot.Subsystems.Vision.VisionIO.VisionIOInputs;
+import edu.wpi.first.cameraserver.CameraServer;
 
 public class VisionSubsystem extends SubsystemBase {
    //Field2d field = new Field2d();
@@ -45,8 +46,14 @@ public class VisionSubsystem extends SubsystemBase {
                     this.io = io;
                     this.drive = drive;
                    //SmartDashboard.putData("field", field);
+                   getWebcamFeed(); //begins sending webcam video footage to smart dashboard
     }
 
+
+    public void getWebcamFeed() { //puts the webcam connected to dev port 0 onto the dashboard
+        CameraServer.startAutomaticCapture(0);
+    }
+    
     
 
     

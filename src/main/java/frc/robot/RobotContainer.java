@@ -53,6 +53,7 @@ import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticClimbing;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticTrenching;
 import frc.robot.Commands.IntakeCommands.IntakeCommand;
 import frc.robot.Commands.IntakeCommands.Jam;
+import frc.robot.Commands.ShootingCommands.ResetHood;
 import frc.robot.Commands.ShootingCommands.Shooting;
 import frc.robot.Subsystems.Climb.Climb;
 import frc.robot.Subsystems.Climb.ClimbIO;

@@ -98,11 +98,11 @@ public class Shooter extends SubsystemBase {
      }
 
 
-     public void setOutputPivot(double dutycycle) {
+     public void setOutputPivot(double dutycycle) { //sets the power into the pivot motor
         io.setOutputPivot(dutycycle);
      }
 
-     public void setPositionPivot(double position) {
+     public void setPositionPivot(double position) { //tells the pivot what position it is at
         io.setPivotPosition(position);
      }
 
@@ -221,4 +221,10 @@ public class Shooter extends SubsystemBase {
     public void setFeederVelocity(double velocity) {
         io.setFeederVelocity(velocity);
      }
+
+     public double getPivotVelocity() {
+        return io.getPivotVelocity();
+     }
+
+     
 }

@@ -85,10 +85,10 @@ public class AutomaticClimbing {
             if (drive.getEstimatedPosition().getTranslation().getDistance(blueRight.getTranslation()) < drive.getEstimatedPosition().getTranslation().getDistance(blueLeft.getTranslation())) {
                 isClimbingRight = true;
 
-                return new Pose2d[]{blueRight, blueRight.plus(new Transform2d(0.06,0.65,Rotation2d.fromDegrees(0)))};
+                return new Pose2d[]{blueRight, blueRight.plus(new Transform2d(0.0,0.2,Rotation2d.fromDegrees(0)))};
             } else {
                 isClimbingRight = false;
-                return new Pose2d[]{blueLeft, blueLeft.plus(new Transform2d(-0.06,0.65,Rotation2d.fromDegrees(0)))};
+                return new Pose2d[]{blueLeft, blueLeft.plus(new Transform2d(0.0,0.2,Rotation2d.fromDegrees(0)))};
             }
         }
 
@@ -99,10 +99,10 @@ public class AutomaticClimbing {
 
             if (drive.getEstimatedPosition().getTranslation().getDistance(redRight.getTranslation()) < drive.getEstimatedPosition().getTranslation().getDistance(redLeft.getTranslation())) {
                 isClimbingRight = true;
-                return new Pose2d[]{redRight, redRight.plus(new Transform2d(0.06, 0.65,Rotation2d.fromDegrees(0)))};
+                return new Pose2d[]{redRight, redRight.plus(new Transform2d(0.0, 0.2,Rotation2d.fromDegrees(0)))};
             } else {
                 isClimbingRight = false;
-                return new Pose2d[]{redLeft, redLeft.plus(new Transform2d(-0.06, 0.65, Rotation2d.fromDegrees(0)))};
+                return new Pose2d[]{redLeft, redLeft.plus(new Transform2d(0, 0.2, Rotation2d.fromDegrees(0)))};
             }
         }
 
