@@ -112,6 +112,7 @@ public class AutomaticTrenching extends Command {
         // }
 
 
+        
         // else {
             linearVelocity = new Translation2d(linearVelocity.getX() * 0.3, linearVelocity.getY() * distanceToVel_map.get(Math.abs(swerve.getEstimatedPosition().getY() - 4.021328)));
            // linearVelocity = linearVelocity.times(distanceToVel_map.get(Math.abs(swerve.getEstimatedPosition().getY() - 4.021328)));
