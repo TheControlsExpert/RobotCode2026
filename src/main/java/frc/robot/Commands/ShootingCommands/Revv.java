@@ -32,7 +32,7 @@ public class Revv extends Command {
     public void execute() {
         double distance = drive.getEstimatedPosition().getTranslation().getDistance(drive.calculateShootingPosition());
 
-        shooter.LookupTable_Shooting(distance);
+        shooter.LookupTable_Shooting(drive);
         SmartDashboard.putBoolean("Shooter is at Velocity", shooter.isAtShootingVelocity(distance));
     }
 

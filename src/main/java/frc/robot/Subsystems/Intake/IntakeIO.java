@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.revrobotics.AbsoluteEncoder;
 
 import edu.wpi.first.units.measure.Angle;
@@ -20,7 +21,7 @@ import frc.robot.Constants.IntakeConstants;
 public class IntakeIO {
     TalonFX intakeMotor = new TalonFX(14);
     TalonFX pivotMotor = new TalonFX(15);
-    //DutyCycleEncoder pivotEncoder = new DutyCycleEncoder(0);
+    DutyCycleEncoder pivotEncoder = new DutyCycleEncoder(0);
     PositionVoltage pivotPositionVoltage = new PositionVoltage(0);
     StatusSignal<Angle> pivotAngle = pivotMotor.getPosition();
     StatusSignal<AngularVelocity> intakeVel = intakeMotor.getVelocity();
@@ -49,14 +50,14 @@ public class IntakeIO {
 
         pivotConfig.Slot0.kP = IntakeConstants.pivot_kP;
         pivotConfig.Slot0.kG = IntakeConstants.pivot_kG;
-
-        pivotConfig.Feedback.RotorToSensorRatio = 1;
-        pivotConfig.Feedback.SensorToMechanismRatio = IntakeConstants.PivotGearRatio;
+        pivotConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+        
+        pivotConfig.Feedback.RotorToSensorRatio = IntakeConstants.PivotGearRatio;
+        pivotConfig.Feedback.SensorToMechanismRatio = 1;
 
         pivotMotor.getConfigurator().apply(pivotConfig);
-       // pivotMotor.setPosition(IntakeConstants.PivotGearRatio * (pivotEncoder.get() - IntakeConstants.offset));
+        pivotMotor.setPosition(IntakeConstants.PivotGearRatio * -1 * (pivotEncoder.get() - IntakeConstants.offset));
         
-
     }
 
     @AutoLog

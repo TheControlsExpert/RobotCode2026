@@ -150,6 +150,11 @@ public class ShooterIO {
     shooterRight.setControl(shooterRightVoltage.withVelocity(velocity));
   }
 
+  public void setOutputShooter(double dutycycle) {
+    shooterLeft.setControl(new DutyCycleOut(dutycycle));
+    shooterRight.setControl(new DutyCycleOut(dutycycle));
+  }
+
 
 
 }  

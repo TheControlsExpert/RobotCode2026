@@ -18,7 +18,11 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -234,12 +238,21 @@ public final class Constants {
     public static final double ShooterPivotTolerance = 0;
     public static final double feederSupplyCurrentLimit = 50;
 
+
+
+    //Shoot-on-the-fly constants
+    public static final double z = 405.559;
+    public static final double y = 0;
+    public static final double x = 246.244;
+
+    public static final Transform2d robotToShooter = new Transform2d(new Translation2d(x, y), new Rotation2d());
+
   }
 
   public static class IntakeConstants {
     public static final double pivot_kP = 0.0;
     public static final double pivot_kG = 0.0;
-    public static final double offset = 0.0;
+    public static final double offset = 0.64;
     public static final double PivotGearRatio = 5;
     public static final boolean pivot_inverted = false;
     public static final boolean intake_inverted = false;

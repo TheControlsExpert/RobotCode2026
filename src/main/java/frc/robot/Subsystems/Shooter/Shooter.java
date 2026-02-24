@@ -1,13 +1,20 @@
 package frc.robot.Subsystems.Shooter;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Robot.ShootingState;
+import frc.robot.Subsystems.Drive.Drive;
 
 public class Shooter extends SubsystemBase {
     
@@ -17,10 +24,13 @@ public class Shooter extends SubsystemBase {
     //shooting in the hub
     InterpolatingDoubleTreeMap ShootAngleMap = new InterpolatingDoubleTreeMap();
     InterpolatingDoubleTreeMap ShootVelocityMap = new InterpolatingDoubleTreeMap();
+    InterpolatingDoubleTreeMap ShootTOFMap = new InterpolatingDoubleTreeMap();
 
     //passing
     InterpolatingDoubleTreeMap PassAngleMap = new InterpolatingDoubleTreeMap();
     InterpolatingDoubleTreeMap PassVelocityMap = new InterpolatingDoubleTreeMap();
+
+    double phaseDelay = 0.03; 
 
         //disconnection tracking
     private boolean wasDisconnected_LeftShooter = false;
@@ -37,6 +47,8 @@ public class Shooter extends SubsystemBase {
         ShootVelocityMap.put(0.0, 1.0);
         PassAngleMap.put(0.0, 1.0);
         PassVelocityMap.put(0.0, 1.0);
+        ShootTOFMap.put(0.0, 1.0);
+
     }
 
     
@@ -98,11 +110,60 @@ public class Shooter extends SubsystemBase {
         io.setVelocityShooter(velocity);
      }
 
-     public void LookupTable_Shooting(double distance) {
-  
-        io.setPivotPosition(ShootAngleMap.get(distance));
-        io.setVelocityShooter(ShootVelocityMap.get(distance));
+     public void setOutputShooter(double dutycycle) {
+        io.setOutputShooter(dutycycle);
      }
+
+     public void LookupTable_Shooting(Drive drive) {
+
+    // Calculate estimated pose while accounting for phase delay
+   
+    ChassisSpeeds robotRelativeVelocity = drive.getRobotRelativeSpeeds();
+    Pose2d beforeEstimatedPose = drive.getEstimatedPosition();
+    Pose2d estimatedPose = beforeEstimatedPose.exp(
+        
+            new Twist2d(
+                robotRelativeVelocity.vxMetersPerSecond * phaseDelay,
+                robotRelativeVelocity.vyMetersPerSecond * phaseDelay,
+                robotRelativeVelocity.omegaRadiansPerSecond * phaseDelay));
+
+    // Calculate target
+    Translation2d target = drive.calculateShootingPosition();
+        
+    Pose2d launcherPosition = estimatedPose.transformBy(ShooterConstants.robotToShooter);
+    double launcherToTargetDistance = target.getDistance(launcherPosition.getTranslation());
+
+    // Calculate field relative launcher velocity
+    // This isn't actually the launcherVelocity given it won't account for angular velocity of robot
+    double launcherVelocityX = drive.getFieldRelativeSpeeds().vxMetersPerSecond;
+    double launcherVelocityY = drive.getFieldRelativeSpeeds().vyMetersPerSecond;
+
+    // Account for imparted velocity by robot (launcher) to offset
+    double timeOfFlight = ShootTOFMap.get(launcherToTargetDistance);
+    Pose2d lookaheadPose = launcherPosition;
+    double lookaheadLauncherToTargetDistance = launcherToTargetDistance;
+
+    for (int i = 0; i < 20; i++) {
+      timeOfFlight = ShootTOFMap.get(lookaheadLauncherToTargetDistance);
+      double offsetX = launcherVelocityX * timeOfFlight;
+      double offsetY = launcherVelocityY * timeOfFlight;
+      lookaheadPose =
+          new Pose2d(
+              launcherPosition.getTranslation().plus(new Translation2d(offsetX, offsetY)),
+              launcherPosition.getRotation());
+      lookaheadLauncherToTargetDistance = target.getDistance(lookaheadPose.getTranslation());
+    }
+
+    // Account for launcher being off center
+    Pose2d lookaheadRobotPose =
+        lookaheadPose.transformBy(ShooterConstants.robotToShooter.inverse());
+    Rotation2d driveAngle = target.minus(lookaheadRobotPose.getTranslation()).getAngle();
+    // Calculate remaining parameters
+  
+        io.setPivotPosition(ShootAngleMap.get(launcherToTargetDistance));
+        io.setVelocityShooter(ShootVelocityMap.get(launcherToTargetDistance));
+     }
+    
 
      public boolean isShooterVelocityLow(double distance) {
           double velocity;

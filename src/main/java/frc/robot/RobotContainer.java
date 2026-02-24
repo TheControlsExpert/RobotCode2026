@@ -249,205 +249,69 @@ public class RobotContainer {
                 () -> -controller.getRightX(),
                 drive,
                 controller));
+         controller.leftBumper().whileTrue(new IntakeCommand(intake));
 
+         
 
-
-       controller.x().whileTrue(autoTrenching.andThen(
-        
-      Commands.defer(() -> autoTrenching.getPathingCommand().until(
-        
-       () -> (autoTrenching.passedTrench() && 
-       (Math.abs(controller.getLeftY()) > 0.1 || Math.abs(controller.getLeftX()) > 0.1 || Math.abs(controller.getRightX()) > 0.1))), Set.of(drive))));
-
-      
-       controller.a().whileTrue(new AutoBumping(drive, intake, () -> -controller.getLeftY(), () -> -controller.getLeftX(), 0.08, controller));
-       controller.y().whileTrue(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
-       controller.leftBumper().whileTrue(new IntakeCommand(intake));
-       controller.rightBumper().onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), DriverStation.getAlliance().get().equals(Alliance.Blue) ? Rotation2d.kZero : Rotation2d.fromDegrees(180))), drive)
-                .ignoringDisable(true));
-       
-       controller2.rightTrigger().whileTrue((new InstantCommand(() -> {intake.Retract();}, intake)
+         controller.rightTrigger().whileTrue(new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)
+       .andThen((new InstantCommand(() -> {intake.Retract();}, intake)
                .andThen(new WaitCommand(0.7))
                .andThen(new InstantCommand(() -> {intake.Extend();}, intake))
-               .andThen(new WaitCommand(0.5))).repeatedly());
-       
-       controller2.leftTrigger().whileTrue(new StartEndCommand(() -> {intake.Retract();}, () -> {intake.Extend();}, intake));
-       controller2.rightBumper().whileTrue(new Jam(indexer, shooter, intake));
-       controller2.leftBumper().onTrue(new InstantCommand(() -> {
-        if (Robot.shootingState.equals(ShootingState.PASSING)) {
-          Robot.shootingState = ShootingState.SHOOTING;
-        }
-        else {
-          Robot.shootingState = ShootingState.PASSING;
-        }
-       }));
+               .andThen(new WaitCommand(0.5))).repeatedly()).
+               
+        handleInterrupt(() -> {intake.setIntakeDutyCycle(0);}));
 
-       controller2.y().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.US;}));
-       controller2.a().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.ENEMY;}));
-       controller2.b().onTrue(new InstantCommand(() -> {intake.resetPivotPosition();}));
+        controller.leftTrigger().whileTrue(new StartEndCommand(() -> {intake.Retract();}, () -> {intake.Extend();}, intake));
+        controller.leftBumper().whileTrue(new StartEndCommand(() -> {shooter.setOutputShooter(0.7); shooter.setFeederVelocity(0.7);}, 
+                                                              () -> {shooter.setOutputShooter(0); shooter.setFeederVelocity(0);}, shooter));
+         
+
+        
+      }           
+
+
+
+      //  controller.x().whileTrue(autoTrenching.andThen(
+        
+      // Commands.defer(() -> autoTrenching.getPathingCommand().until(
+        
+      //  () -> (autoTrenching.passedTrench() && 
+      //  (Math.abs(controller.getLeftY()) > 0.1 || Math.abs(controller.getLeftX()) > 0.1 || Math.abs(controller.getRightX()) > 0.1))), Set.of(drive))));
+
+      
+      //  controller.a().whileTrue(new AutoBumping(drive, intake, () -> -controller.getLeftY(), () -> -controller.getLeftX(), 0.08, controller));
+      //  controller.y().whileTrue(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
+      //  controller.leftBumper().whileTrue(new IntakeCommand(intake));
+      //  controller.rightBumper().onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), DriverStation.getAlliance().get().equals(Alliance.Blue) ? Rotation2d.kZero : Rotation2d.fromDegrees(180))), drive)
+      //           .ignoringDisable(true));
+       
+      //  controller2.rightTrigger().whileTrue(new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)
+      //  .andThen((new InstantCommand(() -> {intake.Retract();}, intake)
+      //          .andThen(new WaitCommand(0.7))
+      //          .andThen(new InstantCommand(() -> {intake.Extend();}, intake))
+      //          .andThen(new WaitCommand(0.5))).repeatedly()).
+               
+      //   handleInterrupt(() -> {intake.setIntakeDutyCycle(0);}));
+       
+      //  controller2.leftTrigger().whileTrue(new StartEndCommand(() -> {intake.Retract();}, () -> {intake.Extend();}, intake));
+      //  controller2.rightBumper().whileTrue(new Jam(indexer, shooter, intake));
+      //  controller2.leftBumper().onTrue(new InstantCommand(() -> {
+      //   if (Robot.shootingState.equals(ShootingState.PASSING)) {
+      //     Robot.shootingState = ShootingState.SHOOTING;
+      //   }
+      //   else {
+      //     Robot.shootingState = ShootingState.PASSING;
+      //   }
+      //  }));
+
+      //  controller2.y().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.US;}));
+      //  controller2.a().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.ENEMY;}));
+      //  controller2.b().onTrue(new InstantCommand(() -> {intake.resetPivotPosition();}));
        //put controller command for reseting pivot of shooter
        
        
 
     
-        
-      // controller.a().whileTrue(new AutoBumping(drive,  () -> -controller.getLeftY(),
-      //           () -> -controller.getLeftX(), 0.08, controller));
-
-       // controller.().whileTrue(new IntakeCommand(superstructure));
-       //controller.rightTrigger().whileTrue(new EjectCommand(superstructure, drive, vision));
-      //  controller.rightTrigger().whileTrue(new EjectCommand(superstructure, drive, vision).andThen(new ThirdPartAutoAlign(drive, vision, superstructure, controller)));
-       //  controller.leftTrigger().whileTrue(new CoralPrepCommand(superstructure, controller));
-       //  controller.x().whileTrue(new AutoAlignReef(drive, vision, superstructure, controller));
-       // // controller.y().onTrue(new OH_SHIT(superstructure));
-      //   controller.leftBumper().whileTrue(new IntakeCommand(superstructure));
-       //  controller.button(8).whileTrue(new ClimbUpCommand(climb));
-       //  controller.button(7).whileTrue(new ClimbDownCommand(climb));
-         //controller.button(7).onTrue(new InstantCommand(() -> {if (isInClimbMode) { isInClimbMode = false;} else { isInClimbMode = true;};}));
- 
-      //  new JoystickButton(LevelsController, 5).onTrue(Commands.runOnce((() -> {superstructure.hasCoral = true;})));
-      //  new JoystickButton(LevelsController, 7).onTrue(new InstantCommand(() -> {drive.resettingLocalization = true;})).onFalse(new InstantCommand(() -> {drive.resettingLocalization = false;}));
-      //  new JoystickButton(LevelsController, 6).onTrue(Commands.runOnce(() -> {superstructure.shouldFlip += 32;}));
-        
-     //    controller.a().onTrue(new ResetWristCommand(superstructure));
-      //   controller.b().onTrue(new ResetElevatorCommand(superstructure));
-      //   controller.y().whileTrue(new AlgaeIntakeCommand(superstructure, drive, controller));
-
-       //  controller.povUp().onTrue(new InstantCommand(( ) -> {drive.maxSpeed += 0.5;}));
-      //   controller.povDown().onTrue(new InstantCommand(( ) -> {drive.maxSpeed -= 0.5;}));
-
-
-
-         //controller.b().whileTrue(new FirstPartAutoAlignSource(superstructure, drive).andThen(new SecondPartAutoAlignSource(drive, superstructure)).andThen(new ThirdPartAutoAlignSource(drive,  superstructure)));
-         //controller.y().whileTrue(new FirstPartAutoAlignSource(superstructure, drive));
-
-         //controller.rightBumper().whileTrue(new AutoAlignerProcessor(superstructure, controller));
-        // controller.y().whileTrue(new WheelRadiusCharacterization(drive));
-         
-       // controller.rightBumper().whileTrue(new FirstPartAutoAlignSource(superstructure, drive).andThen(new );
-
-        
-        // controller.leftStick().     
-        
-       // controller.leftBumper().whileTrue(Commands.either(Commands.startEnd(() -> {superstructure.setIntakeManual(0.2);}, () -> {superstructure.setIntakeManual(0);}, superstructure.intake),
-        //                                                   new IntakeCommand(superstructure), 
-        //                                                  () -> (superstructure.getManualMode().equals(ManualMode.MANUAL))));
-        // controller.leftTrigger().and(() -> (superstructure.hasCoral)).whileTrue(new PrepCommand(superstructure, controller));
-        // controller.rightTrigger().and(() -> (superstructure.hasCoral)).whileTrue(new EjectCommand(superstructure));
-        // controller.x().whileTrue(Commands.run(() -> 
-      
-        //   drive.runVelocity(
-        //       ChassisSpeeds.fromFieldRelativeSpeeds(
-        //         driver.getTargetSpeeds(drive.getEstimatedPosition(), Robot.reefMode.equals(ReefMode.CORAL) ? RobotState.getInstance().getScoringPose() : RobotState.getInstance().getAlgaePose()),
-                  
-        //         isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI))
-        //               : drive.getRotation())), drive));
-
-
-        //controller.rightBumper().onTrue(Commands.runOnce(() -> { boolean whichSwitch = superstructure.getManualMode().equals(ManualMode.AUTOMATIC); if (whichSwitch) {superstructure.setManualMode(ManualMode.MANUAL); superstructure.setIntakeManual(0);} else {superstructure.setManualMode(ManualMode.AUTOMATIC); superstructure.setDesiredState(SuperstructureState.HOME_UP); superstructure.setIntakeManual(0);}}, superstructure));
-        //controller.y().and(() -> superstructure.getManualMode().equals(ManualMode.MANUAL)).whileTrue(new InstantCommand(() -> {superstructure.setPivotManual(0.1 * 12);}, superstructure)).onFalse(new InstantCommand(() -> {superstructure.setPivotManual(0);}, superstructure));
-        //controller.a().and(() -> superstructure.getManualMode().equals(ManualMode.MANUAL)).whileTrue(new InstantCommand(() -> {superstructure.setPivotManual(-0.1 * 12);}, superstructure)).onFalse(new InstantCommand(() -> {superstructure.setPivotManual(0);}, superstructure));
-        
-
-       // controller.button(7).onTrue(Commands.runOnce(() -> {drive.resetGyro();}, drive));
-
-        
-        
-
-        
-    
-
-                                                          
-
-        
-    
-       
-
-        
-   // controller.x().whileTrue(Commands.runEnd(() -> {intake.setState(Intake_states.Bofore_First);}, () -> {intake.setState(Intake_states.Ready);}, intake));
-    
-    
-    //controller.leftBumper().whileTrue(new AutoSourcingCommand(drive, superstructure, intake, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX()));
-    //controller.leftTrigger().whileTrue(Commands.either(new AutoScoreAimCommand( superstructure, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX()), 
-                                //      Commands.runEnd(() -> {superstructure.setIntakeManual(0.2);}, () -> {superstructure.setIntakeManual(0);}, superstructure), 
-                                //      () -> (!superstructure.DesiredManualMode.equals(ManualMode.MANUAL));
-    
-    
-    //controller.x().and(() -> superstructure.DesiredManualMode.equals(ManualMode.MANUAL)).whileTrue(new InstantCommand(() -> {superstructure.setIntakeManual(-0.2);}, superstructure)).onFalse(new InstantCommand(() -> {superstructure.setIntakeManual(0);}, superstructure));
-    //controller.x().onTrue(Commands.runOnce(() -> {drive.setPose(new Pose2d());}, drive));
-    //MANUAL MODES
-    
-    //controller.povUp().and(() -> superstructure.DesiredManualMode.equals(ManualMode.MANUAL)).whileTrue(new InstantCommand(() -> {superstructure.setElevatorManual(0.35);}, superstructure)).onFalse(new InstantCommand(() -> {superstructure.setElevatorManual(0);}, superstructure));
-    //controller.povDown().and(() -> superstructure.DesiredManualMode.equals(ManualMode.MANUAL)).whileTrue(new InstantCommand(() -> {superstructure.setElevatorManual(-0.25);}, superstructure)).onFalse(new InstantCommand(() -> {superstructure.setElevatorManual(0);}, superstructure));
-    //controller.povRight().and(() -> superstructure.DesiredManualMode.equals(ManualMode.MANUAL)).whileTrue(new InstantCommand(() -> {superstructure.setWristManual(0.3);}, superstructure)).onFalse(new InstantCommand(() -> {superstructure.setWristManual(0);}, superstructure));
-   // controller.povLeft().and(() -> superstructure.DesiredManualMode.equals(ManualMode.MANUAL)).whileTrue(new InstantCommand(() -> {superstructure.setWristManual(-0.3);}, superstructure)).onFalse(new InstantCommand(() -> {superstructure.setWristManual(0);}, superstructure));
-    
-    //controller.y().and(() -> superstructure.DesiredManualMode.equals(ManualMode.MANUAL)).whileTrue(new InstantCommand(() -> {superstructure.setPivotManual(0.1 * 12);}, superstructure)).onFalse(new InstantCommand(() -> {superstructure.setPivotManual(0);}, superstructure));
-    //controller.a().and(() -> superstructure.DesiredManualMode.equals(ManualMode.MANUAL)).whileTrue(new InstantCommand(() -> {superstructure.setPivotManual(-0.1 * 12);}, superstructure)).onFalse(new InstantCommand(() -> {superstructure.setPivotManual(0);}, superstructure));
-        
-    
-    //controller.rightBumper().onTrue(Commands.runOnce(() -> { boolean whichSwitch = superstructure.getManualMode().equals(ManualMode.AUTOMATIC); if (whichSwitch) {superstructure.setDesiredManualMode(ManualMode.MANUAL);} else {superstructure.setDesiredManualMode(ManualMode.AUTOMATIC); superstructure.setDesiredState(SuperstructureState.HOME_UP)}}, superstructure));
-    
-    //controller.b().onTrue(Commands.runOnce(() -> {drive.resetGyro();}, drive));
-
-   // controller.b().whileTrue(pathfindingCommand)
-
-   //JoystickButton seventeen = new JoystickButton(LevelsController, 6);
-   controller.rightBumper().onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), DriverStation.getAlliance().get().equals(Alliance.Blue) ? Rotation2d.kZero : Rotation2d.fromDegrees(180))), drive)
-                .ignoringDisable(true));
-
-    
-
-   //seventeen.onTrue(Commands.runOnce(() -> {drive.resetGyro();}, drive).ignoringDisable(true));
-      }
-      
-  
-// controller.y().whileTrue(
-
-
-//       new SelectCommand<>(
-//           // Maps selector values to commands
-//           Map.ofEntries(
-//               Map.entry(CommandSelector.ONE, new PrintCommand("Command one was selected!")),
-//               Map.entry(CommandSelector.TWO, new PrintCommand("Command two was selected!")),
-//               Map.entry(CommandSelector.THREE, new PrintCommand("Command three was selected!"))),
-//           this::selectPathCommand));
-
-
-
-
-  
-
-
-    
-    
-    
-   
-   // controller.y().onTrue(Commands.runOnce(() -> gyro.resetGyro()));
-
-    // Lock to 0° when A button is held
-    // controller
-    //     .a()
-    //     .whileTrue(
-    //         DriveCommands.joystickDriveAtAngle(
-    //             drive,
-    //             () -> -controller.getLeftY(),
-    //             () -> -controller.getLeftX(),
-    //             () -> new Rotation2d()));
-
-    // // Switch to X pattern when X button is pressed
-    // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
-
-    // Reset gyro to 0° when B button is pressed
-    // controller
-    //     .b()
-    //     .onTrue(
-    //         Commands.runOnce(
-    //                 () ->
-    //                     drive.setPose(
-    //                         new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
-    //                 drive)
-    //             .ignoringDisable(true));
   
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
