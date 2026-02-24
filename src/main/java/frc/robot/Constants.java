@@ -241,8 +241,8 @@ public final class Constants {
     public static final double pivot_kG = 0.0;
     public static final double offset = 0.0;
     public static final double PivotGearRatio = 5;
-    public static final boolean pivot_inverted = false;
-    public static final boolean intake_inverted = false;
+    public static final boolean pivot_inverted = true;
+    public static final boolean intake_inverted = true;
 
     public static final double intakeSupplyCurrentLimit = 40;
     public static final double HOME_Position = 0;
