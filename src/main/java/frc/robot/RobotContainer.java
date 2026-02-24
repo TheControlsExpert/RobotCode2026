@@ -53,6 +53,7 @@ import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticClimbing;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticTrenching;
 import frc.robot.Commands.IntakeCommands.IntakeCommand;
 import frc.robot.Commands.IntakeCommands.Jam;
+import frc.robot.Commands.ShootingCommands.ResetHood;
 import frc.robot.Commands.ShootingCommands.Shooting;
 import frc.robot.Subsystems.Climb.Climb;
 import frc.robot.Subsystems.Climb.ClimbIO;
@@ -285,6 +286,7 @@ public class RobotContainer {
        controller2.y().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.US;}));
        controller2.a().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.ENEMY;}));
        controller2.b().onTrue(new InstantCommand(() -> {intake.resetPivotPosition();}));
+       controller2.x().onTrue(new ResetHood(shooter));
        //put controller command for reseting pivot of shooter
        
        

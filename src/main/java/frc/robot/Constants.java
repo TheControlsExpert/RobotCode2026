@@ -218,6 +218,8 @@ public final class Constants {
 
     public static final boolean shooterL_inverted = true;
     public static final boolean shooterR_inverted = false;
+    public static final boolean shooterPivot_inverted = false;
+    public static final boolean feederConfig_inverted = false;
 
     public static final double shooterPivot_kP = 0.0;
     public static final double shooterPivot_kD = 0.0;
