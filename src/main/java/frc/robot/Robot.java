@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -44,15 +45,25 @@ public class Robot extends LoggedRobot {
   public static AutoWinner autoWinner = AutoWinner.US;
   public static ArrayList<String> DisconnectedMotorNames = new ArrayList<String>();
 
+  public static final SendableChooser choosa = new SendableChooser<>(); //will determine which autos to display
+  public static String chosenAuto;
+  public static final String auto1 = "auto 1"; //should be replaced with real auto commands
+  public static final String auto2 = "auto 2";
+
   
     public Robot() {
      m_robotContainer = new RobotContainer();
+
 
     }
 
     @Override
     public void robotInit() {
       Pathfinding.setPathfinder(new LocalADStar());
+
+      choosa.setDefaultOption("auto 1", auto1); //adding the auto options into the selector
+      choosa.addOption("Auto 2", auto2);
+      SmartDashboard.putData("Auto Choices: ", choosa); //putting the selector data on smart dashboard
 
         
     }
@@ -88,6 +99,8 @@ public class Robot extends LoggedRobot {
     }
 
     ActivePeriodTracker.initialize();
+
+
 
   }
 

@@ -36,7 +36,7 @@ public class ResetHood extends Command {
         boolean pivotIsReset = false;
 
         if (time.hasElapsed(0.5)) {  
-            if (shooter.getPivotVelocity() < 0.01) {           
+            if (shooter.getPivotVelocity() < 0.01) { //if the pivot can't move any more
                 pivotIsReset = true;
             }
         }
