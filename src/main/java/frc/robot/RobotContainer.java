@@ -13,11 +13,7 @@
 
 package frc.robot;
 
-import frc.robot.Enums.AutoEnums;
-import frc.robot.Enums.ClimbEnums;
-import frc.robot.Enums.PositionEnums;
-import frc.robot.Enums.MiddleEnums;
-
+import frc.robot.AutoEnums;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -327,10 +323,10 @@ public class RobotContainer {
 
 
        //takes in the initial states selected by the driver
-  public Command getAutonomousCommand(PositionEnums chosenPosition, AutoEnums chosenAuto, ClimbEnums chosenClimb, MiddleEnums chosenMiddle) {
+  public Command getAutonomousCommand(AutoEnums.LoaderEnums chosenLoader, AutoEnums.ClimbEnums chosenClimb, AutoEnums.MiddleEnums chosenMiddle, AutoEnums.PositionEnums chosenPosition) {
 
 
-    
+
     //decides which initial states exist, which will affect the auto paths
     //1. middle or not
    //1. loaders

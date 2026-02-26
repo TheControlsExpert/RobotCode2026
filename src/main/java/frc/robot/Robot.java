@@ -6,10 +6,8 @@
 package frc.robot;
 
 //Brings in the different enum states necessary for auto
-import frc.robot.Enums.AutoEnums;
-import frc.robot.Enums.ClimbEnums;
-import frc.robot.Enums.PositionEnums;
-import frc.robot.Enums.MiddleEnums;
+
+import frc.robot.AutoEnums;
 
 import java.util.ArrayList;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -51,11 +49,11 @@ public class Robot extends LoggedRobot {
   public static ArrayList<String> DisconnectedMotorNames = new ArrayList<String>();
 
 
-  //creates the choosers for possible auto enum states and inital position
-  public static SendableChooser<AutoEnums> autoChooser = new SendableChooser<>();
-  public static SendableChooser<ClimbEnums> climbChooser = new SendableChooser<>();
-  public static SendableChooser<PositionEnums> positionChooser = new SendableChooser<>();
-  public static SendableChooser<MiddleEnums> middleChooser = new SendableChooser<>();
+  //creates the choosers that will hold possible enum states for each choice
+  public static SendableChooser<AutoEnums.LoaderEnums> LoaderChooser = new SendableChooser<>();
+  public static SendableChooser<AutoEnums.ClimbEnums> climbChooser = new SendableChooser<>();
+  public static SendableChooser<AutoEnums.MiddleEnums> middleChooser = new SendableChooser<>();
+  public static SendableChooser<AutoEnums.PositionEnums> positionChooser = new SendableChooser<>();
 
 
 
@@ -69,23 +67,23 @@ public class Robot extends LoggedRobot {
       Pathfinding.setPathfinder(new LocalADStar());
 
       //sets the states for initial autos as part of the chooser options
-      autoChooser.setDefaultOption("Zero Loaders", AutoEnums.ZERO_LOADERS);
-      autoChooser.addOption("One Loader", AutoEnums.ONE_LOADER);
-      autoChooser.addOption("Two loaders", AutoEnums.TWO_LOADERS);
+      LoaderChooser.setDefaultOption("Zero Loaders", AutoEnums.LoaderEnums.ZERO_LOADERS);
+      LoaderChooser.addOption("One Loader", AutoEnums.LoaderEnums.ONE_LOADER);
+      LoaderChooser.addOption("Two loaders", AutoEnums.LoaderEnums.TWO_LOADERS);
 
       //sets the states for initial climb autos as part of the chooser options
-      climbChooser.setDefaultOption("No Climb", ClimbEnums.NO_CLIMB);
-      climbChooser.addOption("Yes climb", ClimbEnums.YES_CLIMB);
+      climbChooser.setDefaultOption("No Climb", AutoEnums.ClimbEnums.FALSE);
+      climbChooser.addOption("Yes climb", AutoEnums.ClimbEnums.TRUE);
 
       //sets the state for going into the middle of the field or not
-      middleChooser.setDefaultOption("No middle", MiddleEnums.NO_MIDDLE);
-      middleChooser.addOption("Yes middle", MiddleEnums.YES_MIDDLE);
+      middleChooser.setDefaultOption("No middle", AutoEnums.MiddleEnums.FALSE);
+      middleChooser.addOption("Yes middle", AutoEnums.MiddleEnums.TRUE);
    
 
       //sets the inital field position
-      positionChooser.setDefaultOption("Hub", PositionEnums.HUB);
-      positionChooser.addOption("Depot", PositionEnums.DEPOT); //hub position not needed for auto logic
-      positionChooser.addOption("Outpost", PositionEnums.OUTPOST);
+      positionChooser.setDefaultOption("Hub", AutoEnums.PositionEnums.HUB);
+      positionChooser.addOption("Depot", AutoEnums.PositionEnums.DEPOT); //hub position not needed for auto logic
+      positionChooser.addOption("Outpost", AutoEnums.PositionEnums.OUTPOST);
         
     }
   
@@ -117,7 +115,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     //passes in all the currently selected states for auto, represented by different enums and selected by the drive team
-  m_autonomousCommand = m_robotContainer.getAutonomousCommand(positionChooser.getSelected(), autoChooser.getSelected(), climbChooser.getSelected(), middleChooser.getSelected());
+  m_autonomousCommand = m_robotContainer.getAutonomousCommand(LoaderChooser.getSelected(), climbChooser.getSelected(), middleChooser.getSelected(), positionChooser.getSelected());
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -126,12 +124,12 @@ public class Robot extends LoggedRobot {
     ActivePeriodTracker.initialize();
 
     //shows the user the possible climb and auto states on smart dashboard
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-    SmartDashboard.putData("Climb chooser", climbChooser);
+    SmartDashboard.putData("Loader Chooser", LoaderChooser);
+    SmartDashboard.putData("Climb Chooser", climbChooser);
     //alow the driver to decide whether to go into the middle of the field or not
-    SmartDashboard.putData("MiddleChooser", middleChooser);
-    //allows the driver to select color
-    SmartDashboard.putData("Field Position", positionChooser);
+    SmartDashboard.putData("Middle Chooser", middleChooser);
+    //allows the driver to select position on the field
+    SmartDashboard.putData("Positon Chooser", positionChooser);
 
 
 
