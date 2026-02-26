@@ -5,10 +5,14 @@
 
 package frc.robot;
 
+//Brings in the different enum states necessary for auto
+import frc.robot.Enums.AutoEnums;
+import frc.robot.Enums.ClimbEnums;
+import frc.robot.Enums.StartingPositions;
+import frc.robot.Enums.StartingColors;
+
 import java.util.ArrayList;
-
 import org.littletonrobotics.junction.LoggedRobot;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -34,6 +38,7 @@ import frc.robot.ActivePeriodTracker.ShiftInfo;
 import frc.robot.RobotContainer.ScoringPosition;
 import frc.robot.Subsystems.Drive.GyroIOPigeon2;
 import frc.robot.Subsystems.Drive.PhoenixOdometryThread;
+
 //import frc.robot.Subsystems.Superstructure.Superstructure.SuperstructureState;
 
 public class Robot extends LoggedRobot {
@@ -46,19 +51,46 @@ public class Robot extends LoggedRobot {
   public static ArrayList<String> DisconnectedMotorNames = new ArrayList<String>();
 
 
+  //creates the choosers for possible auto enum states and inital position
+  public static SendableChooser<AutoEnums> autoChooser = new SendableChooser<>();
+  public static SendableChooser<ClimbEnums> climbChooser = new SendableChooser<>();
+  public static SendableChooser<StartingPositions> positionChooser = new SendableChooser<>();
+  public static SendableChooser<StartingColors> colorChooser = new SendableChooser<>();
+
+
   
     public Robot() {
      m_robotContainer = new RobotContainer();
-
-
     }
+
 
     @Override
     public void robotInit() {
       Pathfinding.setPathfinder(new LocalADStar());
+
+      //sets the states for initial autos as part of the chooser options
+      autoChooser.setDefaultOption("Zero Loaders", AutoEnums.ZERO_LOADERS);
+      autoChooser.addOption("One Loader", AutoEnums.ONE_LOADER);
+      autoChooser.addOption("Two loaders", AutoEnums.TWO_LOADERS);
+
+      //sets the states for initial climb autos as part of the chooser options
+      climbChooser.setDefaultOption("No Climb", ClimbEnums.NO_CLIMB);
+      climbChooser.addOption("Yes climb", ClimbEnums.YES_CLIMB);
+
+      //sets the team color options
+      colorChooser.setDefaultOption("Red", StartingColors.RED);
+      colorChooser.addOption("Blue", StartingColors.BLUE);
+
+      //sets the inital field position
+      positionChooser.setDefaultOption("Hub", StartingPositions.HUB);
+      positionChooser.addOption("Depot", StartingPositions.DEPOT);
+      positionChooser.addOption("Outpost", StartingPositions.OUTPOST);
         
     }
   
+
+
+
     @Override
     public void disabledInit() {}
 
@@ -83,13 +115,23 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-  m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    //passes in all the currently selected states for auto, represented by different enums and selected by the drive team
+  m_autonomousCommand = m_robotContainer.getAutonomousCommand(positionChooser.getSelected(), autoChooser.getSelected(), climbChooser.getSelected(), colorChooser.getSelected());
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
 
     ActivePeriodTracker.initialize();
+
+    //shows the user the possible climb and auto states on smart dashboard
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+    SmartDashboard.putData("Climb chooser", climbChooser);
+    //allows the driver to select position and color
+    SmartDashboard.putData("Color", colorChooser);
+    SmartDashboard.putData("Field Position", positionChooser);
+
+
 
 
 

@@ -13,6 +13,11 @@
 
 package frc.robot;
 
+import frc.robot.Enums.AutoEnums;
+import frc.robot.Enums.ClimbEnums;
+import frc.robot.Enums.StartingPositions;
+import frc.robot.Enums.StartingColors;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -319,10 +324,49 @@ public class RobotContainer {
    *                                                                                                                                                                                                                                                                                                                                                                                                                                          
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
+
+
+
+  public Command getAutonomousCommand(StartingPositions chosenPosition, AutoEnums chosenAuto, ClimbEnums chosenClimb, StartingColors color) { //takes in the initial states selected by the driver
+
+    //decides which initial states exist, which will affect the auto paths
+    if (chosenPosition == StartingPositions.DEPOT) {
+
+    } else if (chosenPosition == StartingPositions.HUB) {
+
+    } else if (chosenPosition == StartingPositions.OUTPOST) {
+
+    }
+
+
+    if (chosenAuto == AutoEnums.ONE_LOADER) {
+
+    } else if (chosenAuto == AutoEnums.TWO_LOADERS) {
+
+    } else if (chosenAuto == AutoEnums.ZERO_LOADERS); {
+      
+    }
+
+
+    if (chosenClimb == ClimbEnums.NO_CLIMB) {
+
+    } else if (chosenClimb == ClimbEnums.YES_CLIMB); {
+
+    }
+
+
+    if (color == StartingColors.RED) {
+
+    } else if (color == StartingColors.BLUE) {
+
+    }
+
+
    // return new FullRun(drive, superstructure, vision);
    //return new StraightDriveCommand(1.4, drive);
    //return Commands.none();
+
+
    
    return new PathPlannerAuto("3 Piece Top");
   
