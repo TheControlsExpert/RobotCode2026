@@ -45,10 +45,6 @@ public class Robot extends LoggedRobot {
   public static AutoWinner autoWinner = AutoWinner.US;
   public static ArrayList<String> DisconnectedMotorNames = new ArrayList<String>();
 
-  public static final SendableChooser choosa = new SendableChooser<>(); //will determine which autos to display
-  public static String chosenAuto;
-  public static final String auto1 = "auto 1"; //should be replaced with real auto commands
-  public static final String auto2 = "auto 2";
 
   
     public Robot() {
@@ -60,11 +56,6 @@ public class Robot extends LoggedRobot {
     @Override
     public void robotInit() {
       Pathfinding.setPathfinder(new LocalADStar());
-
-      choosa.setDefaultOption("auto 1", auto1); //adding the auto options into the selector
-      choosa.addOption("Auto 2", auto2);
-      SmartDashboard.putData("Auto Choices: ", choosa); //putting the selector data on smart dashboard
-
         
     }
   

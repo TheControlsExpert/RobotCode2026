@@ -153,6 +153,10 @@ public class ShooterIO {
     shooterRight.setControl(new DutyCycleOut(dutycycle));
   }
 
+  public double getPivotVelocity() {
+    return shooterPivot.getDutyCycle().getValueAsDouble();
+  }
+
 
 
 }  
