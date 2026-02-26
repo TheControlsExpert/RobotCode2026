@@ -15,8 +15,8 @@ package frc.robot;
 
 import frc.robot.Enums.AutoEnums;
 import frc.robot.Enums.ClimbEnums;
-import frc.robot.Enums.StartingPositions;
-import frc.robot.Enums.StartingColors;
+import frc.robot.Enums.PositionEnums;
+import frc.robot.Enums.MiddleEnums;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -326,45 +326,20 @@ public class RobotContainer {
    */
 
 
+       //takes in the initial states selected by the driver
+  public Command getAutonomousCommand(PositionEnums chosenPosition, AutoEnums chosenAuto, ClimbEnums chosenClimb, MiddleEnums chosenMiddle) {
 
-  public Command getAutonomousCommand(StartingPositions chosenPosition, AutoEnums chosenAuto, ClimbEnums chosenClimb, StartingColors color) { //takes in the initial states selected by the driver
 
+    
     //decides which initial states exist, which will affect the auto paths
-    if (chosenPosition == StartingPositions.DEPOT) {
+    //1. middle or not
+   //1. loaders
+   //2. clkimb no climb
 
-    } else if (chosenPosition == StartingPositions.HUB) {
-
-    } else if (chosenPosition == StartingPositions.OUTPOST) {
-
-    }
+   //finish enum, then if statements, delete colors
 
 
-    if (chosenAuto == AutoEnums.ONE_LOADER) {
 
-    } else if (chosenAuto == AutoEnums.TWO_LOADERS) {
-
-    } else if (chosenAuto == AutoEnums.ZERO_LOADERS); {
-      
-    }
-
-
-    if (chosenClimb == ClimbEnums.NO_CLIMB) {
-
-    } else if (chosenClimb == ClimbEnums.YES_CLIMB); {
-
-    }
-
-
-    if (color == StartingColors.RED) {
-
-    } else if (color == StartingColors.BLUE) {
-
-    }
-
-
-   // return new FullRun(drive, superstructure, vision);
-   //return new StraightDriveCommand(1.4, drive);
-   //return Commands.none();
 
 
    

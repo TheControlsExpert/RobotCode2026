@@ -8,8 +8,8 @@ package frc.robot;
 //Brings in the different enum states necessary for auto
 import frc.robot.Enums.AutoEnums;
 import frc.robot.Enums.ClimbEnums;
-import frc.robot.Enums.StartingPositions;
-import frc.robot.Enums.StartingColors;
+import frc.robot.Enums.PositionEnums;
+import frc.robot.Enums.MiddleEnums;
 
 import java.util.ArrayList;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -54,11 +54,11 @@ public class Robot extends LoggedRobot {
   //creates the choosers for possible auto enum states and inital position
   public static SendableChooser<AutoEnums> autoChooser = new SendableChooser<>();
   public static SendableChooser<ClimbEnums> climbChooser = new SendableChooser<>();
-  public static SendableChooser<StartingPositions> positionChooser = new SendableChooser<>();
-  public static SendableChooser<StartingColors> colorChooser = new SendableChooser<>();
+  public static SendableChooser<PositionEnums> positionChooser = new SendableChooser<>();
+  public static SendableChooser<MiddleEnums> middleChooser = new SendableChooser<>();
 
 
-  
+
     public Robot() {
      m_robotContainer = new RobotContainer();
     }
@@ -77,14 +77,15 @@ public class Robot extends LoggedRobot {
       climbChooser.setDefaultOption("No Climb", ClimbEnums.NO_CLIMB);
       climbChooser.addOption("Yes climb", ClimbEnums.YES_CLIMB);
 
-      //sets the team color options
-      colorChooser.setDefaultOption("Red", StartingColors.RED);
-      colorChooser.addOption("Blue", StartingColors.BLUE);
+      //sets the state for going into the middle of the field or not
+      middleChooser.setDefaultOption("No middle", MiddleEnums.NO_MIDDLE);
+      middleChooser.addOption("Yes middle", MiddleEnums.YES_MIDDLE);
+   
 
       //sets the inital field position
-      positionChooser.setDefaultOption("Hub", StartingPositions.HUB);
-      positionChooser.addOption("Depot", StartingPositions.DEPOT);
-      positionChooser.addOption("Outpost", StartingPositions.OUTPOST);
+      positionChooser.setDefaultOption("Hub", PositionEnums.HUB);
+      positionChooser.addOption("Depot", PositionEnums.DEPOT); //hub position not needed for auto logic
+      positionChooser.addOption("Outpost", PositionEnums.OUTPOST);
         
     }
   
@@ -116,7 +117,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     //passes in all the currently selected states for auto, represented by different enums and selected by the drive team
-  m_autonomousCommand = m_robotContainer.getAutonomousCommand(positionChooser.getSelected(), autoChooser.getSelected(), climbChooser.getSelected(), colorChooser.getSelected());
+  m_autonomousCommand = m_robotContainer.getAutonomousCommand(positionChooser.getSelected(), autoChooser.getSelected(), climbChooser.getSelected(), middleChooser.getSelected());
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -127,8 +128,9 @@ public class Robot extends LoggedRobot {
     //shows the user the possible climb and auto states on smart dashboard
     SmartDashboard.putData("Auto Chooser", autoChooser);
     SmartDashboard.putData("Climb chooser", climbChooser);
-    //allows the driver to select position and color
-    SmartDashboard.putData("Color", colorChooser);
+    //alow the driver to decide whether to go into the middle of the field or not
+    SmartDashboard.putData("MiddleChooser", middleChooser);
+    //allows the driver to select color
     SmartDashboard.putData("Field Position", positionChooser);
 
 
