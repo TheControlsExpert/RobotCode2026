@@ -84,6 +84,14 @@ public class Robot extends LoggedRobot {
       positionChooser.setDefaultOption("Hub", AutoEnums.PositionEnums.HUB);
       positionChooser.addOption("Depot", AutoEnums.PositionEnums.DEPOT); //hub position not needed for auto logic
       positionChooser.addOption("Outpost", AutoEnums.PositionEnums.OUTPOST);
+
+      //shows the driver all the choosers on smart dashboard
+      SmartDashboard.putData("Loader Chooser", LoaderChooser);
+      SmartDashboard.putData("Climb Chooser", climbChooser);
+      //alow the driver to decide whether to go into the middle of the field or not
+      SmartDashboard.putData("Middle Chooser", middleChooser);
+      //allows the driver to select position on the field
+      SmartDashboard.putData("Positon Chooser", positionChooser);
         
     }
   
@@ -97,10 +105,11 @@ public class Robot extends LoggedRobot {
         CommandScheduler.getInstance().run();
 
          String fullList_disconnections = "";
-    for (String motorName : DisconnectedMotorNames) {
-        fullList_disconnections += motorName + ", " + "\n";
-    }
-    SmartDashboard.putString("Disconnected Motors", fullList_disconnections);
+        for (String motorName : DisconnectedMotorNames) {
+            fullList_disconnections += motorName + ", " + "\n";
+        }
+        
+        SmartDashboard.putString("Disconnected Motors", fullList_disconnections);
     }
 
   
@@ -114,8 +123,16 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-    //passes in all the currently selected states for auto, represented by different enums and selected by the drive team
-  m_autonomousCommand = m_robotContainer.getAutonomousCommand(LoaderChooser.getSelected(), climbChooser.getSelected(), middleChooser.getSelected(), positionChooser.getSelected());
+
+    //reads the states the driver chose for this specific auto
+    AutoEnums.LoaderEnums chosenLoader = LoaderChooser.getSelected();
+    AutoEnums.ClimbEnums chosenClimb = climbChooser.getSelected();
+    AutoEnums.MiddleEnums chosenMiddle = middleChooser.getSelected();
+    AutoEnums.PositionEnums chosenPosition = positionChooser.getSelected();
+
+    //passes in all the currently selected states to construct an auto program
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand(chosenLoader, chosenClimb, chosenMiddle, chosenPosition);
+
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -123,13 +140,7 @@ public class Robot extends LoggedRobot {
 
     ActivePeriodTracker.initialize();
 
-    //shows the user the possible climb and auto states on smart dashboard
-    SmartDashboard.putData("Loader Chooser", LoaderChooser);
-    SmartDashboard.putData("Climb Chooser", climbChooser);
-    //alow the driver to decide whether to go into the middle of the field or not
-    SmartDashboard.putData("Middle Chooser", middleChooser);
-    //allows the driver to select position on the field
-    SmartDashboard.putData("Positon Chooser", positionChooser);
+    
 
 
 
