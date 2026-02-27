@@ -100,7 +100,7 @@ public final class Constants {
       public static final boolean invertDrive = true;
       public static final boolean invertSteer = true;
       public static final boolean invertEncoder = false;
-      public static final double angleOffset = -0.054;
+      public static final double angleOffset = 0.16748;
       // 36.123046875 + 2.28515625)
       public static final SwerveModuleConstants constants =
           new SwerveModuleConstants(
@@ -122,7 +122,7 @@ public final class Constants {
       public static final boolean invertSteer = true;
       public static final boolean invertEncoder = false;
 
-      public static final double angleOffset = -0.2019;
+      public static final double angleOffset = 0.3149;
       public static final SwerveModuleConstants constants =
           new SwerveModuleConstants(
               driveMotorID,
@@ -142,7 +142,7 @@ public final class Constants {
       public static final boolean invertDrive = false;
       public static final boolean invertSteer = true;
       public static final boolean invertEncoder = false;
-      public static final double angleOffset = 0.406;
+      public static final double angleOffset = -0.263;
       public static final SwerveModuleConstants constants =
           new SwerveModuleConstants(
               driveMotorID,
@@ -162,7 +162,7 @@ public final class Constants {
       public static final boolean invertDrive = true;
       public static final boolean invertSteer = true;
       public static final boolean invertEncoder = false;
-      public static final double angleOffset = -0.02832;
+      public static final double angleOffset = 0.1545;
       ;
       // -120.937
       public static final SwerveModuleConstants constants =
@@ -220,8 +220,8 @@ public final class Constants {
     
     //from looking from intake to shooter
 
-    public static final boolean shooterL_inverted = true;
-    public static final boolean shooterR_inverted = false;
+    public static final boolean shooterL_inverted = false;
+    public static final boolean shooterR_inverted = true;
     public static final boolean shooterPivot_inverted = false;
     public static final boolean feederConfig_inverted = false;
 

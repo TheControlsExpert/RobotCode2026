@@ -28,7 +28,7 @@ public class ShooterIO {
     TalonFX shooterLeft = new TalonFX(18);
     TalonFX shooterRight = new TalonFX(19);
     TalonFXS shooterPivot = new TalonFXS(20);
-    TalonFX feeder = new TalonFX(21);
+    TalonFX feeder = new TalonFX(17);
 
     VelocityVoltage shooterLeftVoltage = new VelocityVoltage(0);
     VelocityVoltage shooterRightVoltage = new VelocityVoltage(0);
@@ -153,6 +153,8 @@ public class ShooterIO {
     shooterRight.setControl(new DutyCycleOut(dutycycle));
   }
 
-
+  public double getPivotVelocity() {
+    return shooterPivot.getVelocity().getValue().in(RPM);
+  }
 
 }  

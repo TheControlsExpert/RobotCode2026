@@ -52,9 +52,7 @@ import frc.robot.Commands.DriveCommands.AligningCommands.AutoBumping;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticClimbing;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticTrenching;
 import frc.robot.Commands.IntakeCommands.IntakeCommand;
-import frc.robot.Commands.IntakeCommands.Jam;
-import frc.robot.Commands.ShootingCommands.ResetHood;
-import frc.robot.Commands.ShootingCommands.Shooting;
+   
 import frc.robot.Subsystems.Climb.Climb;
 import frc.robot.Subsystems.Climb.ClimbIO;
 import frc.robot.Subsystems.Drive.Drive;
@@ -263,7 +261,7 @@ public class RobotContainer {
         handleInterrupt(() -> {intake.setIntakeDutyCycle(0);}));
 
         controller.leftTrigger().whileTrue(new StartEndCommand(() -> {intake.Retract();}, () -> {intake.Extend();}, intake));
-        controller.leftBumper().whileTrue(new StartEndCommand(() -> {shooter.setOutputShooter(0.7); shooter.setFeederVelocity(0.7);}, 
+        controller.leftBumper().whileTrue(new StartEndCommand(() -> {shooter.setOutputShooter(0.3); shooter.setFeederVelocity(0.3);}, 
                                                               () -> {shooter.setOutputShooter(0); shooter.setFeederVelocity(0);}, shooter));
          
 
