@@ -21,7 +21,7 @@ import frc.robot.Constants.IntakeConstants;
 public class IntakeIO {
     TalonFX intakeMotor = new TalonFX(14);
     TalonFX pivotMotor = new TalonFX(15);
-    DutyCycleEncoder pivotEncoder = new DutyCycleEncoder(0);
+   // DutyCycleEncoder pivotEncoder = new DutyCycleEncoder(0);
     PositionVoltage pivotPositionVoltage = new PositionVoltage(0);
     StatusSignal<Angle> pivotAngle = pivotMotor.getPosition();
     StatusSignal<AngularVelocity> intakeVel = intakeMotor.getVelocity();
@@ -56,7 +56,7 @@ public class IntakeIO {
         pivotConfig.Feedback.SensorToMechanismRatio = 1;
 
         pivotMotor.getConfigurator().apply(pivotConfig);
-        pivotMotor.setPosition(IntakeConstants.PivotGearRatio * -1 * (pivotEncoder.get() - IntakeConstants.offset));
+      //  pivotMotor.setPosition(IntakeConstants.PivotGearRatio * -1 * (pivotEncoder.get() - IntakeConstants.offset));
         
     }
 

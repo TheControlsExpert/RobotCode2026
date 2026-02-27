@@ -22,7 +22,7 @@ import frc.robot.Subsystems.Indexer.Indexer;
 import frc.robot.Subsystems.Intake.IntakeSubsystem;
 import frc.robot.Subsystems.Shooter.Shooter;
 
-public class Shooting extends Command {
+public class ShootingAuto extends Command {
     Drive drive;
     Shooter shooter;
     Indexer indexer;
@@ -35,18 +35,18 @@ public class Shooting extends Command {
     IntakeSubsystem intake;
     boolean hasShuffled = false;
     boolean waiting = false;
+    Translation2d targetPosition;
+    double speed;
     Timer timer = new Timer();
-
-    public Shooting(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, CommandXboxController controller, DoubleSupplier xSupplier, DoubleSupplier ySupplier, double kP_rotation, ShuffleCommand shuffle) {
+    public ShootingAuto(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, double kP_rotation, ShuffleCommand shuffle, Translation2d targetPosition, double speed) {
         this.shooter = shooter;
         this.drive = drive;
         this.indexer = indexer;
-        this.xSupplier = xSupplier;
-        this.ySupplier = ySupplier;
-        this.controller = controller;
         this.kP_rotation = kP_rotation;
         this.shuffle = shuffle;
         this.intake = intake;
+        this.targetPosition = targetPosition;
+        this.speed = speed;
         addRequirements(shooter, drive, indexer);
         
     }
@@ -63,19 +63,7 @@ public class Shooting extends Command {
     @Override
     public void execute() {
 
-        
-                Translation2d linearVelocity;
-
-        if (controller.rightStick().getAsBoolean()) {
-          linearVelocity =
-                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble() / 12, ySupplier.getAsDouble() / 12);
-        }
-
-        else {
-            linearVelocity =
-                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
-
-        }
+       
 
               
         Translation2d shootingPosition = drive.calculateShootingPosition();
@@ -90,6 +78,19 @@ public class Shooting extends Command {
         //Change back to degrees
         deltaRotation = Math.toDegrees(deltaRotation);
         double omega = deltaRotation * kP_rotation;
+
+        Translation2d directionOfTravel = targetPosition.minus(drive.getEstimatedPosition().getTranslation());
+        Translation2d linearVelocity;
+        if (directionOfTravel.getNorm() > 0.05) { // Prevent division by zero
+     linearVelocity = directionOfTravel.times(speed/directionOfTravel.getNorm());
+        }
+
+        else {
+     linearVelocity = new Translation2d();
+        }
+        
+
+
 
 
               // Convert to field relative speeds & send command
@@ -129,7 +130,7 @@ public class Shooting extends Command {
 
     if (readyToShoot) {
         indexer.setIndexerDutyCycle(1);
-        shooter.setFeederVelocity(0.6);
+        shooter.setFeederVelocity(1);
     }
 
     else if (waiting){
@@ -170,12 +171,11 @@ public void end(boolean interrupted) {
     indexer.setIndexerDutyCycle(0);
 }
 
-
 @Override
 public boolean isFinished() {
     return timer.hasElapsed(3);
 }
-}
 
+}
 
   

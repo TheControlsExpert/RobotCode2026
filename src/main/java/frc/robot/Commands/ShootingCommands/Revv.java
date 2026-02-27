@@ -24,7 +24,7 @@ public class Revv extends Command {
         this.drive = drive;
         this.controller = controller;
 
-        addRequirements(shooter, drive);
+        addRequirements(shooter);
     }
 
   
@@ -38,7 +38,7 @@ public class Revv extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        if (!controller.rightTrigger().getAsBoolean()) {
+        if (!controller.rightTrigger().getAsBoolean() && !DriverStation.isAutonomous()) {
             shooter.setShooterVelocity(0);
             shooter.setPositionPivot(ShooterConstants.Pivot_HOME);      
         }

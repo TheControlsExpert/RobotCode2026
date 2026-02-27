@@ -1,6 +1,8 @@
 package frc.robot.Commands.DriveCommands.AligningCommands;
 
 
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -47,7 +49,8 @@ public class AutomaticClimbing {
         Pose2d[] climbPoses = getClosestClimbPoses();
         
         hasReachedFirstPose = false;
- 
+        
+        if (DriverStation.isTeleop()) {
 
         return 
                 
@@ -67,12 +70,17 @@ public class AutomaticClimbing {
             
             return climbPoses[1].transformBy(climbPoses[0].minus(climbPoses[1]).times(MathUtil.clamp(timer.get() / moving_setpoint_time, 0, 1)));
         }
+        
     });
+}
 
+else {
+    return new RotationController(drive, drive.rotationkP, 5, climbPoses[0].getRotation()).
+    andThen(new ProfiledPIDCommand(autoAlign, drive,
 
-
-
-    }
+    () -> {return climbPoses[0];}));
+}
+}
 
     public Pose2d[] getClosestClimbPoses() {
         SmartDashboard.putBoolean("isClimbingRight", isClimbingRight);

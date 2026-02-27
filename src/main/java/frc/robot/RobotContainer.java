@@ -16,6 +16,7 @@ package frc.robot;
 import frc.robot.AutoEnums;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -28,6 +29,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -53,7 +57,10 @@ import frc.robot.Commands.DriveCommands.AligningCommands.AutoBumping;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticClimbing;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticTrenching;
 import frc.robot.Commands.IntakeCommands.IntakeCommand;
-   
+import frc.robot.Commands.IntakeCommands.ShuffleCommand;
+import frc.robot.Commands.ShootingCommands.Revv;
+import frc.robot.Commands.ShootingCommands.Shooting;
+import frc.robot.Commands.ShootingCommands.ShootingAuto;
 import frc.robot.Subsystems.Climb.Climb;
 import frc.robot.Subsystems.Climb.ClimbIO;
 import frc.robot.Subsystems.Drive.Drive;
@@ -329,247 +336,255 @@ public class RobotContainer {
   //decides what auto paths to create
   //tests every combination of initial states
   public Command getAutonomousCommand(AutoEnums.LoaderEnums chosenLoader, AutoEnums.ClimbEnums chosenClimb, AutoEnums.MiddleEnums chosenMiddle, AutoEnums.PositionEnums chosenPosition) {
+  
 
-    if (chosenPosition.equals(AutoEnums.PositionEnums.DEPOT)) {
-      if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
-        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+  //   }
 
-          }
+  //   catch (Exception e) {
+  //     System.out.println("Path not found");
+  //   }
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
 
-          }
+  //   if (chosenPosition.equals(AutoEnums.PositionEnums.DEPOT)) {
+  //     if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
+  //       if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
 
-        }
+  //         }
 
-        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
 
-          }
+  //         }
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+  //       }
+
+  //       else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+  //         }
+
+  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
             
-          }
+  //         }
           
-        }
+  //       }
 
-      }
+  //     }
 
-      else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
-        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+  //     else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
+  //       if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
 
-          }
+  //         }
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+  //           if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
 
-          }
+  //         }
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
             
-          }
+  //         }
             
-          }
+  //         }
 
-        }
+  //       }
 
-        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+  //       else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
 
-          }
+  //         }
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
             
-          }
+  //         }
           
-        }
+  //       }
 
-      }
+  //     }
 
-      else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
-        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+  //     else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
+  //       if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
 
-          }
+  //         }
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
             
-          }
+  //         }
 
-        }
+  //       }
 
-        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+  //       else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
 
-          }
+  //         }
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
             
-          }
+  //         }
           
-        }
+  //       }
 
-      }
-    }
+  //     }
+  //   }
 
-    else if (chosenPosition.equals(AutoEnums.PositionEnums.HUB)) {
-      if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
-        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+  //   else if (chosenPosition.equals(AutoEnums.PositionEnums.HUB)) {
+  //     if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
+  //       if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
 
-          }
+  //         }
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
             
-          }
+  //         }
 
-        }
+  //       }
 
-        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+  //       else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
 
-          }
+  //         }
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
             
-          }
+  //         }
           
-        }
+  //       }
 
-      }
+  //     }
 
-      else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
-        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+  //     else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
+  //       if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
 
-          }
+  //         }
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
             
-          }
+  //         }
 
-        }
+  //       }
 
-        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+  //       else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
 
-          }
+  //         }
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
             
-          }
+  //         }
           
-        }
+  //       }
 
-      }
+  //     }
 
-      else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
-        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+  //     else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
+  //       if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
 
-          }
+  //         }
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
             
-          }
+  //         }
 
-        }
+  //       }
 
-        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+  //       else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
 
-          }
+  //         }
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
             
-          }
+  //         }
           
-        }
+  //       }
 
-      }
+  //     }
 
 
-    }
+  //   }
 
-    else if (chosenPosition.equals(AutoEnums.PositionEnums.OUTPOST)) {
-      if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
-        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+  //   else if (chosenPosition.equals(AutoEnums.PositionEnums.OUTPOST)) {
+  //     if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
+  //       if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
 
-          }
+  //         }
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
             
-          }
+  //         }
 
-        }
+  //       }
 
-        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+  //       else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
 
-          }
+  //         }
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
             
-          }
+  //         }
           
-        }
+  //       }
 
-      }
+  //     }
 
-      else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
-        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+  //     else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
+  //       if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
 
-          }
+  //         }
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
             
-          }
+  //         }
 
-        }
+  //       }
 
-        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+  //       else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
 
-          }
+  //         }
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
             
-          }
+  //         }
           
-        }
+  //       }
 
-      }
+  //     }
 
-      else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
-        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+  //     else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
+  //       if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
 
-          }
+  //         }
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
             
-          }
+  //         }
 
-        }
+  //       }
 
-        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+  //       else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
 
-          }
+  //         }
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
             
-          }
+  //         }
           
-        }
+  //       }
 
-      }
+  //     }
 
-    }
+  //   }
 
 
 
@@ -578,19 +593,19 @@ public class RobotContainer {
 
 
     
-    //decides which initial states exist, which will affect the auto paths
-    //1. middle or not
-   //1. loaders
-   //2. clkimb no climb
+  //   //decides which initial states exist, which will affect the auto paths
+  //   //1. middle or not
+  //  //1. loaders
+  //  //2. clkimb no climb
 
-   //finish enum, then if statements, delete colors
+  //  //finish enum, then if statements, delete colors
 
 
 
 
 
    
-   return new PathPlannerAuto("3 Piece Top");
+  //  return new PathPlannerAuto("3 Piece Top");
   
    
    
