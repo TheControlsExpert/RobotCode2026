@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.294776386404293,
-        "y": 0.571
+        "x": 0.839,
+        "y": 0.684
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.69613595706619,
-        "y": 0.6521270125223608
+        "x": 1.0471637215463712,
+        "y": 1.1878585547154459
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.059,
-        "y": 3.118
+        "x": 1.4553309481216454,
+        "y": 2.063613595706619
       },
       "prevControl": {
-        "x": 7.896745974955277,
-        "y": 1.4792343470482998
+        "x": 1.3276632544666274,
+        "y": 1.848669509961492
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,22 +33,22 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 3.0,
-    "maxAngularVelocity": 600.0,
-    "maxAngularAcceleration": 500.0,
-    "nominalVoltage": 11.0,
+    "maxVelocity": 5.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 800.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": -100.0
+    "velocity": 0,
+    "rotation": 31.429565614838467
   },
   "reversed": false,
   "folder": "Auto Outpost",
   "idealStartingState": {
-    "velocity": 2.0,
-    "rotation": 180.0
+    "velocity": 0,
+    "rotation": 0.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
