@@ -431,14 +431,16 @@ public class RobotContainer {
       PathPlannerPath middleAutoPath;
       Command returnPath;
       Command OutpostPath;
-      Command climbPath;
+      Command shootDepot;
 
        try {
         middleAutoPath = PathPlannerPath.fromPathFile("Human Player Center Approach");
         middleAuto = AutoBuilder.followPath(middleAutoPath);
         returnPath = AutoBuilder.followPath(PathPlannerPath.fromPathFile("Human Player Wayback"));
         OutpostPath = AutoBuilder.followPath(PathPlannerPath.fromPathFile("Collect Outpost"));
-        climbPath = AutoBuilder.followPath(PathPlannerPath.fromPathFile("Outpost to Climb"));
+        shootDepot = AutoBuilder.followPath(PathPlannerPath.fromPathFile("Outpost to Climb"));
+
+        
        }
 
        catch (Exception e) {
@@ -500,7 +502,7 @@ public class RobotContainer {
                   andThen(new ParallelRaceGroup(new Revv(shooter, drive, controller), returnPath)).
                   andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake))).
                   andThen(OutpostPath).andThen(new WaitCommand(2)).
-                  andThen(climbPath).
+                  andThen(shootDepot).
                   andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake))).
                   andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
                 }      
