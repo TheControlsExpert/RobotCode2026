@@ -331,114 +331,92 @@ public class RobotContainer {
 
 
 
-
- //builds an auto command based on initialized auto states chosen by 
+ 
   public Command getAutonomousCommand(AutoEnums.LoaderEnums chosenLoader, AutoEnums.ClimbEnums chosenClimb, AutoEnums.MiddleEnums chosenMiddle, AutoEnums.PositionEnums chosenPosition) {
-      Command middleAuto = Commands.none();
-    Command returnPath = Commands.none();
-    Command DepotPath = Commands.none();
 
- try{
-    PathPlannerPath middleAutoPath = PathPlannerPath.fromPathFile("Human Player Center Approach");
-     middleAuto = AutoBuilder.followPath(middleAutoPath);
-     returnPath = AutoBuilder.followPath(PathPlannerPath.fromPathFile("Human Player Wayback"));
-     DepotPath = AutoBuilder.followPath(PathPlannerPath.fromPathFile("Collect Outpost"));
+//
+    // if (chosenPosition.equals(AutoEnums.PositionEnums.DEPOT)) {
 
-     return new InstantCommand(() -> {drive.resetPosition(middleAutoPath.getStartingHolonomicPose().get());}).
-     andThen(new ParallelRaceGroup(new IntakeCommand(intake), middleAuto)).
-     andThen(new ParallelRaceGroup(new Revv(shooter, drive, controller), returnPath)).
-     andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake))).
-     andThen(DepotPath).andThen(new WaitCommand(2)).
-     andThen(new ShootingAuto(shooter, drive, indexer, intake, drive.rotationkP, new ShuffleCommand(intake), new Translation2d(1.326,2.3), 0.1)).
-     andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
- }
-
-    catch (Exception e) {
-      e.printStackTrace();
-      return Commands.none();
-    }
-
-  
-
-    if (chosenPosition.equals(AutoEnums.PositionEnums.DEPOT)) {
-      if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
-        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-            //basic auto and do nothing
-          }
+    //   if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
+    //     if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+    //       if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+    //         //basic auto and do nothing
+    //       }
 
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            //only climb
-          }
-        }
+    //       else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+    //         //only climb
+    //       }
+    //     }
 
 
-        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-            //go to middle, come back and shoot
-          }
+    //     else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+    //       if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+    //         //go to middle, come back and shoot
+    //       }
 
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            //go to middle, come back and shoot, then climb
-          } 
-        }
-      }
+    //       else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+    //         //go to middle, come back and shoot, then climb
+    //       } 
+    //     }
+    //   }
 
 
 
-      else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
-        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-            //go to the depot and shoot
-          }
+    //   else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
+    //     if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+    //       if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+    //         //go to the depot and shoot
+    //       }
 
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            //go to the depot, shoot, then climb
-          }
-        }
+    //       else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+    //         //go to the depot, shoot, then climb
+    //       }
+    //     }
 
 
-        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-            //go to middle, come back while shooting, go to depot, shoot
-          }
+    //     else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+    //       if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+    //         //go to middle, come back while shooting, go to depot, shoot
+    //       }
 
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            //go to middle, come back while shooting, go to depot, shoot, climb
-          }      
-        }
-      }
+    //       else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+    //         //go to middle, come back while shooting, go to depot, shoot, climb
+    //       }      
+    //     }
+    //   }
 
 
 
-      else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
-        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-            //go to the depot, shoot while going to outpost, shoot
-          }
+    //   else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
+    //     if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+    //       if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+    //         //go to the depot, shoot while going to outpost, shoot
+    //       }
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            //go to the depot, shoot while going to outpost, shoot, then climb
-          }
-        }
+    //       else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+    //         //go to the depot, shoot while going to outpost, shoot, then climb
+    //       }
+    //     }
 
 
-        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-            //just go to the middle and shoot while coming back
+    //     else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+    //       if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+    //         //just go to the middle and shoot while coming back
 
-           }
+    //        }
 
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            //just go to the middle, shoot while coming back, and climb
-          }         
-        }
-      }
-    }
+    //       else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+    //         //just go to the middle, shoot while coming back, and climb
+    //       }         
+    //     }
+    //   }
+    // }
+
+    
 
 
 
@@ -447,183 +425,130 @@ public class RobotContainer {
 
 
     if (chosenPosition.equals(AutoEnums.PositionEnums.OUTPOST)) {
-      if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
-        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-            //basic auto and do nothing
+
+      //initializes a bunch of commmands to be mutilated later
+      Command middleAuto;
+      PathPlannerPath middleAutoPath;
+      Command returnPath;
+      Command OutpostPath;
+
+       try {
+        middleAutoPath = PathPlannerPath.fromPathFile("Human Player Center Approach");
+        middleAuto = AutoBuilder.followPath(middleAutoPath);
+        returnPath = AutoBuilder.followPath(PathPlannerPath.fromPathFile("Human Player Wayback"));
+        OutpostPath = AutoBuilder.followPath(PathPlannerPath.fromPathFile("Collect Outpost"));
+       }
+
+       catch (Exception e) {
+        return Commands.none();
+       }
+      
+
+            if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
+              if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+                if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+                  //basic auto and do nothing
+                }
+
+
+                else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+                  //only climb
+                }
+              }
+
+
+              else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+                if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+                  //go to middle, come back and shoot
+                }
+
+
+                else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+                  //go to middle, come back and shoot, then climb
+                } 
+              }
+            }
+
+
+
+            else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
+              if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+                if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+                  //go to the outpost and shoot
+                }
+
+
+                else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+                  //go to the outpost, shoot, then climb
+                }
+              }
+
+
+              else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+                if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+                  //go to middle, come back while shooting, go to outpost, shoot
+                }
+
+
+                else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+                  //go to middle, come back while shooting, go to outpost, shoot, climb
+                }      
+              }
+            }
+
+
+
+            else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
+              if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+                if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+                  //go to the outpost, shoot while going to depot, shoot
+                }
+
+                else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+                  //go to the outpost, shoot while going to depot, shoot, then climb
+                }
+              }
+
+
+              else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+                if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+                  //just go to the middle and shoot while coming back
+
+                }
+
+                else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+                  //just go to the middle, shoot while coming back, and climb
+
+                  return new InstantCommand(() -> {drive.resetPosition(middleAutoPath.getStartingHolonomicPose().get());}).
+                  andThen(new ParallelRaceGroup(new IntakeCommand(intake), middleAuto)).
+                  andThen(new ParallelRaceGroup(new Revv(shooter, drive, controller), returnPath)).
+                  andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake))).
+                  andThen(OutpostPath).andThen(new WaitCommand(2)).
+                  andThen(new ShootingAuto(shooter, drive, indexer, intake, drive.rotationkP, new ShuffleCommand(intake), new Translation2d(1.326,2.3), 0.1)).
+                  andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
+
+                }
+              }
+            }
+
+            
           }
-
-
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            //only climb
-          }
-        }
-
-
-        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-            //go to middle, come back and shoot
-          }
-
-
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            //go to middle, come back and shoot, then climb
-          } 
-        }
-      }
-
-
-
-      else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
-        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-            //go to the outpost and shoot
-          }
-
-
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            //go to the outpost, shoot, then climb
-          }
-        }
-
-
-        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-            //go to middle, come back while shooting, go to outpost, shoot
-          }
-
-
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            //go to middle, come back while shooting, go to outpost, shoot, climb
-          }      
-        }
-      }
-
-
-
-      else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
-        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-            //go to the outpost, shoot while going to depot, shoot
-          }
-
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            //go to the outpost, shoot while going to depot, shoot, then climb
-          }
-        }
-
-
-        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-            //just go to the middle and shoot while coming back
-
-          }
-
-          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            //just go to the middle, shoot while coming back, and climb
-          }         
-        }
-      }
-    
+          return Commands.none();
   
-  
+        } 
+  }        
 
-
-
-
-    
-
-
-
-
-
-
+        
+       
+       
+       
 
     
-  //   //decides which initial states exist, which will affect the auto paths
-  //   //1. middle or not
-  //  //1. loaders
-  //  //2. clkimb no climb
-
-  //  //finish enum, then if statements, delete colors
 
 
-
-
-
-   
-  //  return new PathPlannerAuto("3 Piece Top");
-  
-   
-   
-   //return new FirstPartAutoAlign(drive,  superstructure, ScoringPosition.J).andThen(new SecondPartAutoAlign(drive, vision, superstructure)).andThen(new EjectCommand(superstructure, drive, vision)).andThen(new InstantCommand(() -> {drive.runVelocity(new ChassisSpeeds(-0.5, -2.5, 0));})).andThen(new WaitCommand(0.5)).andThen(new FirstPartAutoAlignSource(superstructure, drive)).andThen(new SecondPartAutoAlignSource(drive, superstructure)).andThen(new ThirdPartAutoAlignSource(drive, superstructure)).andThen(new FirstPartAutoAlign(drive, superstructure, ScoringPosition.K)).andThen(new SecondPartAutoAlign(drive, vision, superstructure)).andThen(new EjectCommand(superstructure, drive ,vision)).andThen(new InstantCommand(() -> {drive.runVelocity(new ChassisSpeeds(-0.5, 0, 0));})).andThen(new WaitUntilCommand(() -> (superstructure.current_state.equals(SuperstructureState.HOME_UP)))).andThen(new FirstPartAutoAlignSource(superstructure, drive)).andThen(new SecondPartAutoAlignSource(drive, superstructure));
+      
 
 
  
-}
 
-
-
-
-
-
-
-
-
-
-
-
-// public enum ScoringCommand {
-//   OFFSET_STRAIGHT,
-//   CURVING
-// }
-
-// public static Pose2d getScoringPose_w_offset() {
-//   return PositionGetter.get()
-
-
-// }
-
-
-// public static Pose2d getScoringPose() {
-
-// }
-
-
-// public ScoringCommand selectPathCommand() {
-
-//   //check if we are in zone for collision
-
-//   double[] positions = PositionGetter_offset.get(currentScoringCommand);
-//   double[] xyposition_goal = new double[2];
-//   double m;
-//   double b;
-
-//   if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
-//     xyposition_goal[0] = positions[0];
-//     xyposition_goal[1] = positions[1];
-
-//   }
-
-//   else {
-//     xyposition_goal[0] = positions[2];
-//     xyposition_goal[1] = positions[3];
-//   }
-
-//   m = (drive.getEstimatedPosition().getY() - xyposition_goal[1]) / (drive.getEstimatedPosition().getX() - xyposition_goal[0]);
-//   b = xyposition_goal[1] + m * xyposition_goal[0];
-
-
-
-
-
-
-
-
-
-
-
-
- }
-}
   
