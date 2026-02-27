@@ -332,259 +332,181 @@ public class RobotContainer {
 
 
 
-  //takes in inital auto states
-  //decides what auto paths to create
-  //tests every combination of initial states
+ //builds an auto command based on initialized auto states chosen by 
   public Command getAutonomousCommand(AutoEnums.LoaderEnums chosenLoader, AutoEnums.ClimbEnums chosenClimb, AutoEnums.MiddleEnums chosenMiddle, AutoEnums.PositionEnums chosenPosition) {
   
 
-  //   }
+    if (chosenPosition.equals(AutoEnums.PositionEnums.DEPOT)) {
+      if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+            //basic auto and do nothing
+          }
 
-  //   catch (Exception e) {
-  //     System.out.println("Path not found");
-  //   }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            //only climb
+          }
+        }
 
 
-  //   if (chosenPosition.equals(AutoEnums.PositionEnums.DEPOT)) {
-  //     if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
-  //       if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+            //go to middle, come back and shoot
+          }
 
-  //         }
 
-  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            //go to middle, come back and shoot, then climb
+          } 
+        }
+      }
 
-  //         }
 
-  //       }
 
-  //       else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+      else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+            //go to the depot and shoot
+          }
 
-  //         }
 
-  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            
-  //         }
-          
-  //       }
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            //go to the depot, shoot, then climb
+          }
+        }
 
-  //     }
 
-  //     else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
-  //       if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+            //go to middle, come back while shooting, go to depot, shoot
+          }
 
-  //         }
 
-  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-  //           if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            //go to middle, come back while shooting, go to depot, shoot, climb
+          }      
+        }
+      }
 
-  //         }
 
-  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            
-  //         }
-            
-  //         }
 
-  //       }
+      else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+            //go to the depot, shoot while going to outpost, shoot
+          }
 
-  //       else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            //go to the depot, shoot while going to outpost, shoot, then climb
+          }
+        }
 
-  //         }
 
-  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            
-  //         }
-          
-  //       }
-
-  //     }
-
-  //     else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
-  //       if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-
-  //         }
-
-  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            
-  //         }
-
-  //       }
-
-  //       else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+            //just go to the middle and shoot while coming back
 
   //         }
 
-  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            
-  //         }
-          
-  //       }
-
-  //     }
-  //   }
-
-  //   else if (chosenPosition.equals(AutoEnums.PositionEnums.HUB)) {
-  //     if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
-  //       if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-
-  //         }
-
-  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            
-  //         }
-
-  //       }
-
-  //       else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-
-  //         }
-
-  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            
-  //         }
-          
-  //       }
-
-  //     }
-
-  //     else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
-  //       if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-
-  //         }
-
-  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            
-  //         }
-
-  //       }
-
-  //       else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-
-  //         }
-
-  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            
-  //         }
-          
-  //       }
-
-  //     }
-
-  //     else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
-  //       if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-
-  //         }
-
-  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            
-  //         }
-
-  //       }
-
-  //       else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-
-  //         }
-
-  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            
-  //         }
-          
-  //       }
-
-  //     }
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            //just go to the middle, shoot while coming back, and climb
+          }         
+        }
+      }
+    }
 
 
-  //   }
 
-  //   else if (chosenPosition.equals(AutoEnums.PositionEnums.OUTPOST)) {
-  //     if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
-  //       if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+
+
+
+    if (chosenPosition.equals(AutoEnums.PositionEnums.OUTPOST)) {
+      if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+            //basic auto and do nothing
+          }
+
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            //only climb
+          }
+        }
+
+
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+            //go to middle, come back and shoot
+          }
+
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            //go to middle, come back and shoot, then climb
+          } 
+        }
+      }
+
+
+
+      else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+            //go to the outpost and shoot
+          }
+
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            //go to the outpost, shoot, then climb
+          }
+        }
+
+
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+            //go to middle, come back while shooting, go to outpost, shoot
+          }
+
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            //go to middle, come back while shooting, go to outpost, shoot, climb
+          }      
+        }
+      }
+
+
+
+      else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+            //go to the outpost, shoot while going to depot, shoot
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            //go to the outpost, shoot while going to depot, shoot, then climb
+          }
+        }
+
+
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+            //just go to the middle and shoot while coming back
 
   //         }
 
-  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            
-  //         }
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            //just go to the middle, shoot while coming back, and climb
+          }         
+        }
+      }
+    }
 
-  //       }
 
-  //       else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
 
-  //         }
 
-  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            
-  //         }
-          
-  //       }
 
-  //     }
-
-  //     else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
-  //       if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-
-  //         }
-
-  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            
-  //         }
-
-  //       }
-
-  //       else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-
-  //         }
-
-  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            
-  //         }
-          
-  //       }
-
-  //     }
-
-  //     else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
-  //       if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-
-  //         }
-
-  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            
-  //         }
-
-  //       }
-
-  //       else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-  //         if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-
-  //         }
-
-  //         else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-            
-  //         }
-          
-  //       }
-
-  //     }
-
-  //   }
+    
 
 
 
