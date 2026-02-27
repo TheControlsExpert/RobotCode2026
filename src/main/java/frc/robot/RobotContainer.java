@@ -492,6 +492,14 @@ public class RobotContainer {
 
                 else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
                   //go to middle, come back while shooting, go to outpost, shoot, climb
+
+                  return new InstantCommand(() -> {drive.resetPosition(middleAutoPath.getStartingHolonomicPose().get());}).
+                  andThen(new ParallelRaceGroup(new IntakeCommand(intake), middleAuto)).
+                  andThen(new ParallelRaceGroup(new Revv(shooter, drive, controller), returnPath)).
+                  andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake))).
+                  andThen(OutpostPath).andThen(new WaitCommand(2)).
+                  andThen(new ShootingAuto(shooter, drive, indexer, intake, drive.rotationkP, new ShuffleCommand(intake), new Translation2d(1.326,2.3), 0.1)).
+                  andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
                 }      
               }
             }
@@ -519,13 +527,7 @@ public class RobotContainer {
                 else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
                   //just go to the middle, shoot while coming back, and climb
 
-                  return new InstantCommand(() -> {drive.resetPosition(middleAutoPath.getStartingHolonomicPose().get());}).
-                  andThen(new ParallelRaceGroup(new IntakeCommand(intake), middleAuto)).
-                  andThen(new ParallelRaceGroup(new Revv(shooter, drive, controller), returnPath)).
-                  andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake))).
-                  andThen(OutpostPath).andThen(new WaitCommand(2)).
-                  andThen(new ShootingAuto(shooter, drive, indexer, intake, drive.rotationkP, new ShuffleCommand(intake), new Translation2d(1.326,2.3), 0.1)).
-                  andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
+                  
 
                 }
               }
