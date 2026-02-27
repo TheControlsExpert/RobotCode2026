@@ -431,7 +431,7 @@ public class RobotContainer {
           if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
             //just go to the middle and shoot while coming back
 
-  //         }
+           }
 
           else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
             //just go to the middle, shoot while coming back, and climb
@@ -517,16 +517,16 @@ public class RobotContainer {
           if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
             //just go to the middle and shoot while coming back
 
-  //         }
+          }
 
           else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
             //just go to the middle, shoot while coming back, and climb
           }         
         }
       }
-    }
+    
   
-
+  
 
 
 
@@ -570,20 +570,7 @@ public class RobotContainer {
 
 
 
-public enum ScoringPosition {
-  A,
-  B,
-  C,
-  D,
-  E,
-  F,
-  G,
-  H,
-  I,
-  J,
-  K,
-  L
-}
+
 
 
 // public enum ScoringCommand {
@@ -637,5 +624,6 @@ public enum ScoringPosition {
 
 
 
-// }
+ }
 }
+  

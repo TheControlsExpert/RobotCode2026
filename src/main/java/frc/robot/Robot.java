@@ -33,7 +33,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.ActivePeriodTracker.ShiftInfo;
-import frc.robot.RobotContainer.ScoringPosition;
 import frc.robot.Subsystems.Drive.GyroIOPigeon2;
 import frc.robot.Subsystems.Drive.PhoenixOdometryThread;
 
@@ -167,7 +166,7 @@ public class Robot extends LoggedRobot {
 
   }
 
-  
+
 
   @Override
   public void teleopPeriodic() {
