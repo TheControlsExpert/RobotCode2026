@@ -333,6 +333,7 @@ public class RobotContainer {
 
  
   public Command getAutonomousCommand(AutoEnums.LoaderEnums chosenLoader, AutoEnums.ClimbEnums chosenClimb, AutoEnums.MiddleEnums chosenMiddle, AutoEnums.PositionEnums chosenPosition) {
+     
 
 //
     // if (chosenPosition.equals(AutoEnums.PositionEnums.DEPOT)) {
@@ -440,7 +441,7 @@ public class RobotContainer {
         OutpostPath = AutoBuilder.followPath(PathPlannerPath.fromPathFile("Collect Outpost"));
         shootDepot = AutoBuilder.followPath(PathPlannerPath.fromPathFile("Outpost to Climb"));
 
-        
+
        }
 
        catch (Exception e) {
