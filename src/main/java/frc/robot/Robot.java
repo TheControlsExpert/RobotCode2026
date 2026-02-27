@@ -61,7 +61,6 @@ public class Robot extends LoggedRobot {
      m_robotContainer = new RobotContainer();
     }
 
-
     @Override
     public void robotInit() {
       Pathfinding.setPathfinder(new LocalADStar());

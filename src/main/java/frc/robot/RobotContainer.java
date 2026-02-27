@@ -322,11 +322,264 @@ public class RobotContainer {
    */
 
 
-       //takes in the initial states selected by the driver
+
+
+
+
+
+  //takes in inital auto states
+  //decides what auto paths to create
+  //tests every combination of initial states
   public Command getAutonomousCommand(AutoEnums.LoaderEnums chosenLoader, AutoEnums.ClimbEnums chosenClimb, AutoEnums.MiddleEnums chosenMiddle, AutoEnums.PositionEnums chosenPosition) {
 
+    if (chosenPosition.equals(AutoEnums.PositionEnums.DEPOT)) {
+      if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+
+          }
+
+        }
+
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+          
+        }
+
+      }
+
+      else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+            
+          }
+
+        }
+
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+          
+        }
+
+      }
+
+      else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+
+        }
+
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+          
+        }
+
+      }
+    }
+
+    else if (chosenPosition.equals(AutoEnums.PositionEnums.HUB)) {
+      if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+
+        }
+
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+          
+        }
+
+      }
+
+      else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+
+        }
+
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+          
+        }
+
+      }
+
+      else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+
+        }
+
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+          
+        }
+
+      }
 
 
+    }
+
+    else if (chosenPosition.equals(AutoEnums.PositionEnums.OUTPOST)) {
+      if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+
+        }
+
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+          
+        }
+
+      }
+
+      else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+
+        }
+
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+          
+        }
+
+      }
+
+      else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+
+        }
+
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+          
+        }
+
+      }
+
+    }
+
+
+
+
+
+
+
+    
     //decides which initial states exist, which will affect the auto paths
     //1. middle or not
    //1. loaders
