@@ -334,6 +334,30 @@ public class RobotContainer {
 
  //builds an auto command based on initialized auto states chosen by 
   public Command getAutonomousCommand(AutoEnums.LoaderEnums chosenLoader, AutoEnums.ClimbEnums chosenClimb, AutoEnums.MiddleEnums chosenMiddle, AutoEnums.PositionEnums chosenPosition) {
+      Command middleAuto = Commands.none();
+    Command returnPath = Commands.none();
+    Command DepotPath = Commands.none();
+
+ try{
+    PathPlannerPath middleAutoPath = PathPlannerPath.fromPathFile("Human Player Center Approach");
+     middleAuto = AutoBuilder.followPath(middleAutoPath);
+     returnPath = AutoBuilder.followPath(PathPlannerPath.fromPathFile("Human Player Wayback"));
+     DepotPath = AutoBuilder.followPath(PathPlannerPath.fromPathFile("Collect Outpost"));
+
+     return new InstantCommand(() -> {drive.resetPosition(middleAutoPath.getStartingHolonomicPose().get());}).
+     andThen(new ParallelRaceGroup(new IntakeCommand(intake), middleAuto)).
+     andThen(new ParallelRaceGroup(new Revv(shooter, drive, controller), returnPath)).
+     andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake))).
+     andThen(DepotPath).andThen(new WaitCommand(2)).
+     andThen(new ShootingAuto(shooter, drive, indexer, intake, drive.rotationkP, new ShuffleCommand(intake), new Translation2d(1.326,2.3), 0.1)).
+     andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
+ }
+
+    catch (Exception e) {
+      e.printStackTrace();
+      return Commands.none();
+    }
+
   
 
     if (chosenPosition.equals(AutoEnums.PositionEnums.DEPOT)) {
@@ -501,6 +525,7 @@ public class RobotContainer {
         }
       }
     }
+  
 
 
 
