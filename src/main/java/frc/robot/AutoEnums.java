@@ -17,7 +17,6 @@ public class AutoEnums {
 
     } public enum PositionEnums {
         DEPOT,
-        HUB,
         OUTPOST;
     }
 }

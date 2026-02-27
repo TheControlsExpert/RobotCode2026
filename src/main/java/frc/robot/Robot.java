@@ -79,8 +79,7 @@ public class Robot extends LoggedRobot {
    
 
       //sets the inital field position
-      positionChooser.setDefaultOption("Hub", AutoEnums.PositionEnums.HUB);
-      positionChooser.addOption("Depot", AutoEnums.PositionEnums.DEPOT); //hub position not needed for auto logic
+      positionChooser.setDefaultOption("Depot", AutoEnums.PositionEnums.DEPOT);
       positionChooser.addOption("Outpost", AutoEnums.PositionEnums.OUTPOST);
 
       //shows the driver all the choosers on smart dashboard
