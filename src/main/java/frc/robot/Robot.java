@@ -5,10 +5,12 @@
 
 package frc.robot;
 
+//Brings in the different enum states necessary for auto
+
+import frc.robot.AutoEnums;
+
 import java.util.ArrayList;
-
 import org.littletonrobotics.junction.LoggedRobot;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -23,6 +25,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -33,6 +36,7 @@ import frc.robot.ActivePeriodTracker.ShiftInfo;
 import frc.robot.RobotContainer.ScoringPosition;
 import frc.robot.Subsystems.Drive.GyroIOPigeon2;
 import frc.robot.Subsystems.Drive.PhoenixOdometryThread;
+
 //import frc.robot.Subsystems.Superstructure.Superstructure.SuperstructureState;
 
 public class Robot extends LoggedRobot {
@@ -44,19 +48,55 @@ public class Robot extends LoggedRobot {
   public static AutoWinner autoWinner = AutoWinner.US;
   public static ArrayList<String> DisconnectedMotorNames = new ArrayList<String>();
 
-  
+
+  //creates the choosers that will hold possible enum states for each choice
+  public static SendableChooser<AutoEnums.LoaderEnums> LoaderChooser = new SendableChooser<>();
+  public static SendableChooser<AutoEnums.ClimbEnums> climbChooser = new SendableChooser<>();
+  public static SendableChooser<AutoEnums.MiddleEnums> middleChooser = new SendableChooser<>();
+  public static SendableChooser<AutoEnums.PositionEnums> positionChooser = new SendableChooser<>();
+
+
+
     public Robot() {
      m_robotContainer = new RobotContainer();
-
     }
 
     @Override
     public void robotInit() {
       Pathfinding.setPathfinder(new LocalADStar());
 
+      //sets the states for initial autos as part of the chooser options
+      LoaderChooser.setDefaultOption("Zero Loaders", AutoEnums.LoaderEnums.ZERO_LOADERS);
+      LoaderChooser.addOption("One Loader", AutoEnums.LoaderEnums.ONE_LOADER);
+      LoaderChooser.addOption("Two loaders", AutoEnums.LoaderEnums.TWO_LOADERS);
+
+      //sets the states for initial climb autos as part of the chooser options
+      climbChooser.setDefaultOption("No Climb", AutoEnums.ClimbEnums.FALSE);
+      climbChooser.addOption("Yes climb", AutoEnums.ClimbEnums.TRUE);
+
+      //sets the state for going into the middle of the field or not
+      middleChooser.setDefaultOption("No middle", AutoEnums.MiddleEnums.FALSE);
+      middleChooser.addOption("Yes middle", AutoEnums.MiddleEnums.TRUE);
+   
+
+      //sets the inital field position
+      positionChooser.setDefaultOption("Hub", AutoEnums.PositionEnums.HUB);
+      positionChooser.addOption("Depot", AutoEnums.PositionEnums.DEPOT); //hub position not needed for auto logic
+      positionChooser.addOption("Outpost", AutoEnums.PositionEnums.OUTPOST);
+
+      //shows the driver all the choosers on smart dashboard
+      SmartDashboard.putData("Loader Chooser", LoaderChooser);
+      SmartDashboard.putData("Climb Chooser", climbChooser);
+      //alow the driver to decide whether to go into the middle of the field or not
+      SmartDashboard.putData("Middle Chooser", middleChooser);
+      //allows the driver to select position on the field
+      SmartDashboard.putData("Positon Chooser", positionChooser);
         
     }
   
+
+
+
     @Override
     public void disabledInit() {}
 
@@ -64,10 +104,11 @@ public class Robot extends LoggedRobot {
         CommandScheduler.getInstance().run();
 
          String fullList_disconnections = "";
-    for (String motorName : DisconnectedMotorNames) {
-        fullList_disconnections += motorName + ", " + "\n";
-    }
-    SmartDashboard.putString("Disconnected Motors", fullList_disconnections);
+        for (String motorName : DisconnectedMotorNames) {
+            fullList_disconnections += motorName + ", " + "\n";
+        }
+        
+        SmartDashboard.putString("Disconnected Motors", fullList_disconnections);
     }
 
   
@@ -81,13 +122,28 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-  m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+    //reads the states the driver chose for this specific auto
+    AutoEnums.LoaderEnums chosenLoader = LoaderChooser.getSelected();
+    AutoEnums.ClimbEnums chosenClimb = climbChooser.getSelected();
+    AutoEnums.MiddleEnums chosenMiddle = middleChooser.getSelected();
+    AutoEnums.PositionEnums chosenPosition = positionChooser.getSelected();
+
+    //passes in all the currently selected states to construct an auto program
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand(chosenLoader, chosenClimb, chosenMiddle, chosenPosition);
+
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
 
     ActivePeriodTracker.initialize();
+
+    
+
+
+
+
 
   }
 

@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import frc.robot.AutoEnums;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -317,10 +318,277 @@ public class RobotContainer {
    *                                                                                                                                                                                                                                                                                                                                                                                                                                          
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
-   // return new FullRun(drive, superstructure, vision);
-   //return new StraightDriveCommand(1.4, drive);
-   //return Commands.none();
+
+
+
+
+
+
+
+  //takes in inital auto states
+  //decides what auto paths to create
+  //tests every combination of initial states
+  public Command getAutonomousCommand(AutoEnums.LoaderEnums chosenLoader, AutoEnums.ClimbEnums chosenClimb, AutoEnums.MiddleEnums chosenMiddle, AutoEnums.PositionEnums chosenPosition) {
+
+    if (chosenPosition.equals(AutoEnums.PositionEnums.DEPOT)) {
+      if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+
+          }
+
+        }
+
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+          
+        }
+
+      }
+
+      else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+            
+          }
+
+        }
+
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+          
+        }
+
+      }
+
+      else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+
+        }
+
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+          
+        }
+
+      }
+    }
+
+    else if (chosenPosition.equals(AutoEnums.PositionEnums.HUB)) {
+      if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+
+        }
+
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+          
+        }
+
+      }
+
+      else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+
+        }
+
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+          
+        }
+
+      }
+
+      else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+
+        }
+
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+          
+        }
+
+      }
+
+
+    }
+
+    else if (chosenPosition.equals(AutoEnums.PositionEnums.OUTPOST)) {
+      if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+
+        }
+
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+          
+        }
+
+      }
+
+      else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+
+        }
+
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+          
+        }
+
+      }
+
+      else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
+        if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+
+        }
+
+        else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+          if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
+
+          }
+
+          else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
+            
+          }
+          
+        }
+
+      }
+
+    }
+
+
+
+
+
+
+
+    
+    //decides which initial states exist, which will affect the auto paths
+    //1. middle or not
+   //1. loaders
+   //2. clkimb no climb
+
+   //finish enum, then if statements, delete colors
+
+
+
+
+
    
    return new PathPlannerAuto("3 Piece Top");
   
