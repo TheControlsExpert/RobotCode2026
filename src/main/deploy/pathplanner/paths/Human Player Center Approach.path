@@ -16,11 +16,11 @@
     },
     {
       "anchor": {
-        "x": 8.05906976744186,
+        "x": 8.059,
         "y": 3.1182647584973164
       },
       "prevControl": {
-        "x": 7.896815742397138,
+        "x": 7.896745974955277,
         "y": 1.4794991055456164
       },
       "nextControl": null,
@@ -45,7 +45,7 @@
     "rotation": -100.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Auto Outpost",
   "idealStartingState": {
     "velocity": 2.0,
     "rotation": 180.0
