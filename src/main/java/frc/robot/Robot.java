@@ -83,12 +83,12 @@ public class Robot extends LoggedRobot {
       positionChooser.addOption("Outpost", AutoEnums.PositionEnums.OUTPOST);
 
       //shows the driver all the choosers on smart dashboard
-      SmartDashboard.putData("Loader Chooser", LoaderChooser);
-      SmartDashboard.putData("Climb Chooser", climbChooser);
+      SmartDashboard.putData("How many loaders?", LoaderChooser);
+      SmartDashboard.putData("Climb or not?", climbChooser);
       //alow the driver to decide whether to go into the middle of the field or not
-      SmartDashboard.putData("Middle Chooser", middleChooser);
+      SmartDashboard.putData("Middle or not?", middleChooser);
       //allows the driver to select position on the field
-      SmartDashboard.putData("Positon Chooser", positionChooser);
+      SmartDashboard.putData("Iniitial Position", positionChooser);
         
     }
   
