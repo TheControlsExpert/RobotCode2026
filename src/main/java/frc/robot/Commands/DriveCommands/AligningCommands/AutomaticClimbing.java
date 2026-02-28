@@ -75,10 +75,11 @@ public class AutomaticClimbing {
 }
 
 else {
-    return new RotationController(drive, drive.rotationkP, 5, climbPoses[0].getRotation()).
-    andThen(new ProfiledPIDCommand(autoAlign, drive,
+    return new ProfiledPIDCommand(autoAlign, drive,
 
-    () -> {return climbPoses[0];}));
+    () -> {
+        publisher.set(new Pose2d(climbPoses[0].getX(), climbPoses[0].getY()-0.05, climbPoses[0].getRotation()));
+        return climbPoses[0];});
 }
 }
 
@@ -125,7 +126,7 @@ else {
 
     //flips translation2d from bottom of blue to top of blue
     public Pose2d FlipVertically_bottom_to_top(Pose2d point) {
-        return new Pose2d(new Translation2d( point.getX(), 2* (3.745611 - point.getY()) + point.getY()), point.getRotation().plus(Rotation2d.fromDegrees(180))); 
+        return new Pose2d(new Translation2d( point.getX()-0.0254 * 2, 2* (3.745611 - point.getY()) + point.getY()), point.getRotation().plus(Rotation2d.fromDegrees(180))); 
      }
 
     public Pose2d FlipVertically_bottom_to_top_halfpoint(Pose2d point) {

@@ -14,9 +14,13 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Robot;
 import frc.robot.Commands.IntakeCommands.ShuffleCommand;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Robot.ShootingState;
 import frc.robot.Subsystems.Drive.Drive;
 import frc.robot.Subsystems.Indexer.Indexer;
 import frc.robot.Subsystems.Intake.IntakeSubsystem;
@@ -31,11 +35,14 @@ public class Shooting extends Command {
     CommandXboxController controller;
     double kP_rotation;
     boolean readyToShoot = false;
-    ShuffleCommand shuffle;
+    Command shuffle;
     IntakeSubsystem intake;
     boolean hasShuffled = false;
     boolean waiting = false;
     Timer timer = new Timer();
+    double timeout = 9999;
+
+    
 
     public Shooting(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, CommandXboxController controller, DoubleSupplier xSupplier, DoubleSupplier ySupplier, double kP_rotation, ShuffleCommand shuffle) {
         this.shooter = shooter;
@@ -45,11 +52,27 @@ public class Shooting extends Command {
         this.ySupplier = ySupplier;
         this.controller = controller;
         this.kP_rotation = kP_rotation;
-        this.shuffle = shuffle;
+        this.shuffle = shuffle.getShuffleCommand();
         this.intake = intake;
         addRequirements(shooter, drive, indexer);
         
     }
+
+     public Shooting(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, CommandXboxController controller, DoubleSupplier xSupplier, DoubleSupplier ySupplier, double kP_rotation, ShuffleCommand shuffle, double timeout) {
+        this.shooter = shooter;
+        this.drive = drive;
+        this.indexer = indexer;
+        this.xSupplier = xSupplier;
+        this.ySupplier = ySupplier;
+        this.controller = controller;
+        this.kP_rotation = kP_rotation;
+        this.shuffle = shuffle.getShuffleCommand();
+        this.intake = intake;
+        this.timeout = timeout;
+        addRequirements(shooter, drive, indexer);
+        
+    }
+
 
     @Override
     public void initialize() {
@@ -117,7 +140,7 @@ public class Shooting extends Command {
         
     }
 
-    if (shooter.isShooterVelocityLow(distance) && readyToShoot) {
+    if (shooter.isShooterVelocityLow(distance) && readyToShoot && DriverStation.isTeleop() && Robot.shootingState.equals(ShootingState.SHOOTING)) {
         readyToShoot = false;
         waiting = true;
     }
@@ -137,8 +160,9 @@ public class Shooting extends Command {
         shooter.setFeederVelocity(-0.5);
     }
 
-    if (!intake.isHopperFull() && intake.isReadyToClose() && !hasShuffled && DriverStation.isAutonomous()) {
-        CommandScheduler.getInstance().schedule(shuffle.getShuffleCommand());
+    if (!intake.isHopperFull() && intake.isReadyToClose() && !hasShuffled && DriverStation.isAutonomous() && !intake.isShuffling) {
+        CommandScheduler.getInstance().schedule(shuffle);
+        intake.isShuffling = true;
         hasShuffled = true;
     }
 
@@ -168,12 +192,14 @@ public void end(boolean interrupted) {
     }
     shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
     indexer.setIndexerDutyCycle(0);
+    CommandScheduler.getInstance().cancel(shuffle);
+    intake.isShuffling = false;
 }
 
 
 @Override
 public boolean isFinished() {
-    return timer.hasElapsed(3);
+    return timer.hasElapsed(timeout);
 }
 }
 

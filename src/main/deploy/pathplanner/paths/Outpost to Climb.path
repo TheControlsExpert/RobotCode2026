@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.0471637215463712,
-        "y": 1.1878585547154459
+        "x": 1.2248719206548437,
+        "y": 1.2624154080465895
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.4553309481216454,
-        "y": 2.063613595706619
+        "x": 1.2069605758101858,
+        "y": 1.3054706307870367
       },
       "prevControl": {
-        "x": 1.3276632544666274,
-        "y": 1.848669509961492
+        "x": 1.0414686374780653,
+        "y": 1.1180875516494646
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
     "rotation": 31.429565614838467
   },
   "reversed": false,
-  "folder": "Auto Outpost",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
