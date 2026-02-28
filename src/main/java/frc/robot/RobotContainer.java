@@ -274,7 +274,7 @@ public class RobotContainer {
          
 
         
-      }           
+                
 
 
 
@@ -292,13 +292,43 @@ public class RobotContainer {
       //  controller.rightBumper().onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), DriverStation.getAlliance().get().equals(Alliance.Blue) ? Rotation2d.kZero : Rotation2d.fromDegrees(180))), drive)
       //           .ignoringDisable(true));
        
-      //  controller2.rightTrigger().whileTrue(new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)
+      controller.rightTrigger().whileTrue(
+      Commands.defer(() -> { 
+        if (intake.isShuffling) {
+      return Commands.none();}
+
+        else {
+          return new InstantCommand(() -> {
+            intake.isShuffling = true;
+            intake.setIntakeDutyCycle(0.3);}, intake)
+       .andThen((new InstantCommand(() -> {intake.Retract();}, intake)
+               .andThen(new WaitCommand(0.7))
+               .andThen(new InstantCommand(() -> {intake.Extend();}, intake))
+               .andThen(new WaitCommand(0.5))).repeatedly()).
+               
+        handleInterrupt(() -> {intake.setIntakeDutyCycle(0);
+                               intake.Extend();
+                               intake.isShuffling = false;
+                                });
+        }
+      
+      }, Set.of(intake)));
+
+    } 
+      
+      
+      
+      
+      
+      
+      //new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)
       //  .andThen((new InstantCommand(() -> {intake.Retract();}, intake)
       //          .andThen(new WaitCommand(0.7))
       //          .andThen(new InstantCommand(() -> {intake.Extend();}, intake))
       //          .andThen(new WaitCommand(0.5))).repeatedly()).
                
-      //   handleInterrupt(() -> {intake.setIntakeDutyCycle(0);}));
+      //   handleInterrupt(() -> {intake.setIntakeDutyCycle(0);
+       //                           intake.Extend();}));
        
       //  controller2.leftTrigger().whileTrue(new StartEndCommand(() -> {intake.Retract();}, () -> {intake.Extend();}, intake));
       //  controller2.rightBumper().whileTrue(new Jam(indexer, shooter, intake));
@@ -501,10 +531,10 @@ public class RobotContainer {
                   return new InstantCommand(() -> {drive.resetPosition(middleAutoPath.getStartingHolonomicPose().get());}).
                   andThen(new ParallelRaceGroup(new IntakeCommand(intake), middleAuto)).
                   andThen(new ParallelRaceGroup(new Revv(shooter, drive, controller), returnPath)).
-                  andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake))).
+                  andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 5)).
                   andThen(OutpostPath).andThen(new WaitCommand(2)).
                   andThen(shootDepot).
-                  andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake))).
+                  andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 3)).
                   andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
                 }      
               }
