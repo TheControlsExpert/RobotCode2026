@@ -393,9 +393,12 @@ public class RobotContainer {
         } 
       }
 
+      
+
        catch (Exception e) {
         return Commands.none();
        }
+
 
 
 
@@ -527,13 +530,13 @@ public class RobotContainer {
 
             }
           }
-        }
-
-            
-          }
-          return Commands.none();
+        }      
+      }
+          
+      
+      return Commands.none();
   
-        } 
+    } 
   }        
 
         
