@@ -437,11 +437,11 @@ public class RobotContainer {
 
         if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
 
-          middleAutoPath = PathPlannerPath.fromPathFile("Human Player Center Approach").mirrorPath();
+          middleAutoPath = PathPlannerPath.fromPathFile("Human Player Center Approach").flipPath();
           middleAuto = AutoBuilder.followPath(middleAutoPath);
-          returnPath = AutoBuilder.followPath(PathPlannerPath.fromPathFile("Human Player Wayback").mirrorPath()); //from middle to shoot pos
-          OutpostPath = AutoBuilder.followPath(PathPlannerPath.fromPathFile("Collect Outpost").mirrorPath()); //path from shooter pos to outpost
-          shootDepot = AutoBuilder.followPath(PathPlannerPath.fromPathFile("Outpost to Climb").mirrorPath()); //outpost, path from outpost to shooter pos
+          returnPath = AutoBuilder.followPath(PathPlannerPath.fromPathFile("Human Player Wayback").flipPath()); //from middle to shoot pos
+          OutpostPath = AutoBuilder.followPath(PathPlannerPath.fromPathFile("Collect Outpost").flipPath()); //path from shooter pos to outpost
+          shootDepot = AutoBuilder.followPath(PathPlannerPath.fromPathFile("Outpost to Climb").flipPath()); //outpost, path from outpost to shooter pos
         }
 
         else {
@@ -457,6 +457,8 @@ public class RobotContainer {
        catch (Exception e) {
         return Commands.none();
        }
+
+      
       
 
             if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
