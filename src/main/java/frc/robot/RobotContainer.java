@@ -437,7 +437,7 @@ public class RobotContainer {
 
         if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
 
-          middleAutoPath = PathPlannerPath.fromPathFile("Human Player Center Approach");
+          middleAutoPath = PathPlannerPath.fromPathFile("Human Player Center Approach").mirrorPath();
           middleAuto = AutoBuilder.followPath(middleAutoPath);
           returnPath = AutoBuilder.followPath(PathPlannerPath.fromPathFile("Human Player Wayback").mirrorPath()); //from middle to shoot pos
           OutpostPath = AutoBuilder.followPath(PathPlannerPath.fromPathFile("Collect Outpost").mirrorPath()); //path from shooter pos to outpost
