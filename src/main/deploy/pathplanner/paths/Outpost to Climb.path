@@ -45,7 +45,7 @@
     "rotation": 31.429565614838467
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Auto Outpost",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
