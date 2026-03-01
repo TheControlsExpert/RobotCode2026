@@ -606,7 +606,7 @@ public class RobotContainer {
             if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) { //go to the outpost and shoot
               
               return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
-              andThen(goLoaderAuto).andThen(new WaitCommand(2)).
+              andThen(goLoaderAuto).
               andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake)));
             }
 
@@ -614,7 +614,7 @@ public class RobotContainer {
             else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) { //go to the outpost, shoot, then climb
               
               return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
-              andThen(goLoaderAuto).andThen(new WaitCommand(2)).
+              andThen(goLoaderAuto).
               andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake))).
               andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
             }
@@ -639,7 +639,7 @@ public class RobotContainer {
               andThen(new ParallelRaceGroup(new IntakeCommand(intake), goMiddleAuto)).
               andThen(new ParallelRaceGroup(new Revv(shooter, drive, controller), leaveMiddleAuto)).
               andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 5)).
-              andThen(goLoaderAuto).andThen(new WaitCommand(2)).
+              andThen(goLoaderAuto).
               andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 3)).
               andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
             }      
@@ -678,18 +678,3 @@ public class RobotContainer {
   
     } 
   }        
-
-        
-       
-       
-       
-
-    
-
-
-      
-
-
- 
-
-  
