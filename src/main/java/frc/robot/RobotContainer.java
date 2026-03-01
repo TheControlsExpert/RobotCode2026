@@ -544,7 +544,7 @@ public class RobotContainer {
                 else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) { //go to the outpost, shoot, then climb
                   
                   return new InstantCommand(() -> {drive.resetPosition(middleAutoPath.getStartingHolonomicPose().get());}).
-                  andThen(OutpostPath).andThen(new WaitCommand(2)).
+                  andThen(OutpostPath).andThen(new WaitCommand(1.9)).
                   andThen(shootDepot).
                   andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 5)).
                   andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(false), Set.of(drive)));
@@ -559,7 +559,7 @@ public class RobotContainer {
                   andThen(new ParallelRaceGroup(new IntakeCommand(intake), middleAuto)).
                   andThen(new ParallelRaceGroup(new Revv(shooter, drive, controller), returnPath)).
                   andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 5)).
-                  andThen(OutpostPath).andThen(new WaitCommand(2)).
+                  andThen(OutpostPath).andThen(new WaitCommand(1.9)).
                   andThen(shootDepot).
                   andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 3));
                 }
@@ -571,7 +571,7 @@ public class RobotContainer {
                   andThen(new ParallelRaceGroup(new IntakeCommand(intake), middleAuto)).
                   andThen(new ParallelRaceGroup(new Revv(shooter, drive, controller), returnPath)).
                   andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 5)).
-                  andThen(OutpostPath).andThen(new WaitCommand(2)).
+                  andThen(OutpostPath).andThen(new WaitCommand(1.9)).
                   andThen(shootDepot).
                   andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 3)).
                   andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(false), Set.of(drive)));

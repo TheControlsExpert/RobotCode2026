@@ -38,12 +38,14 @@ public class ShootingAuto extends Command {
     Translation2d targetPosition;
     double speed;
     Timer timer = new Timer();
-    public ShootingAuto(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, double kP_rotation, ShuffleCommand shuffle, Translation2d targetPosition, double speed) {
+    double timeout;
+    public ShootingAuto(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, double kP_rotation, ShuffleCommand shuffle, double timeout, Translation2d targetPosition, double speed) {
         this.shooter = shooter;
         this.drive = drive;
         this.indexer = indexer;
         this.kP_rotation = kP_rotation;
         this.shuffle = shuffle;
+        this.timeout = timeout;
         this.intake = intake;
         this.targetPosition = targetPosition;
         this.speed = speed;
@@ -173,7 +175,7 @@ public void end(boolean interrupted) {
 
 @Override
 public boolean isFinished() {
-    return timer.hasElapsed(3);
+    return timer.hasElapsed(timeout);
 }
 
 }
