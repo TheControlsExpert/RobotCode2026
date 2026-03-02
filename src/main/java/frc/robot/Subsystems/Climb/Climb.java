@@ -37,4 +37,9 @@ public class Climb extends SubsystemBase {
     public void setClimbDutyCycle(double dutyCycle) {
         io.setClimbDutyCycle(dutyCycle);
     }
+
+
+    public double getEncoderValue() {
+        return io.getEncoderValue();
+    }
 }

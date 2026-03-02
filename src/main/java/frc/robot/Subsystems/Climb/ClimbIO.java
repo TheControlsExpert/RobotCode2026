@@ -50,5 +50,9 @@ public class ClimbIO {
     public void setClimbDutyCycle(double dutyCycle) {
         climbMotor.setControl(climbDutyCycleOut.withOutput(dutyCycle));
     }
+
+    public double getEncoderValue() {
+        return climbMotor.getPosition().getValueAsDouble();
+    }
    
 }
