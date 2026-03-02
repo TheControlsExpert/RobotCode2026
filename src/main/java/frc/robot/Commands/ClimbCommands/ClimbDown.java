@@ -1,6 +1,7 @@
 package frc.robot.Commands.ClimbCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.ClimbConstants;
 import frc.robot.Subsystems.Climb.Climb;
 
 public class ClimbDown extends Command{
@@ -19,16 +20,12 @@ public class ClimbDown extends Command{
 
 
     public boolean isFinished() {
-        boolean limitReached = false;
-        if (climb.getEncoderValue() == 0) { //arbitrary constant representing rotations needed to fully extend
-            limitReached = true;
-        }
-        return limitReached;
+        return climb.getEncoderValue() > ClimbConstants.lowerLimit;
     }
 
 
 
-    public void end() {
+    public void end(boolean interrupted) {
         climb.setClimbDutyCycle(0);
     }
 }

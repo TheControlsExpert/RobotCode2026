@@ -53,6 +53,5 @@ public class ClimbIO {
 
     public double getEncoderValue() {
         return climbMotor.getPosition().getValueAsDouble();
-    }
-   
+    } 
 }

@@ -199,6 +199,8 @@ public final class Constants {
     public static double supplyCurrentLimit = 60;
     public static double supplyCurrentLowerLimit = 40;
     public static double supplyCurrentLowerLimit_time = 0.25;
+    public static double lowerLimit = 0;
+    public static double upperLimit = 50;
   }
 
   public static class ShooterConstants {

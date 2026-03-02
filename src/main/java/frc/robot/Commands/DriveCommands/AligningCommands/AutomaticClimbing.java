@@ -58,10 +58,10 @@ public class AutomaticClimbing {
         
         if (DriverStation.isTeleop()) {
 
-        return 
+        return (
                 
             
-        new ProfiledPIDCommand(autoAlign, drive,
+        new ClimbUp(climb).andThen(new ProfiledPIDCommand(autoAlign, drive,
 
         () -> {
         if (!hasReachedFirstPose) {
@@ -77,15 +77,15 @@ public class AutomaticClimbing {
             return climbPoses[1].transformBy(climbPoses[0].minus(climbPoses[1]).times(MathUtil.clamp(timer.get() / moving_setpoint_time, 0, 1)));
         }
         
-    }).andThen(new ClimbUp(climb)).andThen(new WaitCommand(2)).andThen(new ClimbDown(climb));
+    })).andThen(new ClimbDown(climb)).andThen(new WaitCommand(2)).andThen(new ClimbUp(climb)));
 }
 
 else {
-    return new ProfiledPIDCommand(autoAlign, drive,
+    return (new ClimbUp(climb).andThen(new ProfiledPIDCommand(autoAlign, drive,
 
     () -> {
         publisher.set(new Pose2d(climbPoses[0].getX(), climbPoses[0].getY()-0.05, climbPoses[0].getRotation()));
-        return climbPoses[0];}).andThen(new ClimbUp(climb)).andThen(new WaitCommand(2)).andThen(new ClimbDown(climb));
+        return climbPoses[0];})).andThen(new ClimbDown(climb)).andThen(new WaitCommand(2)).andThen(new ClimbUp(climb)));
 }
 }
 
