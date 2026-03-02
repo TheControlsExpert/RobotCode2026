@@ -7,7 +7,7 @@ import frc.robot.Subsystems.Drive.Drive;
 
 public class ClimbDown extends Command{
     Climb climb;
-    Drive drive;
+    
 
     public ClimbDown (Climb climb) {
         this.climb = climb;
@@ -17,8 +17,8 @@ public class ClimbDown extends Command{
 
     @Override
     public void initialize() {
-        if (drive.getEstimatedPosition().getTranslation().getDistance(ClimbConstants.RightPoseBlue.getTranslation()) <= 0.2)
-        climb.setClimbDutyCycle(-0.2);
+        // if (drive.getEstimatedPosition().getTranslation().getDistance(ClimbConstants.RightPoseBlue.getTranslation()) <= 0.2)
+        // climb.setClimbDutyCycle(-0.2);
     }
 
 

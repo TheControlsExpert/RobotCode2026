@@ -259,8 +259,8 @@ public class RobotContainer {
                 controller));
         controller.leftBumper().whileTrue(new IntakeCommand(intake));
 
-        controller.button(8).whileTrue(autoClimbing.getClimbingCommand()); //climbing commands
-        controller.button(7).onTrue(new ClimbDown(climb)); 
+        //controller.button(8).whileTrue(autoClimbing.getClimbingCommand()); //climbing commands
+       // controller.button(7).onTrue(new ClimbDown(climb)); 
          
 
          controller.rightTrigger().whileTrue(new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)
