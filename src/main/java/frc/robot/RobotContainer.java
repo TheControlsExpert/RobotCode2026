@@ -47,6 +47,7 @@ import frc.robot.Constants.SwerveConstants.Mod1;
 import frc.robot.Constants.SwerveConstants.Mod2;
 import frc.robot.Constants.SwerveConstants.Mod3;
 import frc.robot.Robot.ShootingState;
+import frc.robot.Commands.ClimbCommands.ClimbDown;
 import frc.robot.Commands.DriveCommands.DriveCommand;
 import frc.robot.Commands.DriveCommands.FeedforwardCharacterization;
 import frc.robot.Commands.DriveCommands.StraightDriveCommand;
@@ -256,8 +257,10 @@ public class RobotContainer {
                 () -> -controller.getRightX(),
                 drive,
                 controller));
-         controller.leftBumper().whileTrue(new IntakeCommand(intake));
+        controller.leftBumper().whileTrue(new IntakeCommand(intake));
 
+        controller.button(8).whileTrue(autoClimbing.getClimbingCommand()); //climbing commands
+        controller.button(7).onTrue(new ClimbDown(climb)); 
          
 
          controller.rightTrigger().whileTrue(new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)

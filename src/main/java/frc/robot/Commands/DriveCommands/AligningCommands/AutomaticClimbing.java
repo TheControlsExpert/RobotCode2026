@@ -56,7 +56,7 @@ public class AutomaticClimbing {
         
         if (DriverStation.isTeleop()) { //if we're in teleop, only align, climbing will be done manually
 
-            return (new ClimbUp(climb).andThen
+            return new ClimbUp(climb).andThen
             (new ProfiledPIDCommand(autoAlign, drive,
 
             () -> {
@@ -76,7 +76,7 @@ public class AutomaticClimbing {
                     return climbPoses[1].transformBy(climbPoses[0].minus(climbPoses[1]).times(MathUtil.clamp(timer.get() / moving_setpoint_time, 0, 1)));
                 }
             
-            })).andThen(new ClimbDown(climb)).andThen(new WaitCommand(2)).andThen(new ClimbUp(climb)));
+            }));
         }
 
 
