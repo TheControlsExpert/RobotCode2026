@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Commands.ClimbCommands.ClimbDown;
 import frc.robot.Commands.ClimbCommands.ClimbUp;
@@ -56,8 +57,8 @@ public class AutomaticClimbing {
         
         if (DriverStation.isTeleop()) { //if we're in teleop, only align, climbing will be done manually
 
-            return new ClimbUp(climb).andThen
-            (new ProfiledPIDCommand(autoAlign, drive,
+            return new ParallelCommandGroup(new ClimbUp(climb), 
+            new ProfiledPIDCommand(autoAlign, drive,
 
             () -> {
                 if (!hasReachedFirstPose) {
@@ -82,13 +83,13 @@ public class AutomaticClimbing {
 
         else  { //if we're in autonomous
 
-            return (new ClimbUp(climb).andThen(new ProfiledPIDCommand(autoAlign, drive,
+            return new ParallelCommandGroup(new ClimbUp(climb), new ProfiledPIDCommand(autoAlign, drive,
 
             () -> {
                 publisher.set(new Pose2d(climbPoses[0].getX(), climbPoses[0].getY()-0.05, climbPoses[0].getRotation()));
                 return climbPoses[0];
             }
-                )).andThen(new ClimbDown(climb)).andThen(new WaitCommand(2)).andThen(new ClimbUp(climb)));
+                )).andThen(new ClimbDown(climb, drive, this));
         }
     }
 
@@ -104,7 +105,10 @@ public class AutomaticClimbing {
     public Pose2d[] getClosestClimbPoses() {
         SmartDashboard.putBoolean("isClimbingRight", isClimbingRight);
         Pose2d blueRight = ClimbConstants.RightPoseBlue;
+        Pose2d blueRightAdjusted = ClimbConstants.RightPoseBlueAdjusted;
+
         Pose2d blueLeft = FlipVertically_bottom_to_top(blueRight);
+        Pose2d blueLeftAdjusted = FlipVertically_bottom_to_top(blueRightAdjusted);
         
         if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
            
@@ -112,10 +116,10 @@ public class AutomaticClimbing {
             if (drive.getEstimatedPosition().getTranslation().getDistance(blueRight.getTranslation()) < drive.getEstimatedPosition().getTranslation().getDistance(blueLeft.getTranslation())) {
                 isClimbingRight = true;
 
-                return new Pose2d[]{blueRight, blueRight.plus(new Transform2d(0.0,0.2,Rotation2d.fromDegrees(0)))};
+                return new Pose2d[]{blueRight, blueRight.plus(new Transform2d(0.0,0.2,Rotation2d.fromDegrees(0))), blueRightAdjusted};
             } else {
                 isClimbingRight = false;
-                return new Pose2d[]{blueLeft, blueLeft.plus(new Transform2d(0.0,0.2,Rotation2d.fromDegrees(0)))};
+                return new Pose2d[]{blueLeft, blueLeft.plus(new Transform2d(0.0,0.2,Rotation2d.fromDegrees(0))), blueLeftAdjusted};
             }
         }
 
@@ -124,12 +128,15 @@ public class AutomaticClimbing {
             Pose2d redRight = FlipVertically_bottom_to_top_halfpoint(FlipHorizontally_BtoR(blueRight));
             Pose2d redLeft = FlipVertically_bottom_to_top_halfpoint(FlipHorizontally_BtoR(blueLeft));
 
+            Pose2d redRightAdjusted = FlipVertically_bottom_to_top(blueRightAdjusted);
+            Pose2d redLeftAdjusted = FlipVertically_bottom_to_top(blueLeftAdjusted);
+
             if (drive.getEstimatedPosition().getTranslation().getDistance(redRight.getTranslation()) < drive.getEstimatedPosition().getTranslation().getDistance(redLeft.getTranslation())) {
                 isClimbingRight = true;
-                return new Pose2d[]{redRight, redRight.plus(new Transform2d(0.0, 0.2,Rotation2d.fromDegrees(0)))};
+                return new Pose2d[]{redRight, redRight.plus(new Transform2d(0.0, 0.2,Rotation2d.fromDegrees(0))), redRightAdjusted};
             } else {
                 isClimbingRight = false;
-                return new Pose2d[]{redLeft, redLeft.plus(new Transform2d(0, 0.2, Rotation2d.fromDegrees(0)))};
+                return new Pose2d[]{redLeft, redLeft.plus(new Transform2d(0, 0.2, Rotation2d.fromDegrees(0))), redLeftAdjusted};
             }
         }
 
