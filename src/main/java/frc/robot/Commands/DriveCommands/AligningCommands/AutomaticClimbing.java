@@ -16,7 +16,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.Commands.ClimbCommands.ClimbDown;
+import frc.robot.Commands.ClimbCommands.ClimbUp;
 import frc.robot.Constants.ClimbConstants;
+import frc.robot.Subsystems.Climb.Climb;
 import frc.robot.Subsystems.Drive.Drive;
 import frc.robot.Subsystems.Vision.VisionSubsystem;
 
@@ -25,6 +28,7 @@ public class AutomaticClimbing {
     ProfiledPIDCommand profiledPIDCommand;
     AutoAlign autoAlign;
     VisionSubsystem vision;
+    Climb climb;
 
     double translationalMOE = 0.1;
     boolean hasReachedFirstPose = false;
@@ -37,10 +41,11 @@ public class AutomaticClimbing {
 
 
 
-    public AutomaticClimbing(Drive drive, AutoAlign autoAlign, VisionSubsystem vision) {
+    public AutomaticClimbing(Drive drive, AutoAlign autoAlign, VisionSubsystem vision, Climb climb) {
         this.drive = drive;
         this.autoAlign = autoAlign;
         this.vision = vision;
+        this.climb = climb;
            
 
     }
@@ -71,7 +76,7 @@ public class AutomaticClimbing {
             return climbPoses[1].transformBy(climbPoses[0].minus(climbPoses[1]).times(MathUtil.clamp(timer.get() / moving_setpoint_time, 0, 1)));
         }
         
-    });
+    }).andThen(new ClimbUp(climb)).andThen(new ClimbDown(climb));
 }
 
 else {
@@ -79,7 +84,7 @@ else {
 
     () -> {
         publisher.set(new Pose2d(climbPoses[0].getX(), climbPoses[0].getY()-0.05, climbPoses[0].getRotation()));
-        return climbPoses[0];});
+        return climbPoses[0];}).andThen(new ClimbUp(climb)).andThen(new ClimbDown(climb));
 }
 }
 
