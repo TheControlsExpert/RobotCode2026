@@ -47,47 +47,59 @@ public class AutomaticClimbing {
         this.autoAlign = autoAlign;
         this.vision = vision;
         this.climb = climb;
-           
-
     }
 
     public Command getClimbingCommand() {
-        Pose2d[] climbPoses = getClosestClimbPoses();
-        
+
+        Pose2d[] climbPoses = getClosestClimbPoses();   
         hasReachedFirstPose = false;
         
-        if (DriverStation.isTeleop()) {
+        if (DriverStation.isTeleop()) { //if we're in teleop, only align, climbing will be done manually
 
-        return (
+            return (new ClimbUp(climb).andThen
+            (new ProfiledPIDCommand(autoAlign, drive,
+
+            () -> {
+                if (!hasReachedFirstPose) {
+                    
+                    publisher.set(climbPoses[1]);
+
+                    if (drive.getEstimatedPosition().getTranslation().getDistance(climbPoses[1].getTranslation()) < translationalMOE) {
+                        hasReachedFirstPose = true;
+                        timer.restart();
+                    }
+                    return climbPoses[1];
+                } 
                 
+                else {
+                    publisher.set(climbPoses[1].transformBy(climbPoses[0].minus(climbPoses[1]).times(MathUtil.clamp(timer.get() / moving_setpoint_time, 0, 1)))); 
+                    return climbPoses[1].transformBy(climbPoses[0].minus(climbPoses[1]).times(MathUtil.clamp(timer.get() / moving_setpoint_time, 0, 1)));
+                }
             
-        new ClimbUp(climb).andThen(new ProfiledPIDCommand(autoAlign, drive,
-
-        () -> {
-        if (!hasReachedFirstPose) {
-            publisher.set(climbPoses[1]);
-            if (drive.getEstimatedPosition().getTranslation().getDistance(climbPoses[1].getTranslation()) < translationalMOE) {
-                hasReachedFirstPose = true;
-                timer.restart();
-            }
-            return climbPoses[1];
-        } else {
-            publisher.set(climbPoses[1].transformBy(climbPoses[0].minus(climbPoses[1]).times(MathUtil.clamp(timer.get() / moving_setpoint_time, 0, 1))));
-            
-            return climbPoses[1].transformBy(climbPoses[0].minus(climbPoses[1]).times(MathUtil.clamp(timer.get() / moving_setpoint_time, 0, 1)));
+            })).andThen(new ClimbDown(climb)).andThen(new WaitCommand(2)).andThen(new ClimbUp(climb)));
         }
-        
-    })).andThen(new ClimbDown(climb)).andThen(new WaitCommand(2)).andThen(new ClimbUp(climb)));
-}
 
-else {
-    return (new ClimbUp(climb).andThen(new ProfiledPIDCommand(autoAlign, drive,
 
-    () -> {
-        publisher.set(new Pose2d(climbPoses[0].getX(), climbPoses[0].getY()-0.05, climbPoses[0].getRotation()));
-        return climbPoses[0];})).andThen(new ClimbDown(climb)).andThen(new WaitCommand(2)).andThen(new ClimbUp(climb)));
-}
-}
+        else  { //if we're in autonomous
+
+            return (new ClimbUp(climb).andThen(new ProfiledPIDCommand(autoAlign, drive,
+
+            () -> {
+                publisher.set(new Pose2d(climbPoses[0].getX(), climbPoses[0].getY()-0.05, climbPoses[0].getRotation()));
+                return climbPoses[0];
+            }
+                )).andThen(new ClimbDown(climb)).andThen(new WaitCommand(2)).andThen(new ClimbUp(climb)));
+        }
+    }
+
+
+
+
+
+
+
+
+
 
     public Pose2d[] getClosestClimbPoses() {
         SmartDashboard.putBoolean("isClimbingRight", isClimbingRight);
