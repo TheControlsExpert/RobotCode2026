@@ -427,7 +427,7 @@ public class RobotContainer {
 
             else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) { //only climb
               
-              return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
+              return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}). //this may have to be changed to account for starting hub position
               andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(true), Set.of(drive)));
             }
           }
@@ -457,10 +457,33 @@ public class RobotContainer {
 
 
         else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
-          if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+          if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) { //this assumes that we are starting from the hub position
+
+            //new paths and autos have to be created to go from the hub to the outpost
+            try { 
+
+              if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
+              goLoaderAutoPath = PathPlannerPath.fromPathFile("Hub to (Collect Outpost)"); 
+              shootFromLoaderAutoPath = PathPlannerPath.fromPathFile("Hub to (Return Outpost)");
+              } else {
+                goLoaderAutoPath = PathPlannerPath.fromPathFile("Hub to (Collect Outpost)").flipPath();
+                shootFromLoaderAutoPath = shootFromLoaderAutoPath.flipPath();
+              }
+
+            }
+            catch (Exception e) {
+              return Commands.none();
+            }
+
+            goLoaderAuto = AutoBuilder.followPath(goLoaderAutoPath);
+            shootFromLoaderAuto = AutoBuilder.followPath(shootFromLoaderAutoPath);
+
+              
+
+
             if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) { //go to the outpost and shoot
               
-              return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
+              return new InstantCommand(() -> {drive.resetPosition(goLoaderAutoPath.getStartingHolonomicPose().get());}).
               andThen(goLoaderAuto).andThen(new WaitCommand(2)).
               andThen(shootFromLoaderAuto).
               andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake)));
@@ -469,7 +492,7 @@ public class RobotContainer {
 
             else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) { //go to the outpost, shoot, then climb
               
-              return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
+              return new InstantCommand(() -> {drive.resetPosition(goLoaderAutoPath.getStartingHolonomicPose().get());}).
               andThen(goLoaderAuto).andThen(new WaitCommand(2)).
               andThen(shootFromLoaderAuto).
               andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake))).
