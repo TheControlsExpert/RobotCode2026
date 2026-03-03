@@ -16,68 +16,31 @@
     },
     {
       "anchor": {
-        "x": 0.8615464261718666,
-        "y": 5.966494457093226
+        "x": 0.737350788879723,
+        "y": 5.993492174892058
       },
       "prevControl": {
-        "x": 1.2434422035238144,
-        "y": 5.970840527672793
-      },
-      "nextControl": {
-        "x": 0.6115626133694748,
-        "y": 5.963649578048682
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.7663215488215496,
-        "y": 5.973
-      },
-      "prevControl": {
-        "x": 1.1308591452983454,
-        "y": 5.9989945134611915
+        "x": 1.1192465662316708,
+        "y": 5.997838245471625
       },
       "nextControl": null,
-      "isLocked": true,
+      "isLocked": false,
       "linkedName": null
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.34193161367727765,
-      "rotationDegrees": -30.33283684206709
-    },
-    {
-      "waypointRelativePos": 1.2297540491901582,
-      "rotationDegrees": 0.0
-    },
-    {
-      "waypointRelativePos": 1.7648470305938795,
+      "waypointRelativePos": 0.3151726973684214,
       "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 1.4386962890625,
-      "maxWaypointRelativePos": 1.4884765625,
+      "minWaypointRelativePos": 0.304833984375,
+      "maxWaypointRelativePos": 1.0,
       "constraints": {
-        "maxVelocity": 0.1,
-        "maxAcceleration": 4.0,
-        "maxAngularVelocity": 800.0,
-        "maxAngularAcceleration": 720.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    },
-    {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.7316162109375,
-      "maxWaypointRelativePos": 1.1159179687499998,
-      "constraints": {
-        "maxVelocity": 0.5,
+        "maxVelocity": 0.65,
         "maxAcceleration": 4.0,
         "maxAngularVelocity": 800.0,
         "maxAngularAcceleration": 720.0,
@@ -98,7 +61,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -38.0
+    "rotation": 0.30119413942875
   },
   "reversed": false,
   "folder": "Auto Depot",

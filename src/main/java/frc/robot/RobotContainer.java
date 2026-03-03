@@ -377,6 +377,8 @@ public class RobotContainer {
     Command goLoaderAuto;
     PathPlannerPath shootFromLoaderAutoPath;
     Command shootFromLoaderAuto;
+    PathPlannerPath returnFromLoaderAutoPath;
+    Command returnFromLoaderAuto;
 
       
 
@@ -545,13 +547,16 @@ public class RobotContainer {
             goMiddleAutoPath = PathPlannerPath.fromPathFile("Human Player Center Approach").flipPath().mirrorPath();
             leaveMiddleAutoPath = PathPlannerPath.fromPathFile("Depot Wayback").flipPath();
             goLoaderAutoPath = PathPlannerPath.fromPathFile("Collect Depot").flipPath();
+            returnFromLoaderAutoPath = PathPlannerPath.fromPathFile("Return Depot").flipPath();
           }
           else {
             goMiddleAutoPath = PathPlannerPath.fromPathFile("Human Player Center Approach").mirrorPath();
             leaveMiddleAutoPath = PathPlannerPath.fromPathFile("Depot Wayback");
             goLoaderAutoPath = PathPlannerPath.fromPathFile("Collect Depot");
+            returnFromLoaderAutoPath = PathPlannerPath.fromPathFile("Return Depot");
+          }
           } 
-        }
+        
 
        catch (Exception e) {
         return Commands.none();
@@ -561,6 +566,7 @@ public class RobotContainer {
         goMiddleAuto = AutoBuilder.followPath(goMiddleAutoPath);
         leaveMiddleAuto = AutoBuilder.followPath(leaveMiddleAutoPath);  
         goLoaderAuto = AutoBuilder.followPath(goLoaderAutoPath); 
+        returnFromLoaderAuto = AutoBuilder.followPath(returnFromLoaderAutoPath);
 
 
 
@@ -631,7 +637,7 @@ public class RobotContainer {
               andThen(new ParallelRaceGroup(new IntakeCommand(intake), goMiddleAuto)).
               andThen(new ParallelRaceGroup(new Revv(shooter, drive, controller), leaveMiddleAuto)).
               andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake))).
-              andThen(goLoaderAuto).andThen(new WaitCommand(2)).
+              andThen(new ParallelRaceGroup(new IntakeCommand(intake), goLoaderAuto.andThen(returnFromLoaderAuto))).
               andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake)));
             }
 
@@ -642,7 +648,7 @@ public class RobotContainer {
               andThen(new ParallelRaceGroup(new IntakeCommand(intake), goMiddleAuto)).
               andThen(new ParallelRaceGroup(new Revv(shooter, drive, controller), leaveMiddleAuto)).
               andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 5)).
-              andThen(goLoaderAuto).
+              andThen(new ParallelRaceGroup(new IntakeCommand(intake), goLoaderAuto.andThen(returnFromLoaderAuto))).
               andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 3)).
               andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
             }      

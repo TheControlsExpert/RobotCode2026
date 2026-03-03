@@ -218,7 +218,7 @@ private final Field2d m_field = new Field2d();
  // Method that will drive the robot gn ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
  new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
  new PIDConstants(translationkP, 0.0, 0.3), // Translation PID constants
- new PIDConstants(0.1, 0.0, 0.0) // Rotation PID constants
+ new PIDConstants(2.5, 0.0, 0.0) // Rotation PID constants
  ),
  
  config, // The robot configuration
