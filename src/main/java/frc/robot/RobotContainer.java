@@ -642,18 +642,15 @@ public class RobotContainer {
 
                 PathPlannerPath hubToDepotPath;
                 Command hubToDepotAuto;
-                PathPlannerPath hubEnterDepotPath;
                 PathPlannerPath hubLeaveDepotPath;
-                Command hubCollectDepotAuto;
+                Command hubLeaveDepotAuto;
 
                 try {
                   if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
                     hubToDepotPath = PathPlannerPath.fromPathFile("Hub to Depot Entrance");
-                    hubEnterDepotPath = PathPlannerPath.fromPathFile("Collect Depot (HUB)");
                     hubLeaveDepotPath = PathPlannerPath.fromPathFile("Return Depot");
                   } else {
                     hubToDepotPath = PathPlannerPath.fromPathFile("Hub to Depot Entrance").flipPath();
-                    hubEnterDepotPath = PathPlannerPath.fromPathFile("Collect Depot (HUB)").flipPath();
                     hubLeaveDepotPath = PathPlannerPath.fromPathFile("Return Depot").flipPath();
                   }
                 } catch (Exception e) {
@@ -661,7 +658,7 @@ public class RobotContainer {
                 }
 
                 hubToDepotAuto = AutoBuilder.followPath(hubToDepotPath);
-                hubCollectDepotAuto = AutoBuilder.followPath(hubEnterDepotPath).andThen(AutoBuilder.followPath(hubLeaveDepotPath));
+                hubLeaveDepotAuto = AutoBuilder.followPath(hubLeaveDepotPath);
 
 
 
@@ -670,8 +667,8 @@ public class RobotContainer {
                 if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) { //go to the outpost and shoot
                   
                   return new InstantCommand(() -> {drive.resetPosition(hubToDepotPath.getStartingHolonomicPose().get());}).
-                  andThen(hubToDepotAuto).
-                  andThen(new ParallelRaceGroup(new IntakeCommand(intake), hubCollectDepotAuto)).
+                  andThen(new ParallelRaceGroup(hubToDepotAuto, new WaitCommand(1).andThen(new IntakeCommand(intake)))).
+                  andThen(hubLeaveDepotAuto).
                   andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 5));
                 }
 
@@ -679,8 +676,8 @@ public class RobotContainer {
                 else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) { //go to the outpost, shoot, then climb
                   
                   return new InstantCommand(() -> {drive.resetPosition(hubToDepotPath.getStartingHolonomicPose().get());}).
-                  andThen(hubToDepotAuto).
-                  andThen(new ParallelRaceGroup(new IntakeCommand(intake), hubCollectDepotAuto)).
+                  andThen(new ParallelRaceGroup(hubToDepotAuto, new WaitCommand(1).andThen(new IntakeCommand(intake)))).
+                  andThen(hubLeaveDepotAuto).
                   andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 5)).
                   andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(true), Set.of(drive)));
                 }
