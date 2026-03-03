@@ -35,7 +35,6 @@ public class AutomaticClimbing {
     double translationalMOE = 0.1;
     boolean hasReachedFirstPose = false;
     boolean isClimbingRight = false;
-    boolean isOverridePossible = false; //if the driver can override the climb
     double moving_setpoint_time = 0.15;
 
     StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault()
@@ -161,9 +160,10 @@ public class AutomaticClimbing {
 
 
     public boolean isOverridePossible() {
+        boolean isOverridePossible = false;
 
-        if (drive.getEstimatedPosition().getTranslation().getDistance(getClosestClimbPoses()[2].getTranslation()) < 0.07 && //makes sure the bot is close enough to the tower
-         climb.getEncoderValue() > ClimbConstants.upperLimit) //makes sure the climb is actually completely up
+        if (drive.getEstimatedPosition().getTranslation().getDistance(getClosestClimbPoses()[2].getTranslation()) < 0.025 && //makes sure the bot is close enough to the tower
+         climb.getEncoderValue() >= ClimbConstants.upperLimit) //makes sure the climb is actually completely up
 
         { isOverridePossible = true;}
 
