@@ -259,12 +259,14 @@ public class RobotContainer {
                 controller));
         controller.leftBumper().whileTrue(new IntakeCommand(intake));
 
+        //automatic climbing and climb up in teleop, with potential for overridng
         controller.button(8).whileTrue(Commands.defer(() -> autoClimbing.getClimbingCommand(true).until( //stops the command when:
           () -> autoClimbing.isOverridePossible() && //overriding is possible
           (Math.abs(controller.getLeftY()) > 0.1 || Math.abs(controller.getLeftX()) > 0.1)), //driver moves the controller enough
           Set.of(climb, drive))); 
 
 
+        //brings climb back down
         controller.button(7).onTrue(Commands.defer(() -> new ClimbDown(climb, drive), Set.of(climb))); 
          
 
