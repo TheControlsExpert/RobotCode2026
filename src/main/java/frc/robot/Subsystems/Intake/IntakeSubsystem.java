@@ -72,6 +72,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void setIntakeDutyCycle(double dutyCycle) {
         io.setIntakeDutyCycle(dutyCycle);
+        SmartDashboard.putBoolean("Intake on", Math.abs(dutyCycle) > 0);
     }
 
     public void setPivotPosition(double position) {

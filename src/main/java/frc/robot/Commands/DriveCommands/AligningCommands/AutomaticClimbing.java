@@ -145,8 +145,8 @@ public class AutomaticClimbing {
             Pose2d redRight = FlipVertically_bottom_to_top_halfpoint(FlipHorizontally_BtoR(blueRight));
             Pose2d redLeft = FlipVertically_bottom_to_top_halfpoint(FlipHorizontally_BtoR(blueLeft));
 
-            Pose2d redRightAdjusted = FlipVertically_bottom_to_top(blueRightAdjusted);
-            Pose2d redLeftAdjusted = FlipVertically_bottom_to_top(blueLeftAdjusted);
+            Pose2d redRightAdjusted = FlipVertically_bottom_to_top(FlipHorizontally_BtoR(blueRightAdjusted));
+            Pose2d redLeftAdjusted = FlipVertically_bottom_to_top(FlipHorizontally_BtoR(blueLeftAdjusted));
 
             if (drive.getEstimatedPosition().getTranslation().getDistance(redRight.getTranslation()) < drive.getEstimatedPosition().getTranslation().getDistance(redLeft.getTranslation())) {
                 isClimbingRight = true;

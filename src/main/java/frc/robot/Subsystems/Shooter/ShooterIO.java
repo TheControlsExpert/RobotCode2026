@@ -21,6 +21,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterIO {
@@ -144,6 +145,7 @@ public class ShooterIO {
   }
 
   public void setVelocityShooter(double velocity) {
+     SmartDashboard.putNumber("Shooter on", velocity);
     shooterLeft.setControl(shooterLeftVoltage.withVelocity(velocity));
     shooterRight.setControl(shooterRightVoltage.withVelocity(velocity));
   }

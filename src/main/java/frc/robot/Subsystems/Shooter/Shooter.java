@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.Constants.ShooterConstants;
@@ -108,6 +109,7 @@ public class Shooter extends SubsystemBase {
 
      public void setShooterVelocity(double velocity) {
         io.setVelocityShooter(velocity);
+       
      }
 
      public void setOutputShooter(double dutycycle) {
