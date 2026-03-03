@@ -459,45 +459,49 @@ public class RobotContainer {
         else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
           if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) { //this assumes that we are starting from the hub position
 
+
             //new paths and autos have to be created to go from the hub to the outpost
-            try { 
+            PathPlannerPath HubToOutpostPath;
+            Command HubToOutpostAuto;
+            PathPlannerPath HubLeaveOutpostPath;
+            Command HubLeaveOutpostAuto;
 
+            try {
               if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
-              goLoaderAutoPath = PathPlannerPath.fromPathFile("Hub to (Collect Outpost)"); 
-              shootFromLoaderAutoPath = PathPlannerPath.fromPathFile("Hub to (Return Outpost)");
+                HubToOutpostPath = PathPlannerPath.fromPathFile("Hub to (Collect Outpost)");
+                HubLeaveOutpostPath = PathPlannerPath.fromPathFile("Hub to (Return Outpost)");
               } else {
-                goLoaderAutoPath = PathPlannerPath.fromPathFile("Hub to (Collect Outpost)").flipPath();
-                shootFromLoaderAutoPath = shootFromLoaderAutoPath.flipPath();
+                HubToOutpostPath = PathPlannerPath.fromPathFile("Hub to (Collect Outpost)");
+                HubLeaveOutpostPath = PathPlannerPath.fromPathFile("Hub to (Return Outpost)");
               }
-
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
               return Commands.none();
             }
 
-            goLoaderAuto = AutoBuilder.followPath(goLoaderAutoPath);
-            shootFromLoaderAuto = AutoBuilder.followPath(shootFromLoaderAutoPath);
+            HubToOutpostAuto = AutoBuilder.followPath(HubToOutpostPath);
+            HubLeaveOutpostAuto = AutoBuilder.followPath(HubLeaveOutpostPath);
+            
 
-              
 
 
             if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) { //go to the outpost and shoot
               
-              return new InstantCommand(() -> {drive.resetPosition(goLoaderAutoPath.getStartingHolonomicPose().get());}).
-              andThen(goLoaderAuto).andThen(new WaitCommand(2)).
-              andThen(shootFromLoaderAuto).
+              return new InstantCommand(() -> {drive.resetPosition(HubToOutpostPath.getStartingHolonomicPose().get());}).
+              andThen(HubToOutpostAuto).andThen(new WaitCommand(2)).
+              andThen(new ParallelRaceGroup(HubLeaveOutpostAuto, new Revv(shooter, drive, controller))).
               andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake)));
             }
 
 
             else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) { //go to the outpost, shoot, then climb
-              
-              return new InstantCommand(() -> {drive.resetPosition(goLoaderAutoPath.getStartingHolonomicPose().get());}).
-              andThen(goLoaderAuto).andThen(new WaitCommand(2)).
-              andThen(shootFromLoaderAuto).
+
+              return new InstantCommand(() -> {drive.resetPosition(HubToOutpostPath.getStartingHolonomicPose().get());}).
+              andThen(HubToOutpostAuto).andThen(new WaitCommand(2)).
+              andThen(new ParallelRaceGroup(HubLeaveOutpostAuto, new Revv(shooter, drive, controller))).
               andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake))).
-              andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(false), Set.of(drive)));
+              andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(true), Set.of(drive)));
             }
+                   
           }
 
 
