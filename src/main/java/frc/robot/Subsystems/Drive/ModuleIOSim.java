@@ -33,7 +33,7 @@ public class ModuleIOSim implements ModuleIO {
 
   private boolean driveClosedLoop = false;
   private boolean turnClosedLoop = false;
-  private PIDController driveController = new PIDController(0.1, 0, 0, 0.02);
+  private PIDController driveController = new PIDController(0, 0, 0, 0.02);
   private PIDController turnController = new PIDController(SwerveConstants.angleKP, 0, 0, 0.02);
   private double driveFFVolts = 0;
   private double driveAppliedVolts = 0.0;

@@ -194,7 +194,7 @@ public final class Constants {
   }
 
   public static class ClimbConstants {
-    public static Pose2d RightPoseBlue = new Pose2d(1.08+0.0254, 2.859+0.05, Rotation2d.fromDegrees(180));
+    public static Pose2d RightPoseBlue = new Pose2d(1.08+0.0254, 2.859+0.1, Rotation2d.fromDegrees(180));
     public static Pose2d RightPoseBlueAdjusted = new Pose2d(1.08 + 0.0254, 2.859, Rotation2d.fromDegrees(180));
 
     public static double supplyCurrentLimit = 60;

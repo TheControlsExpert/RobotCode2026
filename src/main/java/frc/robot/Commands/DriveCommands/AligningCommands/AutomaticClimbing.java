@@ -36,6 +36,7 @@ public class AutomaticClimbing {
     boolean hasReachedFirstPose = false;
     boolean isClimbingRight = false;
     double moving_setpoint_time = 0.15;
+
     StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault()
   .getStructTopic("Target for Climbing", Pose2d.struct).publish(); 
 
@@ -50,9 +51,9 @@ public class AutomaticClimbing {
         this.climb = climb;
     }
 
-    public Command getClimbingCommand() {
-
-        Pose2d[] climbPoses = getClosestClimbPoses();   
+    public Command getClimbingCommand(boolean shouldbeSafe) {
+        Pose2d[] climbPoses = getClosestClimbPoses();
+        
         hasReachedFirstPose = false;
         
         if (DriverStation.isTeleop()) { //if we're in teleop, only align, climbing will be done manually
@@ -73,7 +74,7 @@ public class AutomaticClimbing {
                 } 
                 
                 else {
-                    publisher.set(climbPoses[1].transformBy(climbPoses[0].minus(climbPoses[1]).times(MathUtil.clamp(timer.get() / moving_setpoint_time, 0, 1)))); 
+                    publisher.set(climbPoses[2]); 
                     return climbPoses[1].transformBy(climbPoses[0].minus(climbPoses[1]).times(MathUtil.clamp(timer.get() / moving_setpoint_time, 0, 1)));
                 }
             
@@ -82,25 +83,41 @@ public class AutomaticClimbing {
 
 
         else  { //if we're in autonomous
+        if (!shouldbeSafe) {
 
             return new ParallelCommandGroup(new ClimbUp(climb), new ProfiledPIDCommand(autoAlign, drive,
 
+    () -> {
+        publisher.set(climbPoses[2]);
+        return climbPoses[0];}));
+}
+
+    else {
+         return new ParallelCommandGroup(new ClimbUp(climb), 
+            new ProfiledPIDCommand(autoAlign, drive,
+
             () -> {
-                publisher.set(new Pose2d(climbPoses[0].getX(), climbPoses[0].getY()-0.05, climbPoses[0].getRotation()));
-                return climbPoses[0];
-            }
-                )).andThen(new ClimbDown(climb, drive));
-        }
+                if (!hasReachedFirstPose) {
+                    
+                    publisher.set(climbPoses[1]);
+
+                    if (drive.getEstimatedPosition().getTranslation().getDistance(climbPoses[1].getTranslation()) < translationalMOE) {
+                        hasReachedFirstPose = true;
+                        timer.restart();
+                    }
+                    return climbPoses[1];
+                } 
+                
+                else {
+                    publisher.set(climbPoses[2]); 
+                    return climbPoses[1].transformBy(climbPoses[0].minus(climbPoses[1]).times(MathUtil.clamp(timer.get() / moving_setpoint_time, 0, 1)));
+                }
+            
+            }));
+
     }
-
-
-
-
-
-
-
-
-
+        }
+}
 
     public Pose2d[] getClosestClimbPoses() {
         SmartDashboard.putBoolean("isClimbingRight", isClimbingRight);
@@ -116,10 +133,10 @@ public class AutomaticClimbing {
             if (drive.getEstimatedPosition().getTranslation().getDistance(blueRight.getTranslation()) < drive.getEstimatedPosition().getTranslation().getDistance(blueLeft.getTranslation())) {
                 isClimbingRight = true;
 
-                return new Pose2d[]{blueRight, blueRight.plus(new Transform2d(0.0,0.2,Rotation2d.fromDegrees(0))), blueRightAdjusted};
+                return new Pose2d[]{blueRight, blueRight.plus(new Transform2d(0.0,0.4,Rotation2d.fromDegrees(0))), blueRightAdjusted};
             } else {
                 isClimbingRight = false;
-                return new Pose2d[]{blueLeft, blueLeft.plus(new Transform2d(0.0,0.2,Rotation2d.fromDegrees(0))), blueLeftAdjusted};
+                return new Pose2d[]{blueLeft, blueLeft.plus(new Transform2d(0.0,0.4,Rotation2d.fromDegrees(0))), blueLeftAdjusted};
             }
         }
 
@@ -133,10 +150,10 @@ public class AutomaticClimbing {
 
             if (drive.getEstimatedPosition().getTranslation().getDistance(redRight.getTranslation()) < drive.getEstimatedPosition().getTranslation().getDistance(redLeft.getTranslation())) {
                 isClimbingRight = true;
-                return new Pose2d[]{redRight, redRight.plus(new Transform2d(0.0, 0.2,Rotation2d.fromDegrees(0))), redRightAdjusted};
+                return new Pose2d[]{redRight, redRight.plus(new Transform2d(0.0, 0.4,Rotation2d.fromDegrees(0))), redRightAdjusted};
             } else {
                 isClimbingRight = false;
-                return new Pose2d[]{redLeft, redLeft.plus(new Transform2d(0, 0.2, Rotation2d.fromDegrees(0))), redLeftAdjusted};
+                return new Pose2d[]{redLeft, redLeft.plus(new Transform2d(0, 0.4, Rotation2d.fromDegrees(0))), redLeftAdjusted};
             }
         }
 

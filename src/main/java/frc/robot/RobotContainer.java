@@ -579,81 +579,82 @@ public class RobotContainer {
             }
 
 
-            else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) { //only climb
-              
-              return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
-              andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
-            }
-          }
+                else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) { //only climb
+                  
+                  return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
+                  andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(true), Set.of(drive)));
+                }
+              }
 
 
-          else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-            if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) { //go to middle, come back and shoot
-              
-              return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
-              andThen(new ParallelRaceGroup(new IntakeCommand(intake), goMiddleAuto)).
-              andThen(new ParallelRaceGroup(new Revv(shooter, drive, controller), leaveMiddleAuto)).
-              andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake)));
-            }
+              else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+                if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) { //go to middle, come back and shoot
+                  
+                  return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
+                  andThen(new ParallelRaceGroup(new IntakeCommand(intake), goMiddleAuto)).
+                  andThen(new ParallelRaceGroup(new Revv(shooter, drive, controller), leaveMiddleAuto)).
+                  andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 5));
+                }
 
 
-            else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) { //go to middle, come back and shoot, then climb
-              
-              return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
-              andThen(new ParallelRaceGroup(new IntakeCommand(intake), goMiddleAuto)).
-              andThen(new ParallelRaceGroup(new Revv(shooter, drive, controller), leaveMiddleAuto)).
-              andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake))).
-              andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
-            } 
-          }
-        }
-
-
-
-        else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
-          if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-            if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) { //go to the outpost and shoot
-              
-              return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
-              andThen(goLoaderAuto). 
-              andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake)));
+                else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) { //go to middle, come back and shoot, then climb
+                  
+                  return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
+                  andThen(new ParallelRaceGroup(new IntakeCommand(intake), goMiddleAuto)).
+                  andThen(new ParallelRaceGroup(new Revv(shooter, drive, controller), leaveMiddleAuto)).
+                  andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 5)).
+                  andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(true), Set.of(drive)));
+                } 
+              }
             }
 
 
-            else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) { //go to the outpost, shoot, then climb
-              
-              return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
-              andThen(goLoaderAuto).
-              andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake))).
-              andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
+
+            else if (chosenLoader.equals(AutoEnums.LoaderEnums.ONE_LOADER)) {
+              if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
+                if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) { //go to the outpost and shoot
+                  
+                  return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
+                  andThen(goLoaderAuto).
+                  andThen(new ParallelRaceGroup(new IntakeCommand(intake), goLoaderAuto.andThen(returnFromLoaderAuto))).
+                  andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 5));
+                }
+
+
+                else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) { //go to the outpost, shoot, then climb
+                  
+                  return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
+                  andThen(new ParallelRaceGroup(new IntakeCommand(intake), goLoaderAuto.andThen(returnFromLoaderAuto))).
+                  andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 5)).
+                  andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
+                }
+              }
+
+
+              else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
+                if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) { //go to middle, come back, shoot, go to outpost, shoot
+                  
+                  return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
+                  andThen(new ParallelRaceGroup(new IntakeCommand(intake), goMiddleAuto)).
+                  andThen(new ParallelRaceGroup(new Revv(shooter, drive, controller), leaveMiddleAuto)).
+                  andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 5)).
+                  andThen(new ParallelRaceGroup(new IntakeCommand(intake), goLoaderAuto.andThen(returnFromLoaderAuto))).
+                  andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 3));
+                }
+
+
+                else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) { //go to middle, come back while shooting, go to outpost, shoot, climb
+                  
+                  return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
+                  andThen(new ParallelRaceGroup(new IntakeCommand(intake), goMiddleAuto)).
+                  andThen(new ParallelRaceGroup(new Revv(shooter, drive, controller), leaveMiddleAuto)).
+                  andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 5)).
+                  andThen(new ParallelRaceGroup(new IntakeCommand(intake), goLoaderAuto.andThen(returnFromLoaderAuto))).
+                  andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 3)).
+                  andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
+                }      
+              }
             }
-          }
-
-
-          else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-            if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) { //go to middle, come back, shoot, go to outpost, shoot
-              
-              return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
-              andThen(new ParallelRaceGroup(new IntakeCommand(intake), goMiddleAuto)).
-              andThen(new ParallelRaceGroup(new Revv(shooter, drive, controller), leaveMiddleAuto)).
-              andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake))).
-              andThen(new ParallelRaceGroup(new IntakeCommand(intake), goLoaderAuto.andThen(returnFromLoaderAuto))).
-              andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake)));
-            }
-
-
-            else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) { //go to middle, come back while shooting, go to outpost, shoot, climb
-              
-              return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
-              andThen(new ParallelRaceGroup(new IntakeCommand(intake), goMiddleAuto)).
-              andThen(new ParallelRaceGroup(new Revv(shooter, drive, controller), leaveMiddleAuto)).
-              andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 5)).
-              andThen(new ParallelRaceGroup(new IntakeCommand(intake), goLoaderAuto.andThen(returnFromLoaderAuto))).
-              andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 3)).
-              andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
-            }      
-          }
-        }
 
 
 
