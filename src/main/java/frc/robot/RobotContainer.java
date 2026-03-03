@@ -471,8 +471,8 @@ public class RobotContainer {
                 HubToOutpostPath = PathPlannerPath.fromPathFile("Hub to (Collect Outpost)");
                 HubLeaveOutpostPath = PathPlannerPath.fromPathFile("Hub to (Return Outpost)");
               } else {
-                HubToOutpostPath = PathPlannerPath.fromPathFile("Hub to (Collect Outpost)");
-                HubLeaveOutpostPath = PathPlannerPath.fromPathFile("Hub to (Return Outpost)");
+                HubToOutpostPath = PathPlannerPath.fromPathFile("Hub to (Collect Outpost)").flipPath();
+                HubLeaveOutpostPath = PathPlannerPath.fromPathFile("Hub to (Return Outpost)").flipPath();
               }
             } catch (Exception e) {
               return Commands.none();
