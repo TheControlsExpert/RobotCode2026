@@ -259,7 +259,7 @@ public class RobotContainer {
                 controller));
         controller.leftBumper().whileTrue(new IntakeCommand(intake));
 
-        controller.button(8).whileTrue(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(climb, drive))); //climbing commands
+        controller.button(8).whileTrue(Commands.defer(() -> autoClimbing.getClimbingCommand(true), Set.of(climb, drive))); //climbing commands
         controller.button(7).onTrue(Commands.defer(() -> new ClimbDown(climb, drive), Set.of(climb))); 
          
 
@@ -428,7 +428,7 @@ public class RobotContainer {
             else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) { //only climb
               
               return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
-              andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
+              andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(true), Set.of(drive)));
             }
           }
 
@@ -449,7 +449,7 @@ public class RobotContainer {
               andThen(new ParallelRaceGroup(new IntakeCommand(intake), goMiddleAuto)).
               andThen(new ParallelRaceGroup(new Revv(shooter, drive, controller), leaveMiddleAuto)).
               andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake))).
-              andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
+              andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(true), Set.of(drive)));
             } 
           }
         }
@@ -473,7 +473,7 @@ public class RobotContainer {
               andThen(goLoaderAuto).andThen(new WaitCommand(2)).
               andThen(shootFromLoaderAuto).
               andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake))).
-              andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
+              andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(false), Set.of(drive)));
             }
           }
 
@@ -500,7 +500,7 @@ public class RobotContainer {
               andThen(goLoaderAuto).andThen(new WaitCommand(2)).
               andThen(shootFromLoaderAuto).
               andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 3)).
-              andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
+              andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(false), Set.of(drive)));
             }      
           }
         }
@@ -626,7 +626,7 @@ public class RobotContainer {
                   return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
                   andThen(new ParallelRaceGroup(new IntakeCommand(intake), goLoaderAuto.andThen(returnFromLoaderAuto))).
                   andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 5)).
-                  andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
+                  andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(true), Set.of(drive)));
                 }
               }
 
@@ -651,7 +651,7 @@ public class RobotContainer {
                   andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 5)).
                   andThen(new ParallelRaceGroup(new IntakeCommand(intake), goLoaderAuto.andThen(returnFromLoaderAuto))).
                   andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 3)).
-                  andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
+                  andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(true), Set.of(drive)));
                 }      
               }
             }
