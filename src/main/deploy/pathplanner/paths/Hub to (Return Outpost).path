@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.0085812094765898,
-        "y": 0.9478905457913449
+        "x": 1.0074874604159387,
+        "y": 0.9487642706251626
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.419360269363402,
-        "y": 1.6800925925902561
+        "x": 1.3990840517241387,
+        "y": 1.552478448275863
       },
       "prevControl": {
-        "x": 1.3071791835383608,
-        "y": 1.3399438815580837
+        "x": 1.2491696639243997,
+        "y": 1.35241426774714
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,10 +32,6 @@
     {
       "waypointRelativePos": 0,
       "rotationDegrees": 0.0
-    },
-    {
-      "waypointRelativePos": 1.0,
-      "rotationDegrees": 40.0
     }
   ],
   "constraintZones": [],
@@ -50,8 +46,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0.0
+    "velocity": 0.0,
+    "rotation": 42.0
   },
   "reversed": false,
   "folder": "Auto Hub",
