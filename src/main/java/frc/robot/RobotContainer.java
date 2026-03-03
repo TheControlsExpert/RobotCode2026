@@ -498,7 +498,7 @@ public class RobotContainer {
               return new InstantCommand(() -> {drive.resetPosition(HubToOutpostPath.getStartingHolonomicPose().get());}).
               andThen(HubToOutpostAuto).andThen(new WaitCommand(2)).
               andThen(new ParallelRaceGroup(HubLeaveOutpostAuto, new Revv(shooter, drive, controller))).
-              andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake))).
+              andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), drive.rotationkP, new ShuffleCommand(intake), 5)).
               andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(true), Set.of(drive)));
             }
                    
