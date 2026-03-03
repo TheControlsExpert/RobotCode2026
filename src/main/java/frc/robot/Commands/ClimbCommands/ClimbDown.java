@@ -21,9 +21,8 @@ public class ClimbDown extends Command{
 
     @Override
     public void initialize() {
-         if (drive.getEstimatedPosition().getTranslation().getDistance(autoClimbing.getClosestClimbPoses()[2].getTranslation()) <= 0.2)
          climb.setClimbDutyCycle(-0.2);
-    }
+    
 
 
     public boolean isFinished() {
