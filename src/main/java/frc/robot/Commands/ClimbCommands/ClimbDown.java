@@ -6,15 +6,14 @@ import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticClimbing;
 import frc.robot.Subsystems.Climb.Climb;
 import frc.robot.Subsystems.Drive.Drive;
 
-public class ClimbDown extends Command{
+public class ClimbDown extends Command {
     Climb climb;
     Drive drive;
-    AutomaticClimbing autoClimbing;
 
-    public ClimbDown (Climb climb, Drive drive, AutomaticClimbing autoClimbing) {
+
+    public ClimbDown (Climb climb, Drive drive) {
         this.climb = climb;
         this.drive = drive;
-        this.autoClimbing = autoClimbing;
         addRequirements(climb);
     }
 
@@ -22,6 +21,7 @@ public class ClimbDown extends Command{
     @Override
     public void initialize() {
          climb.setClimbDutyCycle(-0.2);
+    }
     
 
 
