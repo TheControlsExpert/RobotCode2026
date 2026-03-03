@@ -89,7 +89,7 @@ public class AutomaticClimbing {
                 publisher.set(new Pose2d(climbPoses[0].getX(), climbPoses[0].getY()-0.05, climbPoses[0].getRotation()));
                 return climbPoses[0];
             }
-                )).andThen(new ClimbDown(climb, drive, this));
+                )).andThen(new ClimbDown(climb, drive));
         }
     }
 
