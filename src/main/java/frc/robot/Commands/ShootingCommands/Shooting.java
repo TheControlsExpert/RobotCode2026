@@ -94,6 +94,8 @@ public class Shooting extends Command {
 
         Translation2d linearVelocity;
 
+        if (DriverStation.isTeleop()) {
+
         if (controller.rightStick().getAsBoolean()) {
           linearVelocity =
                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble() / 12, ySupplier.getAsDouble() / 12);
@@ -104,6 +106,11 @@ public class Shooting extends Command {
                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
 
         }
+    }
+
+    else {
+        linearVelocity = new Translation2d(0, 0);
+    }
 
               
         Translation2d shootingPosition = drive.calculateShootingPosition();
