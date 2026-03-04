@@ -270,18 +270,12 @@ public class RobotContainer {
 
         //shouldn't use any localization, so only encoder values
         controller.button(7).onTrue(Commands.defer(() -> {
-          if (autoClimbing.isOverridePossible()) {
+          if (!climb.isClimbGoalUp()) {
             return new ClimbUp(climb);
-          }
-
-          //should be above upperlimit
-          else if (climb.getEncoderValue() < ClimbConstants.lowerLimit) {
+          } else {
             return new ClimbDown(climb, drive);
           }
-
-          //set Set.of shouldn't require the drive
-          else { return Commands.none(); }
-        }, Set.of(drive, climb)
+        }, Set.of( climb)
         ));
          
 
