@@ -41,13 +41,14 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
+import frc.robot.Constants.ClimbConstants;
 import frc.robot.Constants.SwerveConstants.Mod0;
 import frc.robot.Constants.SwerveConstants.Mod1;
 import frc.robot.Constants.SwerveConstants.Mod2;
 import frc.robot.Constants.SwerveConstants.Mod3;
 import frc.robot.Robot.ShootingState;
 import frc.robot.Commands.ClimbCommands.ClimbDown;
+import frc.robot.Commands.ClimbCommands.ClimbUp;
 import frc.robot.Commands.DriveCommands.DriveCommand;
 import frc.robot.Commands.DriveCommands.FeedforwardCharacterization;
 import frc.robot.Commands.DriveCommands.StraightDriveCommand;
@@ -260,14 +261,26 @@ public class RobotContainer {
         controller.leftBumper().whileTrue(new IntakeCommand(intake));
 
         //automatic climbing and climb up in teleop, with potential for overridng
-        controller.button(8).whileTrue(Commands.defer(() -> autoClimbing.getClimbingCommand(true).until( //stops the command when:
+        controller.x().whileTrue(Commands.defer(() -> autoClimbing.getClimbingCommand(true).until( //stops the command when:
           () -> autoClimbing.isOverridePossible() && //overriding is possible
           (Math.abs(controller.getLeftY()) > 0.1 || Math.abs(controller.getLeftX()) > 0.1)), //driver moves the controller enough
           Set.of(climb, drive))); 
 
 
-        //brings climb back down
-        controller.button(7).onTrue(Commands.defer(() -> new ClimbDown(climb, drive), Set.of(climb))); 
+
+        //this is the greatest code ever written
+        controller.button(7).onTrue(Commands.defer(() -> {
+          if (autoClimbing.isOverridePossible()) {
+            return new ClimbUp(climb);
+          }
+
+          else if (climb.getEncoderValue() < ClimbConstants.lowerLimit) {
+            return new ClimbDown(climb, drive);
+          }
+
+          else { return Commands.none(); }
+        }, Set.of(drive, climb)
+        ));
          
 
          controller.rightTrigger().whileTrue(new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)
