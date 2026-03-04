@@ -1,6 +1,5 @@
 package frc.robot.Commands.ClimbCommands;
 
-
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ClimbConstants;
 import frc.robot.Subsystems.Climb.Climb;
@@ -16,6 +15,7 @@ public class ClimbUp extends Command{
 
     @Override
     public void initialize() {
+        climb.setClimbGoalUp(true);
         climb.setClimbDutyCycle(0.2);
     }
 

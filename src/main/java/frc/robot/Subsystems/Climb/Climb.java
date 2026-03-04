@@ -9,6 +9,8 @@ public class Climb extends SubsystemBase {
     
     private final ClimbIO io;
     private final ClimbIOInputsAutoLogged inputs = new ClimbIOInputsAutoLogged();
+
+    private boolean climbGoalUp;
     
      //disconnection tracking
      private boolean wasDisconnected = false;
@@ -41,5 +43,13 @@ public class Climb extends SubsystemBase {
 
     public double getEncoderValue() {
         return io.getEncoderValue();
+    }
+
+    public void setClimbGoalUp(boolean isClimbGoalUp) {
+        climbGoalUp = isClimbGoalUp;
+    }
+
+    public boolean isClimbGoalUp() {
+        return climbGoalUp;
     }
 }
