@@ -63,6 +63,7 @@ import frc.robot.Robot;
 import frc.robot.Robot.ShootingState;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.LimelightHelpers;
 //import frc.robot.Subsystems.Superstructure.Superstructure;
 import frc.robot.Subsystems.Vision.VisionSubsystem.VisionMeasurement;
 
@@ -383,6 +384,10 @@ private final Field2d m_field = new Field2d();
  
  // Update gyro alert
  gyroDisconnectedAlert.set(!gyroInputs.connected);
+LimelightHelpers.SetRobotOrientation("limelight-four", getRotation().getDegrees(), 0, 0, 0, 0, 0);
+LimelightHelpers.SetRobotOrientation("limelight-threegf", getRotation().getDegrees(), 0, 0, 0, 0, 0);
+LimelightHelpers.SetRobotOrientation("limelight-threegs", getRotation().getDegrees(), 0, 0, 0, 0, 0);
+
  
  }
 
@@ -668,7 +673,7 @@ private final Field2d m_field = new Field2d();
 
  SwervePoseEstimator.addVisionMeasurement(new Pose2d(measurement.pose().getTranslation(), getRotation()), measurement.timestamp(), stds);
 
- if (gyroResetTimer.hasElapsed(10) && getGyroSpeed() < 5 && getTranslationalSpeed() < 1 && measurement.numTags() >= 2 && measurement.avgDistance() < 3) {
+ if (gyroResetTimer.hasElapsed(10) && getGyroSpeed() < 1 && getTranslationalSpeed() < 0.1 && measurement.numTags() >= 2 && measurement.avgDistance() < 3) {
  SwervePoseEstimator.resetRotation(Rotation2d.fromDegrees(measurement.rotationDegreees()));
  gyroResetTimer.reset();
  }

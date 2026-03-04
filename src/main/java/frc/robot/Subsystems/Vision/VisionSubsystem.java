@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LimelightConstants;
+import frc.robot.LimelightHelpers;
 import frc.robot.Robot;
 import frc.robot.Subsystems.Drive.Drive;
 import frc.robot.Subsystems.Vision.VisionIO.VisionIOInputs;
@@ -60,6 +61,7 @@ public class VisionSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateInputs(inputs);
+       
         
         if (!wasDisconnected_LL4 &&!inputs.isConnected_LL4) {
             Robot.reportDisconnection("Limelight 4");
