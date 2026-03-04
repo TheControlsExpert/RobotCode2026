@@ -688,8 +688,8 @@ public class RobotContainer {
                 if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) { //go to the depot and shoot
                   
                   return new InstantCommand(() -> {drive.resetPosition(hubToDepotPath.getStartingHolonomicPose().get());}).
-                  andThen(new ParallelRaceGroup(hubToDepotAuto, new WaitCommand(1).andThen(new IntakeCommand(intake)))).
-                  andThen(hubLeaveDepotAuto).
+                  andThen(new ParallelRaceGroup(hubToDepotAuto, new WaitCommand(1).andThen(new IntakeCommand(intake))), new WaitCommand(1.5).andThen(new RevvAuto(shooter, drive, 0))). //TRIPLE PARALLELRACEGROUP!!!!!!!! AAAAAHHHH
+                  andThen(new ParallelRaceGroup(hubLeaveDepotAuto, new RevvAuto(shooter, drive, 0))).
                   andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, new ShuffleCommand(intake), 5));
                 }
 
@@ -697,8 +697,8 @@ public class RobotContainer {
                 else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) { //go to the depot, shoot, then climb
                   
                   return new InstantCommand(() -> {drive.resetPosition(hubToDepotPath.getStartingHolonomicPose().get());}).
-                  andThen(new ParallelRaceGroup(hubToDepotAuto, new WaitCommand(1).andThen(new IntakeCommand(intake)))).
-                  andThen(hubLeaveDepotAuto).
+                  andThen(new ParallelRaceGroup(hubToDepotAuto, new WaitCommand(1).andThen(new IntakeCommand(intake))), new WaitCommand(1.5).andThen(new RevvAuto(shooter, drive, 0))). //TRIPLE PARALLELRACEGROUP!!!!!!!! AAAAAHHHH
+                  andThen(new ParallelRaceGroup(hubLeaveDepotAuto, new RevvAuto(shooter, drive, 0))).
                   andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, new ShuffleCommand(intake), 5)).
                   andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(true), Set.of(drive)));
                 }
@@ -712,7 +712,7 @@ public class RobotContainer {
                   andThen(new ParallelRaceGroup(new IntakeCommand(intake), goMiddleAuto)).
                   andThen(new ParallelRaceGroup(new RevvAuto(shooter, drive, trenchTimeout), leaveMiddleAuto)).
                   andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, new ShuffleCommand(intake), 5)).
-                  andThen(new ParallelRaceGroup(new IntakeCommand(intake), goLoaderAuto.andThen(returnFromLoaderAuto))).
+                  andThen(new ParallelRaceGroup(new IntakeCommand(intake), goLoaderAuto.andThen(returnFromLoaderAuto), new RevvAuto(shooter, drive, 0))).
                   andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, new ShuffleCommand(intake), 3));
                 }
 
@@ -723,7 +723,7 @@ public class RobotContainer {
                   andThen(new ParallelRaceGroup(new IntakeCommand(intake), goMiddleAuto)).
                   andThen(new ParallelRaceGroup(new RevvAuto(shooter, drive, trenchTimeout), leaveMiddleAuto)).
                   andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, new ShuffleCommand(intake), 5)).
-                  andThen(new ParallelRaceGroup(new IntakeCommand(intake), goLoaderAuto.andThen(returnFromLoaderAuto))).
+                  andThen(new ParallelRaceGroup(new IntakeCommand(intake), goLoaderAuto.andThen(returnFromLoaderAuto), new RevvAuto(shooter, drive, 0))).
                   andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, new ShuffleCommand(intake), 3)).
                   andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(true), Set.of(drive)));
                 }      
