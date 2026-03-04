@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Robot;
+import frc.robot.Commands.IntakeCommands.Jam;
 import frc.robot.Commands.IntakeCommands.ShuffleCommand;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Robot.ShootingState;
@@ -188,8 +189,12 @@ public class Shooting extends Command {
 @Override
 public void end(boolean interrupted) {
     if (!DriverStation.isAutonomous()) {
-    shooter.setShooterVelocity(0);
+        shooter.setShooterVelocity(50);
+    } else {
+        shooter.setShooterVelocity(0);
     }
+
+    new Jam(indexer, shooter, 2.0).schedule(); //runs the indexer in the opposite direction to clear balls from the shooter
     shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
     indexer.setIndexerDutyCycle(0);
     CommandScheduler.getInstance().cancel(shuffle);
