@@ -666,7 +666,7 @@ private final Field2d m_field = new Field2d();
 
  if (Math.abs(gyroInputs.rollDegrees) < 2 && Math.abs(gyroInputs.pitchDegrees) < 2 && getGyroSpeed() < 180 && getTranslationalSpeed() < 3) {
 
- SwervePoseEstimator.addVisionMeasurement(measurement.pose(), measurement.timestamp(), stds);
+ SwervePoseEstimator.addVisionMeasurement(new Pose2d(measurement.pose().getTranslation(), getRotation()), measurement.timestamp(), stds);
 
  if (gyroResetTimer.hasElapsed(10) && getGyroSpeed() < 5 && getTranslationalSpeed() < 1 && measurement.numTags() >= 2 && measurement.avgDistance() < 3) {
  SwervePoseEstimator.resetRotation(Rotation2d.fromDegrees(measurement.rotationDegreees()));
