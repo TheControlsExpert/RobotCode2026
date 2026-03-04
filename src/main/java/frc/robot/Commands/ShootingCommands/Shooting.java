@@ -19,7 +19,9 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Robot;
 import frc.robot.Commands.IntakeCommands.ShuffleCommand;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Robot.LocalizationState;
 import frc.robot.Robot.ShootingState;
 import frc.robot.Subsystems.Drive.Drive;
 import frc.robot.Subsystems.Indexer.Indexer;
@@ -32,6 +34,7 @@ public class Shooting extends Command {
     Indexer indexer;
     DoubleSupplier xSupplier;
     DoubleSupplier ySupplier;
+    DoubleSupplier rotationSupplier;
     CommandXboxController controller;
     double kP_rotation;
     boolean readyToShoot = false;
@@ -44,12 +47,13 @@ public class Shooting extends Command {
 
     
 
-    public Shooting(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, CommandXboxController controller, DoubleSupplier xSupplier, DoubleSupplier ySupplier, double kP_rotation, ShuffleCommand shuffle) {
+    public Shooting(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, CommandXboxController controller, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier rotationSupplier, double kP_rotation, ShuffleCommand shuffle) {
         this.shooter = shooter;
         this.drive = drive;
         this.indexer = indexer;
         this.xSupplier = xSupplier;
         this.ySupplier = ySupplier;
+        this.rotationSupplier = rotationSupplier;
         this.controller = controller;
         this.kP_rotation = kP_rotation;
         this.shuffle = shuffle.getShuffleCommand();
@@ -58,12 +62,13 @@ public class Shooting extends Command {
         
     }
 
-     public Shooting(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, CommandXboxController controller, DoubleSupplier xSupplier, DoubleSupplier ySupplier, double kP_rotation, ShuffleCommand shuffle, double timeout) {
+     public Shooting(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, CommandXboxController controller, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier rotationSupplier, double kP_rotation, ShuffleCommand shuffle, double timeout) {
         this.shooter = shooter;
         this.drive = drive;
         this.indexer = indexer;
         this.xSupplier = xSupplier;
         this.ySupplier = ySupplier;
+        this.rotationSupplier = rotationSupplier;
         this.controller = controller;
         this.kP_rotation = kP_rotation;
         this.shuffle = shuffle.getShuffleCommand();
@@ -86,8 +91,7 @@ public class Shooting extends Command {
     @Override
     public void execute() {
 
-        
-                Translation2d linearVelocity;
+        Translation2d linearVelocity;
 
         if (controller.rightStick().getAsBoolean()) {
           linearVelocity =
@@ -105,17 +109,43 @@ public class Shooting extends Command {
 
         double distance = drive.getEstimatedPosition().getTranslation().getDistance(shootingPosition);
         double[] shootingParameters = shooter.LookupTable_Shooting(drive);
-        shooter.setShooterVelocity(shootingParameters[0]);
-        shooter.setPositionPivot(shootingParameters[1]);
-
+        double omega;
         double angleToTarget_radians = shootingPosition.minus(drive.getEstimatedPosition().getTranslation()).getAngle().getRadians();
         double deltaRotation = angleToTarget_radians - drive.getEstimatedPosition().getRotation().getRadians();
         
         deltaRotation = MathUtil.angleModulus(deltaRotation);
         //Change back to degrees
         deltaRotation = Math.toDegrees(deltaRotation);
-        double omega = deltaRotation * kP_rotation;
 
+        if (Robot.localizationState.equals(LocalizationState.OPERATIONAL)) {
+            shooter.setShooterVelocity(shootingParameters[0]);
+            shooter.setPositionPivot(shootingParameters[1]);
+
+        
+         omega = deltaRotation * kP_rotation;
+        
+        }
+
+        else {
+            omega = MathUtil.applyDeadband(rotationSupplier.getAsDouble(), 0.2);
+
+            if (controller.rightStick().getAsBoolean()) {
+                omega = omega / 12;
+            }
+
+          // Square rotation value for more precise control
+            omega = Math.copySign(omega * omega, omega);
+ 
+            if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
+                shooter.setShooterVelocity(ShooterConstants.HUB_SHOOTING_VELOCITY);
+                shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
+            }
+             else if (Robot.shootingState.equals(ShootingState.PASSING)) {
+                shooter.setShooterVelocity(ShooterConstants.BASIC_PASSING_VELOCITY);
+                shooter.setPositionPivot(ShooterConstants.BASIC_PASSING_PIVOT);
+            }
+        }
+        
 
               // Convert to field relative speeds & send command
               ChassisSpeeds speeds =
@@ -136,7 +166,7 @@ public class Shooting extends Command {
 
 
     //
-    if (!readyToShoot && shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance) && Math.abs(deltaRotation) < ShooterConstants.YawAngleTolerance) {
+    if (!readyToShoot && shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance) && (Robot.localizationState.equals(LocalizationState.DISABLED) || Math.abs(deltaRotation) < ShooterConstants.YawAngleTolerance)) {
         readyToShoot = true;
         SmartDashboard.putBoolean("Shooter is at Velocity", true);
         
@@ -162,9 +192,8 @@ public class Shooting extends Command {
         shooter.setFeederVelocity(-0.5);
     }
 
-    if (!intake.isHopperFull() && intake.isReadyToClose() && !hasShuffled && DriverStation.isAutonomous() && !intake.isShuffling) {
+    if (!intake.isHopperFull() && intake.isReadyToClose() && !hasShuffled && DriverStation.isAutonomous() && !intake.is_busy) {
         CommandScheduler.getInstance().schedule(shuffle);
-        intake.isShuffling = true;
         hasShuffled = true;
     }
 
@@ -195,7 +224,6 @@ public void end(boolean interrupted) {
     shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
     indexer.setIndexerDutyCycle(0);
     CommandScheduler.getInstance().cancel(shuffle);
-    intake.isShuffling = false;
 }
 
 

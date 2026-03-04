@@ -18,6 +18,7 @@ public class Revv extends Command {
     private final Shooter shooter;
     private final Drive drive;
     private final CommandXboxController controller;
+    private double when_to_start = -1000;
 
 
     public Revv(Shooter shooter, Drive drive, CommandXboxController controller) {
@@ -27,7 +28,6 @@ public class Revv extends Command {
 
         addRequirements(shooter);
     }
-
   
     @Override
     public void execute() {
@@ -48,16 +48,9 @@ public class Revv extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        if (!controller.rightTrigger().getAsBoolean() && !DriverStation.isAutonomous()) {
+        if (!controller.rightTrigger().getAsBoolean()) {
             shooter.setShooterVelocity(0);
         }
 }
-
-
    
-
-
-    
-    
-    
 }

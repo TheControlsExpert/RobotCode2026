@@ -19,7 +19,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     double averageIntakeFull = 0;   
     double averageReadyToClose = 0;
-    public boolean isShuffling = false;
+    public boolean is_busy = false;
 
     //disconnection tracking
     private boolean wasDisconnected_Intake = false;

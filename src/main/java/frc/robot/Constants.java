@@ -253,6 +253,7 @@ public final class Constants {
     public static final Transform2d robotToShooter = new Transform2d(new Translation2d(x, y), new Rotation2d());
     public static final double HUB_SHOOTING_VELOCITY = 0;
     public static final double BASIC_PASSING_VELOCITY = 0;
+    public static final double BASIC_PASSING_PIVOT = 0;
 
   }
 
