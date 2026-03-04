@@ -47,9 +47,12 @@ public class ResetHood extends Command {
 
     @Override
     public void end(boolean interrupted) {
+        if (!interrupted) {
         shooter.setPositionPivot(0);
         shooter.setOutputPivot(0);
     }
+    }
+
 
 
 

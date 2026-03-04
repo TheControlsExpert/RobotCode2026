@@ -114,54 +114,57 @@ public class Shooter extends SubsystemBase {
         io.setOutputShooter(dutycycle);
      }
 
-     public void LookupTable_Shooting(Drive drive) {
+     public double[] LookupTable_Shooting(Drive drive) {
 
     // Calculate estimated pose while accounting for phase delay
    
-    ChassisSpeeds robotRelativeVelocity = drive.getRobotRelativeSpeeds();
-    Pose2d beforeEstimatedPose = drive.getEstimatedPosition();
-    Pose2d estimatedPose = beforeEstimatedPose.exp(
+    // ChassisSpeeds robotRelativeVelocity = drive.getRobotRelativeSpeeds();
+    // Pose2d beforeEstimatedPose = drive.getEstimatedPosition();
+    // Pose2d estimatedPose = beforeEstimatedPose.exp(
         
-            new Twist2d(
-                robotRelativeVelocity.vxMetersPerSecond * phaseDelay,
-                robotRelativeVelocity.vyMetersPerSecond * phaseDelay,
-                robotRelativeVelocity.omegaRadiansPerSecond * phaseDelay));
+    //         new Twist2d(
+    //             robotRelativeVelocity.vxMetersPerSecond * phaseDelay,
+    //             robotRelativeVelocity.vyMetersPerSecond * phaseDelay,
+    //             robotRelativeVelocity.omegaRadiansPerSecond * phaseDelay));
 
     // Calculate target
     Translation2d target = drive.calculateShootingPosition();
         
-    Pose2d launcherPosition = estimatedPose.transformBy(ShooterConstants.robotToShooter);
-    double launcherToTargetDistance = target.getDistance(launcherPosition.getTranslation());
+    //Pose2d launcherPosition = estimatedPose.transformBy(ShooterConstants.robotToShooter);
+    //double launcherToTargetDistance = target.getDistance(launcherPosition.getTranslation());
+    double launcherToTargetDistance = target.getDistance(drive.getEstimatedPosition().getTranslation());
+
 
     // Calculate field relative launcher velocity
     // This isn't actually the launcherVelocity given it won't account for angular velocity of robot
-    double launcherVelocityX = drive.getFieldRelativeSpeeds().vxMetersPerSecond;
-    double launcherVelocityY = drive.getFieldRelativeSpeeds().vyMetersPerSecond;
+    //double launcherVelocityX = drive.getFieldRelativeSpeeds().vxMetersPerSecond;
+    //ouble launcherVelocityY = drive.getFieldRelativeSpeeds().vyMetersPerSecond;
 
     // Account for imparted velocity by robot (launcher) to offset
-    double timeOfFlight = ShootTOFMap.get(launcherToTargetDistance);
-    Pose2d lookaheadPose = launcherPosition;
-    double lookaheadLauncherToTargetDistance = launcherToTargetDistance;
+    // double timeOfFlight = ShootTOFMap.get(launcherToTargetDistance);
+    // Pose2d lookaheadPose = launcherPosition;
+    // double lookaheadLauncherToTargetDistance = launcherToTargetDistance;
 
-    for (int i = 0; i < 20; i++) {
-      timeOfFlight = ShootTOFMap.get(lookaheadLauncherToTargetDistance);
-      double offsetX = launcherVelocityX * timeOfFlight;
-      double offsetY = launcherVelocityY * timeOfFlight;
-      lookaheadPose =
-          new Pose2d(
-              launcherPosition.getTranslation().plus(new Translation2d(offsetX, offsetY)),
-              launcherPosition.getRotation());
-      lookaheadLauncherToTargetDistance = target.getDistance(lookaheadPose.getTranslation());
-    }
+    // for (int i = 0; i < 20; i++) {
+    //   timeOfFlight = ShootTOFMap.get(lookaheadLauncherToTargetDistance);
+    //   double offsetX = launcherVelocityX * timeOfFlight;
+    //   double offsetY = launcherVelocityY * timeOfFlight;
+    //   lookaheadPose =
+    //       new Pose2d(
+    //           launcherPosition.getTranslation().plus(new Translation2d(offsetX, offsetY)),
+    //           launcherPosition.getRotation());
+    //   lookaheadLauncherToTargetDistance = target.getDistance(lookaheadPose.getTranslation());
+    // }
 
-    // Account for launcher being off center
-    Pose2d lookaheadRobotPose =
-        lookaheadPose.transformBy(ShooterConstants.robotToShooter.inverse());
-    Rotation2d driveAngle = target.minus(lookaheadRobotPose.getTranslation()).getAngle();
-    // Calculate remaining parameters
+    // // Account for launcher being off center
+    // Pose2d lookaheadRobotPose =
+    //     lookaheadPose.transformBy(ShooterConstants.robotToShooter.inverse());
+    // Rotation2d driveAngle = target.minus(lookaheadRobotPose.getTranslation()).getAngle();
+    // // Calculate remaining parameters
   
-        io.setPivotPosition(ShootAngleMap.get(launcherToTargetDistance));
-        io.setVelocityShooter(ShootVelocityMap.get(launcherToTargetDistance));
+    //     io.setPivotPosition(ShootAngleMap.get(launcherToTargetDistance));
+    //     io.setVelocityShooter(ShootVelocityMap.get(launcherToTargetDistance));
+    return new double[] {ShootVelocityMap.get(launcherToTargetDistance), ShootAngleMap.get(launcherToTargetDistance)};
      }
     
 

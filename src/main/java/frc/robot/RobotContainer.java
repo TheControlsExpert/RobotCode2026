@@ -46,6 +46,7 @@ import frc.robot.Constants.SwerveConstants.Mod0;
 import frc.robot.Constants.SwerveConstants.Mod1;
 import frc.robot.Constants.SwerveConstants.Mod2;
 import frc.robot.Constants.SwerveConstants.Mod3;
+import frc.robot.Robot.LocalizationState;
 import frc.robot.Robot.ShootingState;
 import frc.robot.Commands.ClimbCommands.ClimbDown;
 import frc.robot.Commands.DriveCommands.DriveCommand;
@@ -58,7 +59,9 @@ import frc.robot.Commands.DriveCommands.AligningCommands.AutoBumping;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticClimbing;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticTrenching;
 import frc.robot.Commands.IntakeCommands.IntakeCommand;
+import frc.robot.Commands.IntakeCommands.Jam;
 import frc.robot.Commands.IntakeCommands.ShuffleCommand;
+import frc.robot.Commands.ShootingCommands.ResetHood;
 import frc.robot.Commands.ShootingCommands.Revv;
 import frc.robot.Commands.ShootingCommands.Shooting;
 import frc.robot.Commands.ShootingCommands.ShootingAuto;
@@ -288,77 +291,77 @@ public class RobotContainer {
 
 
 
-      //  controller.x().whileTrue(autoTrenching.andThen(
+       controller.x().whileTrue(autoTrenching.andThen(
         
-      // Commands.defer(() -> autoTrenching.getPathingCommand().until(
+      Commands.defer(() -> autoTrenching.getPathingCommand().until(
         
-      //  () -> (autoTrenching.passedTrench() && 
-      //  (Math.abs(controller.getLeftY()) > 0.1 || Math.abs(controller.getLeftX()) > 0.1 || Math.abs(controller.getRightX()) > 0.1))), Set.of(drive))));
+       () -> (autoTrenching.passedTrench() && 
+       (Math.abs(controller.getLeftY()) > 0.1 || Math.abs(controller.getLeftX()) > 0.1 || Math.abs(controller.getRightX()) > 0.1))), Set.of(drive))));
 
       
-      //  controller.a().whileTrue(new AutoBumping(drive, intake, () -> -controller.getLeftY(), () -> -controller.getLeftX(), 0.08, controller));
-      //  controller.y().whileTrue(Commands.defer(() -> autoClimbing.getClimbingCommand(), Set.of(drive)));
-      //  controller.leftBumper().whileTrue(new IntakeCommand(intake));
-      //  controller.rightBumper().onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), DriverStation.getAlliance().get().equals(Alliance.Blue) ? Rotation2d.kZero : Rotation2d.fromDegrees(180))), drive)
-      //           .ignoringDisable(true));
+       controller.a().whileTrue(new AutoBumping(drive, intake, () -> -controller.getLeftY(), () -> -controller.getLeftX(), 0.08, controller));
+       controller.leftBumper().whileTrue(new IntakeCommand(intake));
+       controller.rightBumper().onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), DriverStation.getAlliance().get().equals(Alliance.Blue) ? Rotation2d.kZero : Rotation2d.fromDegrees(180))), drive)
+                .ignoringDisable(true));
        
-      controller.rightTrigger().whileTrue(
-      Commands.defer(() -> { 
-        if (intake.isShuffling) {
-      return Commands.none();}
 
-        else {
-          return new InstantCommand(() -> {
-            intake.isShuffling = true;
-            intake.setIntakeDutyCycle(0.3);}, intake)
-       .andThen((new InstantCommand(() -> {intake.Retract();}, intake)
-               .andThen(new WaitCommand(0.7))
-               .andThen(new InstantCommand(() -> {intake.Extend();}, intake))
-               .andThen(new WaitCommand(0.5))).repeatedly()).
-               
-        handleInterrupt(() -> {intake.setIntakeDutyCycle(0);
-                               intake.Extend();
-                               intake.isShuffling = false;
-                                });
-        }
-      
-      }, Set.of(intake)));
+      //COPILOT
 
-    } 
-      
-      
-      
-      
-      
-      
-      //new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)
+      //intake overrides/fixes
+       controller2.leftTrigger().whileTrue(new StartEndCommand(() -> {intake.Retract();}, () -> {intake.Extend();}, intake));
+       controller2.rightTrigger().whileTrue(new Jam(indexer, shooter));
+         // controller.rightTrigger().whileTrue(
+      // Commands.defer(() -> { 
+      //   if (intake.isShuffling) {
+      // return Commands.none();}
+
+      //   else {
+      //     return new InstantCommand(() -> {
+      //       intake.isShuffling = true;
+      //       intake.setIntakeDutyCycle(0.3);}, intake)
       //  .andThen((new InstantCommand(() -> {intake.Retract();}, intake)
       //          .andThen(new WaitCommand(0.7))
       //          .andThen(new InstantCommand(() -> {intake.Extend();}, intake))
       //          .andThen(new WaitCommand(0.5))).repeatedly()).
                
       //   handleInterrupt(() -> {intake.setIntakeDutyCycle(0);
-       //                           intake.Extend();}));
-       
-      //  controller2.leftTrigger().whileTrue(new StartEndCommand(() -> {intake.Retract();}, () -> {intake.Extend();}, intake));
-      //  controller2.rightBumper().whileTrue(new Jam(indexer, shooter, intake));
-      //  controller2.leftBumper().onTrue(new InstantCommand(() -> {
-      //   if (Robot.shootingState.equals(ShootingState.PASSING)) {
-      //     Robot.shootingState = ShootingState.SHOOTING;
+      //                          intake.Extend();
+      //                          intake.isShuffling = false;
+      //                           });
       //   }
-      //   else {
-      //     Robot.shootingState = ShootingState.PASSING;
-      //   }
-      //  }));
+      
+      // }, Set.of(intake)));
 
-      //  controller2.y().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.US;}));
-      //  controller2.a().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.ENEMY;}));
-      //  controller2.b().onTrue(new InstantCommand(() -> {intake.resetPivotPosition();}));
-       //put controller command for reseting pivot of shooter
-       
-       
 
-    
+      
+
+       //state changes
+       controller2.leftBumper().onTrue(new InstantCommand(() -> {
+        if (Robot.shootingState.equals(ShootingState.PASSING)) {
+          Robot.shootingState = ShootingState.SHOOTING;
+        }
+        else {
+          Robot.shootingState = ShootingState.PASSING;
+        }
+       }));
+
+       controller2.rightBumper().onTrue(new InstantCommand(() -> {
+        if (Robot.localizationState.equals(LocalizationState.OPERATIONAL)) {
+          Robot.localizationState = LocalizationState.DISABLED;
+        }
+        else {
+          Robot.localizationState = LocalizationState.OPERATIONAL;
+        }
+       }));
+
+       //decide auto winner
+       controller2.y().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.US;}));
+       controller2.a().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.ENEMY;}));
+
+       //resets of encoders
+       controller2.b().onTrue(new InstantCommand(() -> {intake.resetPivotPosition();}));
+       controller2.x().onTrue(new ResetHood(shooter));
+      } 
   
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

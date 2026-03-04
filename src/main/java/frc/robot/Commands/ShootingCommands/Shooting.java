@@ -104,7 +104,9 @@ public class Shooting extends Command {
         Translation2d shootingPosition = drive.calculateShootingPosition();
 
         double distance = drive.getEstimatedPosition().getTranslation().getDistance(shootingPosition);
-        shooter.LookupTable_Shooting(drive);
+        double[] shootingParameters = shooter.LookupTable_Shooting(drive);
+        shooter.setShooterVelocity(shootingParameters[0]);
+        shooter.setPositionPivot(shootingParameters[1]);
 
         double angleToTarget_radians = shootingPosition.minus(drive.getEstimatedPosition().getTranslation()).getAngle().getRadians();
         double deltaRotation = angleToTarget_radians - drive.getEstimatedPosition().getRotation().getRadians();

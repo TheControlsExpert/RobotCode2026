@@ -44,6 +44,8 @@ public class Robot extends LoggedRobot {
   //private final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
   private final RobotContainer m_robotContainer;
   public static ShootingState shootingState = ShootingState.SHOOTING;
+  public static LocalizationState localizationState = LocalizationState.OPERATIONAL;
+
   public static AutoWinner autoWinner = AutoWinner.US;
   public static ArrayList<String> DisconnectedMotorNames = new ArrayList<String>();
 
@@ -206,6 +208,11 @@ public class Robot extends LoggedRobot {
   public enum ShootingState {
     PASSING,
     SHOOTING
+  }
+
+  public enum LocalizationState {
+    OPERATIONAL,
+    DISABLED
   }
 
   public enum AutoWinner {
