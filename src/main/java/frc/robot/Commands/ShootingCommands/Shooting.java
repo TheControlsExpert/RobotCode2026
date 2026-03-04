@@ -232,7 +232,7 @@ public void end(boolean interrupted) {
         shooter.setShooterVelocity(0);
     }
 
-    new Jam(indexer, shooter, 2.0).schedule(); //runs the indexer in the opposite direction to clear balls from the shooter
+    //new Jam(indexer, shooter, 2.0).schedule(); //runs the indexer in the opposite direction to clear balls from the shooter
     shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
     indexer.setIndexerDutyCycle(0);
     CommandScheduler.getInstance().cancel(shuffle);
