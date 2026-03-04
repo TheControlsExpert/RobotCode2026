@@ -64,6 +64,7 @@ import frc.robot.Commands.IntakeCommands.Jam;
 import frc.robot.Commands.IntakeCommands.ShuffleCommand;
 import frc.robot.Commands.ShootingCommands.ResetHood;
 import frc.robot.Commands.ShootingCommands.Revv;
+import frc.robot.Commands.ShootingCommands.RevvAuto;
 import frc.robot.Commands.ShootingCommands.Shooting;
 import frc.robot.Commands.ShootingCommands.ShootingAuto;
 import frc.robot.Subsystems.Climb.Climb;
@@ -457,7 +458,7 @@ public class RobotContainer {
               
               return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
               andThen(new ParallelRaceGroup(new IntakeCommand(intake), goMiddleAuto)).
-              andThen(new ParallelRaceGroup(new Revv(shooter, drive, controller), leaveMiddleAuto)).
+              andThen(new ParallelRaceGroup(new RevvAuto(shooter, drive, time), leaveMiddleAuto)).
               andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(),drive.rotationkP, new ShuffleCommand(intake), 4));
             }
 
