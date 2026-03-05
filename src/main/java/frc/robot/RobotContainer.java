@@ -270,8 +270,8 @@ public class RobotContainer {
        
         controller.leftTrigger().whileTrue(new Revv(shooter, drive, controller));
         controller.rightTrigger().whileTrue(new ParallelCommandGroup(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP), 
-                                                                     new WaitUntilCommand(() -> {return intake.isReadyToClose();}).
-                                    andThen(new ShuffleCommand(intake).getShuffleCommand()))).onFalse(new Jam(indexer, shooter, 1.0));                                 
+                                                                     new WaitUntilCommand(() -> {return intake.isReadyToClose() && !intake.is_busy;}).andThen(new ShuffleCommand(intake).getShuffleCommand())))
+                                 .onFalse(new Jam(indexer, shooter, 1.0));                                 
         
 
         //automatic climbing and climb up in teleop, with potential for overridng
