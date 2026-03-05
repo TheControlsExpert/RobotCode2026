@@ -232,7 +232,7 @@ public final class Constants {
     public static final double shooterPivot_kD = 0.0;
 
     public static final double Pivot_HOME = 0;
-    public static final double YawAngleTolerance = 1;
+    public static final double YawAngleTolerance = 5;
     public static final double ShooterVelocityTolerance = 100;
 
     //note that this value has to be MUCH higher bcs the shooter velocity drops by 200rpm+ when a ball is shot
@@ -267,8 +267,8 @@ public final class Constants {
 
     public static final double intakeSupplyCurrentLimit = 40;
     public static final double HOME_Position = 0;
-    public static final double INTAKING_Position = 0;
-    public static final double BUMPING_Position = 0;
+    public static final double INTAKING_Position = 100;
+    public static final double BUMPING_Position = 25;
   }
 
   public static class IndexerConstants {

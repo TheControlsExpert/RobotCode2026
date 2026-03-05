@@ -19,6 +19,6 @@ public class IntakeCommand extends Command{
 
     @Override
     public void end(boolean interrupted) {
-        intake.setIntakeDutyCycle(0);
+        intake.setIntakeDutyCycle(0.2);
     }   
 }

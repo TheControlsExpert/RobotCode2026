@@ -43,8 +43,15 @@ public class Shooter extends SubsystemBase {
         this.io = io;
 
         //put in values here
-        ShootAngleMap.put(0.0, 1.0);
-        ShootVelocityMap.put(0.0, 1.0);
+        ShootAngleMap.put(1.0, 0.5);
+        ShootAngleMap.put(2.0, 5.0);
+        ShootAngleMap.put(6.0, 10.0);
+
+        ShootVelocityMap.put(1.0, 1500.0);
+        ShootVelocityMap.put(4.0, 3500.0);
+        ShootVelocityMap.put(6.0, 4000.0);
+
+
         PassAngleMap.put(0.0, 1.0);
         PassVelocityMap.put(0.0, 1.0);
         ShootTOFMap.put(0.0, 1.0);

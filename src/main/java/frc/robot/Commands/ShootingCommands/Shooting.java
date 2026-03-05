@@ -200,10 +200,14 @@ public class Shooting extends Command {
         shooter.setFeederVelocity(-0.5);
     }
 
-    if (!intake.isHopperFull() && intake.isReadyToClose() && !hasShuffled && DriverStation.isAutonomous() && !intake.is_busy) {
-        CommandScheduler.getInstance().schedule(shuffle);
-        hasShuffled = true;
-    }
+    // if (!intake.isHopperFull() && intake.isReadyToClose() && !hasShuffled && DriverStation.isAutonomous() && !intake.is_busy) {
+    //     CommandScheduler.getInstance().schedule(shuffle);
+    //     hasShuffled = true;
+    // }
+
+    //if (timer.hasElapsed(2)) {
+       // intake.beep = true;
+   // }
 
 }  
 
@@ -226,16 +230,16 @@ public class Shooting extends Command {
   
 @Override
 public void end(boolean interrupted) {
-    if (!DriverStation.isAutonomous()) {
-        shooter.setShooterVelocity(50);
-    } else {
+    // if (!DriverStation.isAutonomous()) {
         shooter.setShooterVelocity(0);
-    }
+        shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
+ //   }
 
-    //new Jam(indexer, shooter, 2.0).schedule(); //runs the indexer in the opposite direction to clear balls from the shooter
-    shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
+    //CommandScheduler.getInstance().schedule(new Jam(indexer, shooter, 2.0)); //runs the indexer in the opposite direction to clear balls from the shooter
+   
     indexer.setIndexerDutyCycle(0);
-    CommandScheduler.getInstance().cancel(shuffle);
+    shooter.setFeederVelocity(0);
+    //CommandScheduler.getInstance().cancel(shuffle);
 }
 
 

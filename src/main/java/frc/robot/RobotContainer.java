@@ -400,13 +400,14 @@ public class RobotContainer {
     PathPlannerPath returnFromLoaderAutoPath;
     Command returnFromLoaderAuto;
 
-     double trenchTimeout = 4;
+     
 
       
 
 
       
       if (chosenPosition.equals(AutoEnums.PositionEnums.OUTPOST)) {
+        double trenchTimeout = 2.3;
 
         //create all paths for outpost starting location
         try {
@@ -544,11 +545,12 @@ public class RobotContainer {
               return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
               andThen(new ParallelRaceGroup(new IntakeCommand(intake), goMiddleAuto)).
               andThen(new ParallelRaceGroup(new RevvAuto(shooter, drive, trenchTimeout), leaveMiddleAuto)).
-              andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, new ShuffleCommand(intake), 4)).
-              andThen(goLoaderAuto).andThen(new ParallelRaceGroup(new WaitCommand(2), new RevvAuto(shooter, drive, 0))).
+              andThen(new ParallelRaceGroup(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, new ShuffleCommand(intake), 5), new WaitUntilCommand(() -> {return intake.isReadyToClose();}).andThen(new ShuffleCommand(intake).getShuffleCommand()))).
+              andThen(new ParallelCommandGroup(goLoaderAuto, new Jam(indexer, shooter, 0.5))).
+              andThen(new ParallelRaceGroup(new WaitCommand(2), new RevvAuto(shooter, drive, 0))).
               andThen(new ParallelRaceGroup(shootFromLoaderAuto, new RevvAuto(shooter, drive, 0))).
-              andThen(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, new ShuffleCommand(intake), 3)).
-              andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(false), Set.of(drive)));
+              andThen(new ParallelRaceGroup(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, new ShuffleCommand(intake), 3), new WaitUntilCommand(() -> {return intake.isReadyToClose();}).andThen(new ShuffleCommand(intake).getShuffleCommand()))).
+              andThen(new ParallelCommandGroup(Commands.defer(() -> autoClimbing.getClimbingCommand(false), Set.of(drive)), new Jam(indexer, shooter, 0.5)));
             }      
           }
         }
@@ -587,6 +589,8 @@ public class RobotContainer {
 
 
       else if (chosenPosition.equals(AutoEnums.PositionEnums.DEPOT)) {
+          double trenchTimeout = 2.3;
+
 
         //create all paths for outpost starting location
         try {

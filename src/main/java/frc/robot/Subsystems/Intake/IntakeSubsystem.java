@@ -16,6 +16,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
     ArrayList<Double> IntakeFullHistory = new ArrayList<>();
     ArrayList<Double> ReadyToCloseHistory = new ArrayList<>();
+    //public boolean beep = false;
 
     double averageIntakeFull = 0;   
     double averageReadyToClose = 0;
@@ -95,7 +96,8 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public boolean isReadyToClose() {
-        return averageReadyToClose > 0.75;
+     //  return beep;
+       return averageReadyToClose > 0.75;
     }
 
     public boolean isHopperFull() {

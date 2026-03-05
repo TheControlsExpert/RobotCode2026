@@ -16,6 +16,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.IntakeConstants;
 
 public class IntakeIO {
@@ -85,6 +86,7 @@ public class IntakeIO {
     }
 
     public void setPosition(double position) {
+        SmartDashboard.putNumber("intake position", position);
         pivotMotor.setControl(pivotPositionVoltage.withPosition(position));
     }
 
