@@ -48,7 +48,7 @@ public class Shooting extends Command {
 
     
 
-    public Shooting(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, CommandXboxController controller, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier rotationSupplier, double kP_rotation, ShuffleCommand shuffle) {
+    public Shooting(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, CommandXboxController controller, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier rotationSupplier, double kP_rotation) {
         this.shooter = shooter;
         this.drive = drive;
         this.indexer = indexer;
@@ -57,13 +57,12 @@ public class Shooting extends Command {
         this.rotationSupplier = rotationSupplier;
         this.controller = controller;
         this.kP_rotation = kP_rotation;
-        this.shuffle = shuffle.getShuffleCommand();
         this.intake = intake;
         addRequirements(shooter, drive, indexer);
         
     }
 
-     public Shooting(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, CommandXboxController controller, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier rotationSupplier, double kP_rotation, ShuffleCommand shuffle, double timeout) {
+     public Shooting(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, CommandXboxController controller, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier rotationSupplier, double kP_rotation, double timeout) {
         this.shooter = shooter;
         this.drive = drive;
         this.indexer = indexer;
@@ -72,7 +71,6 @@ public class Shooting extends Command {
         this.rotationSupplier = rotationSupplier;
         this.controller = controller;
         this.kP_rotation = kP_rotation;
-        this.shuffle = shuffle.getShuffleCommand();
         this.intake = intake;
         this.timeout = timeout;
         addRequirements(shooter, drive, indexer);

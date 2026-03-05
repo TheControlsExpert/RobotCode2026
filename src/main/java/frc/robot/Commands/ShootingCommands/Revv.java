@@ -50,6 +50,7 @@ public class Revv extends Command {
     public void end(boolean interrupted) {
         if (!controller.rightTrigger().getAsBoolean()) {
             shooter.setShooterVelocity(0);
+            //shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
         }
 }
    

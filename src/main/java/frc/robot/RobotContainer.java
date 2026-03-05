@@ -262,13 +262,23 @@ public class RobotContainer {
                 () -> -controller.getRightX(),
                 drive,
                 controller));
+
+
         controller.leftBumper().whileTrue(new IntakeCommand(intake));
+        controller.rightBumper().onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), DriverStation.getAlliance().get().equals(Alliance.Blue) ? Rotation2d.kZero : Rotation2d.fromDegrees(180))), drive)
+                .ignoringDisable(true));
+       
+        controller.leftTrigger().whileTrue(new Revv(shooter, drive, controller));
+        controller.rightTrigger().whileTrue(new ParallelCommandGroup(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP), 
+                                                                     new WaitUntilCommand(() -> {return intake.isReadyToClose();}).
+                                    andThen(new ShuffleCommand(intake).getShuffleCommand()))).onFalse(new Jam(indexer, shooter, 1.0));                                 
+        
 
         //automatic climbing and climb up in teleop, with potential for overridng
-        controller.x().whileTrue(Commands.defer(() -> autoClimbing.getClimbingCommand(true).until( //stops the command when:
-          () -> autoClimbing.isOverridePossible() && //overriding is possible
-          (Math.abs(controller.getLeftY()) > 0.1 || Math.abs(controller.getLeftX()) > 0.1)), //driver moves the controller enough
-          Set.of(climb, drive))); 
+        // controller.x().whileTrue(Commands.defer(() -> autoClimbing.getClimbingCommand(true).until( //stops the command when:
+        //   () -> autoClimbing.isOverridePossible() && //overriding is possible
+        //   (Math.abs(controller.getLeftY()) > 0.1 || Math.abs(controller.getLeftX()) > 0.1)), //driver moves the controller enough
+        //   Set.of(climb, drive))); 
 
 
 
@@ -281,39 +291,16 @@ public class RobotContainer {
           }
         }, Set.of( climb)
         ));
+
+        controller.a().whileTrue(new AutoBumping(drive, intake, () -> -controller.getLeftY(), () -> -controller.getLeftX(), 0.08, controller));
          
-
-         controller.rightTrigger().whileTrue(new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)
-       .andThen((new InstantCommand(() -> {intake.Retract();}, intake)
-               .andThen(new WaitCommand(0.7))
-               .andThen(new InstantCommand(() -> {intake.Extend();}, intake))
-               .andThen(new WaitCommand(0.5))).repeatedly()).
-               
-        handleInterrupt(() -> {intake.setIntakeDutyCycle(0);}));
-
-        controller.leftTrigger().whileTrue(new StartEndCommand(() -> {intake.Retract();}, () -> {intake.Extend();}, intake));
-        controller.leftBumper().whileTrue(new StartEndCommand(() -> {shooter.setOutputShooter(0.3); shooter.setFeederVelocity(0.3);}, 
-                                                              () -> {shooter.setOutputShooter(0); shooter.setFeederVelocity(0);}, shooter));
-         
-
-        
-                
-
-
-
-       controller.x().whileTrue(autoTrenching.andThen(
-        
-      Commands.defer(() -> autoTrenching.getPathingCommand().until(
-        
-       () -> (autoTrenching.passedTrench() && 
-       (Math.abs(controller.getLeftY()) > 0.1 || Math.abs(controller.getLeftX()) > 0.1 || Math.abs(controller.getRightX()) > 0.1))), Set.of(drive))));
-
-      
-       controller.a().whileTrue(new AutoBumping(drive, intake, () -> -controller.getLeftY(), () -> -controller.getLeftX(), 0.08, controller));
-       controller.leftBumper().whileTrue(new IntakeCommand(intake));
-       controller.rightBumper().onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), DriverStation.getAlliance().get().equals(Alliance.Blue) ? Rotation2d.kZero : Rotation2d.fromDegrees(180))), drive)
-                .ignoringDisable(true));
        
+      //  controller.x().whileTrue(autoTrenching.andThen(
+        
+      // Commands.defer(() -> autoTrenching.getPathingCommand().until(
+        
+      //  () -> (autoTrenching.passedTrench() && 
+      //  (Math.abs(controller.getLeftY()) > 0.1 || Math.abs(controller.getLeftX()) > 0.1 || Math.abs(controller.getRightX()) > 0.1))), Set.of(drive))));
 
       //COPILOT
 
@@ -545,11 +532,11 @@ public class RobotContainer {
               return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
               andThen(new ParallelRaceGroup(new IntakeCommand(intake), goMiddleAuto)).
               andThen(new ParallelRaceGroup(new RevvAuto(shooter, drive, trenchTimeout), leaveMiddleAuto)).
-              andThen(new ParallelRaceGroup(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, new ShuffleCommand(intake), 5), new WaitUntilCommand(() -> {return intake.isReadyToClose();}).andThen(new ShuffleCommand(intake).getShuffleCommand()))).
+              andThen(new ParallelRaceGroup(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, 5), new WaitUntilCommand(() -> {return intake.isReadyToClose();}).andThen(new ShuffleCommand(intake).getShuffleCommand()))).
               andThen(new ParallelCommandGroup(goLoaderAuto, new Jam(indexer, shooter, 0.5))).
               andThen(new ParallelRaceGroup(new WaitCommand(2), new RevvAuto(shooter, drive, 0))).
               andThen(new ParallelRaceGroup(shootFromLoaderAuto, new RevvAuto(shooter, drive, 0))).
-              andThen(new ParallelRaceGroup(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, new ShuffleCommand(intake), 3), new WaitUntilCommand(() -> {return intake.isReadyToClose();}).andThen(new ShuffleCommand(intake).getShuffleCommand()))).
+              andThen(new ParallelRaceGroup(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, 3), new WaitUntilCommand(() -> {return intake.isReadyToClose();}).andThen(new ShuffleCommand(intake).getShuffleCommand()))).
               andThen(new ParallelCommandGroup(Commands.defer(() -> autoClimbing.getClimbingCommand(false), Set.of(drive)), new Jam(indexer, shooter, 0.5)));
             }      
           }
