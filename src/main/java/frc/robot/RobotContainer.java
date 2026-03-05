@@ -539,33 +539,7 @@ public class RobotContainer {
               andThen(new ParallelCommandGroup(Commands.defer(() -> autoClimbing.getClimbingCommand(false), Set.of(drive)), new Jam(indexer, shooter, 0.5)));
             }      
           }
-        }
-
-
-
-        else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
-          if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-            if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-              //go to the outpost, shoot while going to depot, shoot
-            }
-
-            else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-              //go to the outpost, shoot while going to depot, shoot, then climb
-            }
-          }
-
-
-          else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-            if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-              //just go to the middle and shoot while coming back
-
-            }
-
-            else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-              //just go to the middle, shoot while coming back, and climb
-            }
-          }
-        }      
+        }    
       }
 
 
@@ -718,33 +692,7 @@ public class RobotContainer {
                   andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(true), Set.of(drive)));
                 }      
               }
-            }
-
-
-
-        else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) {
-          if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-            if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-              //go to the outpost, shoot while going to depot, shoot
-            }
-
-            else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-              //go to the outpost, shoot while going to depot, shoot, then climb
-            }
-          }
-
-
-          else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
-            if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-              //just go to the middle and shoot while coming back
-
-            }
-
-            else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) {
-              //just go to the middle, shoot while coming back, and climb
-            }
-          }
-        }      
+            }   
       }
 
       

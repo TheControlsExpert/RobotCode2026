@@ -69,7 +69,6 @@ public class Robot extends LoggedRobot {
       //sets the states for initial autos as part of the chooser options
       LoaderChooser.setDefaultOption("Zero Loaders", AutoEnums.LoaderEnums.ZERO_LOADERS);
       LoaderChooser.addOption("One Loader", AutoEnums.LoaderEnums.ONE_LOADER);
-      LoaderChooser.addOption("Two loaders", AutoEnums.LoaderEnums.TWO_LOADERS);
 
       //sets the states for initial climb autos as part of the chooser options
       climbChooser.setDefaultOption("No Climb", AutoEnums.ClimbEnums.FALSE);
