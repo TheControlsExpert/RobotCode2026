@@ -364,11 +364,13 @@ public class RobotContainer {
 
        Timer when_to_signal_disconnectedFMS = new Timer();
        RobotModeTriggers.teleop().onTrue(Commands.runOnce(() -> {when_to_signal_disconnectedFMS.restart();}));
-       RobotModeTriggers.teleop().and(() -> {return when_to_signal_disconnectedFMS.hasElapsed(2);}).and(() -> (!Robot.winner_selection_done)).whileTrue(Commands.runEnd(
+       RobotModeTriggers.teleop().and(() -> {return when_to_signal_disconnectedFMS.hasElapsed(2);}).and(() -> (!Robot.winner_selection_done)).whileTrue(Commands.startEnd(
                 () -> {
+                  SmartDashboard.putBoolean("controller was told to rumble", true);
                   controller2.setRumble(RumbleType.kBothRumble, 1);
                 },
                 () -> {
+                  SmartDashboard.putBoolean("controller was told to rumble", false);
                   controller2.setRumble(RumbleType.kBothRumble, 0);
                 }));
       } 
