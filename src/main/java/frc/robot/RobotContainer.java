@@ -749,15 +749,12 @@ public class RobotContainer {
           LeaveDepotAuto = AutoBuilder.followPath(LeaveDepotPath);
 
 
-          if (chosenPosition.equals(AutoEnums.PositionEnums.OUTPOST)) {
-            return new InstantCommand(() -> {drive.resetPosition(HubToOutpostPath.getStartingHolonomicPose().get());}).
-            andThen(HubToOutpostAuto).andThen(new WaitCommand(2)).
-            andThen(new ParallelRaceGroup(OutpostToDepotAuto, new WaitCommand(2).andThen(new IntakeCommand(intake)), new WaitCommand(3).andThen(new RevvAuto(shooter, drive, 0)))).
-            andThen(new ParallelRaceGroup(LeaveDepotAuto, new RevvAuto(shooter, drive, 0))).
-            andThen(new ParallelRaceGroup(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, 3), new WaitUntilCommand(() -> {return intake.isReadyToClose();}).andThen(new ShuffleCommand(intake).getShuffleCommand())));
+          return new InstantCommand(() -> {drive.resetPosition(HubToOutpostPath.getStartingHolonomicPose().get());}).
+          andThen(HubToOutpostAuto).andThen(new WaitCommand(2)).
+          andThen(new ParallelRaceGroup(OutpostToDepotAuto, new WaitCommand(2).andThen(new IntakeCommand(intake)), new WaitCommand(3).andThen(new RevvAuto(shooter, drive, 0)))).
+          andThen(new ParallelRaceGroup(LeaveDepotAuto, new RevvAuto(shooter, drive, 0))).
+          andThen(new ParallelRaceGroup(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, 3), new WaitUntilCommand(() -> {return intake.isReadyToClose();}).andThen(new ShuffleCommand(intake).getShuffleCommand())));
 
-
-          }
       }
 
       
