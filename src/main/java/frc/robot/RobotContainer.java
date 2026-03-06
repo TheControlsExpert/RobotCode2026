@@ -448,9 +448,9 @@ public class RobotContainer {
               Command basicAuto;
               try {
                 if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
-                  basicPath = PathPlannerPath.fromPathFile("Basic Starting Outpost");
+                  basicPath = PathPlannerPath.fromPathFile("Basic Starting Path");
                 } else {
-                  basicPath = PathPlannerPath.fromPathFile("Basic Starting Outpost").flipPath();
+                  basicPath = PathPlannerPath.fromPathFile("Basic Starting Path").flipPath();
                 }
               } catch (Exception e) {return Commands.none();}
               basicAuto = AutoBuilder.followPath(basicPath);
@@ -627,9 +627,9 @@ public class RobotContainer {
               Command basicAuto;
               try {
                 if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
-                  basicPath = PathPlannerPath.fromPathFile("Basic Starting Depot");
+                  basicPath = PathPlannerPath.fromPathFile("Basic Starting Path");
                 } else {
-                  basicPath = PathPlannerPath.fromPathFile("Basic Starting Depot").flipPath();
+                  basicPath = PathPlannerPath.fromPathFile("Basic Starting Path").flipPath();
                 }
               } catch (Exception e) {return Commands.none();}
               basicAuto = AutoBuilder.followPath(basicPath);
