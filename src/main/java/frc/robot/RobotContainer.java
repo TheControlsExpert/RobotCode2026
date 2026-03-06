@@ -406,7 +406,7 @@ public class RobotContainer {
 
 
       
-      if (chosenPosition.equals(AutoEnums.PositionEnums.OUTPOST)) {
+      if (chosenPosition.equals(AutoEnums.PositionEnums.OUTPOST) && AutoEnums.LoaderEnums.TWO_LOADERS != chosenLoader) {
         double trenchTimeout = 2.3;
 
         //create all paths for outpost starting location
@@ -567,7 +567,7 @@ public class RobotContainer {
 
 
 
-      else if (chosenPosition.equals(AutoEnums.PositionEnums.DEPOT)) {
+      else if (chosenPosition.equals(AutoEnums.PositionEnums.DEPOT) && AutoEnums.LoaderEnums.TWO_LOADERS != chosenLoader) {
           double trenchTimeout = 2.3;
 
 
