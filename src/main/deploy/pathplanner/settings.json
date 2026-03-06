@@ -4,8 +4,9 @@
   "holonomicMode": true,
   "pathFolders": [
     "Auto Depot",
+    "Auto Hub",
     "Auto Outpost",
-    "Auto Hub"
+    "Weird Paths"
   ],
   "autoFolders": [],
   "defaultMaxVel": 5.0,
