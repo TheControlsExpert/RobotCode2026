@@ -54,7 +54,9 @@ public class Shooter extends SubsystemBase {
 
         PassAngleMap.put(0.0, 1.0);
         PassVelocityMap.put(0.0, 1.0);
+
         ShootTOFMap.put(0.0, 1.0);
+        ShootTOFMap.put(1.0, 1.5);
 
     }
 
@@ -119,6 +121,10 @@ public class Shooter extends SubsystemBase {
 
      public void setOutputShooter(double dutycycle) {
         io.setOutputShooter(dutycycle);
+     }
+
+     public double getTOF(double distance) {
+        return ShootTOFMap.get(distance);
      }
 
      public double[] LookupTable_Shooting(Drive drive) {

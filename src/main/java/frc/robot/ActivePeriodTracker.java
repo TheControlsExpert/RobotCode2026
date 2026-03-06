@@ -20,7 +20,7 @@ public class ActivePeriodTracker {
   }
 
   public record ShiftInfo(
-      ShiftEnum currentShift, double elapsedTime, double remainingTime, boolean active) {}
+      ShiftEnum currentShift, double elapsedTime, double remainingTime, double remainingTimeCombined, boolean active) {}
 
   private static Timer shiftTimer = new Timer();
   private static final ShiftEnum[] shiftsEnums = ShiftEnum.values();
@@ -47,6 +47,16 @@ public class ActivePeriodTracker {
     Alliance us = DriverStation.getAlliance().get();
     Alliance winner = did_We_win ? us : (us.equals(Alliance.Blue) ? Alliance.Red : Alliance.Blue);
 
+    String message = DriverStation.getGameSpecificMessage();
+    if (message.length() > 0) {
+      char character = message.charAt(0);
+      if (character == 'R') {
+        winner = Alliance.Blue;
+      } else if (character == 'B') {
+        winner = Alliance.Red;
+      }
+    }  
+
     return winner;
   }
 
@@ -70,6 +80,8 @@ public class ActivePeriodTracker {
     double currentTime = shiftTimer.get();
     double stateTimeElapsed = shiftTimer.get();
     double stateTimeRemaining = 0.0;
+    double stateTimeElapsedCombined = stateTimeElapsed;
+    double stateTimeRemainingCombined = stateTimeRemaining;
     boolean active = false;
     ShiftEnum currentShift = ShiftEnum.DISABLED;
 
@@ -96,23 +108,25 @@ public class ActivePeriodTracker {
       stateTimeRemaining = shiftEndTimes[currentShiftIndex] - currentTime;
 
       // If the state is the same as the last shift, combine the elapsed time
-      // if (currentShiftIndex > 0) {
-      //   if (currentSchedule[currentShiftIndex] == currentSchedule[currentShiftIndex - 1]) {
-      //     stateTimeElapsed = currentTime - shiftStartTimes[currentShiftIndex - 1];
-      //   }
-      // }
+       stateTimeElapsedCombined = stateTimeElapsed;
+       stateTimeRemainingCombined = stateTimeRemaining;
+      if (currentShiftIndex > 0) {
+        if (currentSchedule[currentShiftIndex] == currentSchedule[currentShiftIndex - 1]) {
+          stateTimeElapsedCombined = currentTime - shiftStartTimes[currentShiftIndex - 1];
+        }
+      }
 
-      // // If the state is the same as the next shift, combine the remaining time
-      // if (currentShiftIndex < shiftEndTimes.length - 1) {
-      //   if (currentSchedule[currentShiftIndex] == currentSchedule[currentShiftIndex + 1]) {
-      //     stateTimeRemaining = shiftEndTimes[currentShiftIndex + 1] - currentTime;
-      //   }
-      // }
+      // If the state is the same as the next shift, combine the remaining time
+      if (currentShiftIndex < shiftEndTimes.length - 1) {
+        if (currentSchedule[currentShiftIndex] == currentSchedule[currentShiftIndex + 1]) {
+          stateTimeRemainingCombined = shiftEndTimes[currentShiftIndex + 1] - currentTime;
+        }
+      }
 
       active = currentSchedule[currentShiftIndex];
       currentShift = shiftsEnums[currentShiftIndex];
     }
-    ShiftInfo shiftInfo = new ShiftInfo(currentShift, stateTimeElapsed, stateTimeRemaining, active);
+    ShiftInfo shiftInfo = new ShiftInfo(currentShift, stateTimeElapsed, stateTimeRemaining, stateTimeRemainingCombined, active);
     return shiftInfo;
   }
 
