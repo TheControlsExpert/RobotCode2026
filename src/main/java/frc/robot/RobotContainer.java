@@ -448,9 +448,9 @@ public class RobotContainer {
               Command basicAuto;
               try {
                 if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
-                  basicPath = PathPlannerPath.fromPathFile(null);
+                  basicPath = PathPlannerPath.fromPathFile("Basic Starting Outpost");
                 } else {
-                  basicPath = PathPlannerPath.fromPathFile(null).flipPath();
+                  basicPath = PathPlannerPath.fromPathFile("Basic Starting Outpost").flipPath();
                 }
               } catch (Exception e) {return Commands.none();}
               basicAuto = AutoBuilder.followPath(basicPath);
@@ -622,17 +622,34 @@ public class RobotContainer {
 
         if (chosenLoader.equals(AutoEnums.LoaderEnums.ZERO_LOADERS)) {
           if (chosenMiddle.equals(AutoEnums.MiddleEnums.FALSE)) {
-            if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) {
-              //basic auto and do nothing
+            
+            PathPlannerPath basicPath;
+              Command basicAuto;
+              try {
+                if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
+                  basicPath = PathPlannerPath.fromPathFile("Basic Starting Depot");
+                } else {
+                  basicPath = PathPlannerPath.fromPathFile("Basic Starting Depot").flipPath();
+                }
+              } catch (Exception e) {return Commands.none();}
+              basicAuto = AutoBuilder.followPath(basicPath);
+
+            if (chosenClimb.equals(AutoEnums.ClimbEnums.FALSE)) { //just shoot the pre-loaded eight balls
+
+              return new InstantCommand(() -> {drive.resetPosition(basicPath.getStartingHolonomicPose().get());}).
+              andThen(new ParallelRaceGroup(basicAuto, new RevvAuto(shooter, drive, 0))).
+              andThen(new ParallelRaceGroup(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, 3), new WaitUntilCommand(() -> {return intake.isReadyToClose();}).andThen(new ShuffleCommand(intake).getShuffleCommand())));              
             }
 
 
-                else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) { //only climb
-                  
-                  return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
-                  andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(true), Set.of(drive)));
-                }
-              }
+            else if (chosenClimb.equals(AutoEnums.ClimbEnums.TRUE)) { //shoot the preloaded balls and then climb
+              
+              return new InstantCommand(() -> {drive.resetPosition(basicPath.getStartingHolonomicPose().get());}).
+              andThen(new ParallelRaceGroup(basicAuto, new RevvAuto(shooter, drive, 0))).
+              andThen(new ParallelRaceGroup(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, 3), new WaitUntilCommand(() -> {return intake.isReadyToClose();}).andThen(new ShuffleCommand(intake).getShuffleCommand()))).   
+              andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(true), Set.of(drive)));
+            }
+          }
 
 
               else if (chosenMiddle.equals(AutoEnums.MiddleEnums.TRUE)) {
