@@ -39,7 +39,7 @@ public class ShootingAuto extends Command {
     double speed;
     Timer timer = new Timer();
     double timeout;
-    public ShootingAuto(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, double kP_rotation, ShuffleCommand shuffle, double timeout, Translation2d targetPosition, double speed) {
+    public ShootingAuto(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, double kP_rotation, ShuffleCommand shuffle, double timeout, Translation2d targetPosition) {
         this.shooter = shooter;
         this.drive = drive;
         this.indexer = indexer;
@@ -48,7 +48,6 @@ public class ShootingAuto extends Command {
         this.timeout = timeout;
         this.intake = intake;
         this.targetPosition = targetPosition;
-        this.speed = speed;
         addRequirements(shooter, drive, indexer);
         
     }
@@ -83,6 +82,10 @@ public class ShootingAuto extends Command {
 
         Translation2d directionOfTravel = targetPosition.minus(drive.getEstimatedPosition().getTranslation());
         Translation2d linearVelocity;
+
+        speed = drive.getEstimatedPosition().getTranslation().getDistance(targetPosition) / timeout; //sets the speed the bot will be moving at
+        if (speed > ShooterConstants.maxMovingSpeed) { speed = ShooterConstants.maxMovingSpeed; }
+
         if (directionOfTravel.getNorm() > 0.05) { // Prevent division by zero
      linearVelocity = directionOfTravel.times(speed/directionOfTravel.getNorm());
         }

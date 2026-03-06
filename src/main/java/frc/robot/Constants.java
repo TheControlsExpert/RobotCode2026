@@ -220,6 +220,8 @@ public final class Constants {
     public static final double supplyCurrentLowerLimit = 50;
     public static final double supplyCurrentLowerLimit_time = 0.2;
     public static final double statorCurrentLimit = 80;
+
+    public static final double maxMovingSpeed = 0.1;
     
     //from looking from intake to shooter
 
