@@ -22,6 +22,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -40,6 +42,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ClimbConstants;
 import frc.robot.Constants.SwerveConstants.Mod0;
@@ -352,12 +355,22 @@ public class RobotContainer {
        }));
 
        //decide auto winner
-       controller2.y().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.US;}));
-       controller2.a().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.ENEMY;}));
+       controller2.y().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.US; Robot.winner_selection_done = true;}));
+       controller2.a().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.ENEMY; Robot.winner_selection_done = true;}));
 
        //resets of encoders
        controller2.b().onTrue(new InstantCommand(() -> {intake.resetPivotPosition();}));
        controller2.x().onTrue(new ResetHood(shooter));
+
+       Timer when_to_signal_disconnectedFMS = new Timer();
+       RobotModeTriggers.teleop().onTrue(Commands.runOnce(() -> {when_to_signal_disconnectedFMS.restart();}));
+       RobotModeTriggers.teleop().and(() -> {return when_to_signal_disconnectedFMS.hasElapsed(2);}).and(() -> (!Robot.winner_selection_done)).whileTrue(Commands.runEnd(
+                () -> {
+                  controller2.setRumble(RumbleType.kBothRumble, 1);
+                },
+                () -> {
+                  controller2.setRumble(RumbleType.kBothRumble, 0);
+                }));
       } 
   
   /**

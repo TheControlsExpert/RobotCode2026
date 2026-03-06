@@ -46,6 +46,11 @@ public class Shooting extends Command {
     Timer timer = new Timer();
     double timeout = 9999;
 
+    double maxFuelCountDelay = 2.0;
+    double minFuelCountDelay = 1.0;
+    double shiftEndFuelCountExtension = 3.0;
+    double bps = 9;
+
     
 
     public Shooting(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, CommandXboxController controller, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier rotationSupplier, double kP_rotation) {
@@ -169,15 +174,18 @@ public class Shooting extends Command {
                           ? drive.getEstimatedPosition().getRotation().plus(new Rotation2d(Math.PI))
                           : drive.getEstimatedPosition().getRotation()));
     
+if ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - maxFuelCountDelay - shooter.getMaxTOF() - 1/bps) > 0) || 
+    (!Robot.isActive && (shooter.getMinTOF() +  minFuelCountDelay - Robot.combinedTimeLeft) > 0) || 
+    (Robot.shootingState.equals(ShootingState.PASSING)) ||
+    (!Robot.winner_selection_done)) {
 
-
-    //
+    //shooting parameters are close enough to START shooting
     if (!readyToShoot && shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance) && (Robot.localizationState.equals(LocalizationState.DISABLED) || Math.abs(deltaRotation) < ShooterConstants.YawAngleTolerance)) {
         readyToShoot = true;
         SmartDashboard.putBoolean("Shooter is at Velocity", true);
         
     }
-
+//shooting parameters are too far, STOP shooting
     if (shooter.isShooterVelocityLow(distance) && readyToShoot && DriverStation.isTeleop() && Robot.shootingState.equals(ShootingState.SHOOTING)) {
         readyToShoot = false;
         waiting = true;
@@ -190,7 +198,7 @@ public class Shooting extends Command {
 
     if (readyToShoot) {
         indexer.setIndexerDutyCycle(1);
-        shooter.setFeederVelocity(0.6);
+        shooter.setFeederVelocity(1);
     }
 
     else if (waiting){
@@ -206,7 +214,13 @@ public class Shooting extends Command {
     //if (timer.hasElapsed(2)) {
        // intake.beep = true;
    // }
+}
 
+else {
+    indexer.setIndexerDutyCycle(0);
+    shooter.setFeederVelocity(0);
+    readyToShoot = false;
+}
 }  
 
 

@@ -40,10 +40,13 @@ import frc.robot.Subsystems.Drive.PhoenixOdometryThread;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
+  public static boolean winner_selection_done = false;
 
   //private final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
   private final RobotContainer m_robotContainer;
   public static ShootingState shootingState = ShootingState.SHOOTING;
+  public static double combinedTimeLeft = 0;
+  public static boolean isActive = true;
   public static LocalizationState localizationState = LocalizationState.OPERATIONAL;
 
   public static AutoWinner autoWinner = AutoWinner.US;
@@ -150,6 +153,8 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousPeriodic() {
         ShiftInfo shiftInfo = ActivePeriodTracker.getOfficialShiftInfo();
+        combinedTimeLeft = shiftInfo.remainingTimeCombined(); 
+        isActive = shiftInfo.active();
         SmartDashboard.putString("Current Shift", shiftInfo.currentShift().name() + "\n" + String.format("%.1f", shiftInfo.remainingTime()));
   }
 
@@ -173,7 +178,9 @@ public class Robot extends LoggedRobot {
   public void teleopPeriodic() {
    
     ShiftInfo shiftInfo = ActivePeriodTracker.getOfficialShiftInfo();
-      SmartDashboard.putString("Current Shift", (shiftInfo.active() ? "ACTIVE: " : "INACTIVE:")  + "\n" + shiftInfo.currentShift().name() + "\n" + String.format("%.1f", shiftInfo.remainingTime()));
+    combinedTimeLeft = shiftInfo.remainingTimeCombined(); 
+    isActive = shiftInfo.active();
+    SmartDashboard.putString("Current Shift", (shiftInfo.active() ? "ACTIVE: " : "INACTIVE:")  + "\n" + shiftInfo.currentShift().name() + "\n" + String.format("%.1f", shiftInfo.remainingTime()));
   }
   
   @Override

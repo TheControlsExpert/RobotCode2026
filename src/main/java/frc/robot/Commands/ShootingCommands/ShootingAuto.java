@@ -135,16 +135,6 @@ public class ShootingAuto extends Command {
         shooter.setFeederVelocity(1);
     }
 
-    else if (waiting){
-        indexer.setIndexerDutyCycle(-0.5);
-        shooter.setFeederVelocity(-0.5);
-    }
-
-    if (!intake.isHopperFull() && intake.isReadyToClose() && !hasShuffled && DriverStation.isAutonomous()) {
-        CommandScheduler.getInstance().schedule(shuffle.getShuffleCommand());
-        hasShuffled = true;
-    }
-
 }  
 
 
