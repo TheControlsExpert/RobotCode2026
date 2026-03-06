@@ -49,6 +49,7 @@ public class ActivePeriodTracker {
 
     String message = DriverStation.getGameSpecificMessage();
     if (message.length() > 0) {
+      Robot.winner_selection_done = true;
       char character = message.charAt(0);
       if (character == 'R') {
         winner = Alliance.Blue;

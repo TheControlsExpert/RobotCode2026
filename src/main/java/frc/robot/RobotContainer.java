@@ -355,8 +355,8 @@ public class RobotContainer {
        }));
 
        //decide auto winner
-       controller2.y().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.US; Robot.manual_winner_selection = true;}));
-       controller2.a().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.ENEMY; Robot.manual_winner_selection = true;}));
+       controller2.y().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.US; Robot.winner_selection_done = true;}));
+       controller2.a().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.ENEMY; Robot.winner_selection_done = true;}));
 
        //resets of encoders
        controller2.b().onTrue(new InstantCommand(() -> {intake.resetPivotPosition();}));
@@ -364,7 +364,7 @@ public class RobotContainer {
 
        Timer when_to_signal_disconnectedFMS = new Timer();
        RobotModeTriggers.teleop().onTrue(Commands.runOnce(() -> {when_to_signal_disconnectedFMS.restart();}));
-       RobotModeTriggers.teleop().and(() -> {return when_to_signal_disconnectedFMS.hasElapsed(2);}).and(() -> {return !(DriverStation.getGameSpecificMessage().length() > 0);}).and(() -> {return !Robot.manual_winner_selection;}).whileTrue(Commands.runEnd(
+       RobotModeTriggers.teleop().and(() -> {return when_to_signal_disconnectedFMS.hasElapsed(2);}).and(() -> (!Robot.winner_selection_done)).whileTrue(Commands.runEnd(
                 () -> {
                   controller2.setRumble(RumbleType.kBothRumble, 1);
                 },

@@ -40,7 +40,7 @@ import frc.robot.Subsystems.Drive.PhoenixOdometryThread;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
-  public static boolean manual_winner_selection = false;
+  public static boolean winner_selection_done = false;
 
   //private final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
   private final RobotContainer m_robotContainer;

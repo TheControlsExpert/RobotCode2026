@@ -107,6 +107,8 @@ public class Shooter extends SubsystemBase {
      }
 
 
+
+
      public void setOutputPivot(double dutycycle) { //sets the power into the pivot motor
         io.setOutputPivot(dutycycle);
      }
@@ -123,8 +125,12 @@ public class Shooter extends SubsystemBase {
         io.setOutputShooter(dutycycle);
      }
 
-     public double getTOF(double distance) {
-        return ShootTOFMap.get(distance);
+     public double getMaxTOF() {
+        return 3.0;
+     }
+
+    public double getMinTOF() {
+            return 1.5;
      }
 
      public double[] LookupTable_Shooting(Drive drive) {

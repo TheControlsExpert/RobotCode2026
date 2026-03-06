@@ -174,7 +174,10 @@ public class Shooting extends Command {
                           ? drive.getEstimatedPosition().getRotation().plus(new Rotation2d(Math.PI))
                           : drive.getEstimatedPosition().getRotation()));
     
-if ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - maxFuelCountDelay - shooter.getTOF(distance) - 1/bps) > 0) || (!Robot.isActive && (shooter.getTOF(distance) +  minFuelCountDelay - Robot.combinedTimeLeft) > 0) || Robot.shootingState.equals(ShootingState.PASSING)) {
+if ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - maxFuelCountDelay - shooter.getMaxTOF() - 1/bps) > 0) || 
+    (!Robot.isActive && (shooter.getMinTOF() +  minFuelCountDelay - Robot.combinedTimeLeft) > 0) || 
+    (Robot.shootingState.equals(ShootingState.PASSING)) ||
+    (!Robot.winner_selection_done)) {
 
     //shooting parameters are close enough to START shooting
     if (!readyToShoot && shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance) && (Robot.localizationState.equals(LocalizationState.DISABLED) || Math.abs(deltaRotation) < ShooterConstants.YawAngleTolerance)) {
