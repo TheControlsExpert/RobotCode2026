@@ -69,6 +69,7 @@ public class Robot extends LoggedRobot {
       //sets the states for initial autos as part of the chooser options
       LoaderChooser.setDefaultOption("Zero Loaders", AutoEnums.LoaderEnums.ZERO_LOADERS);
       LoaderChooser.addOption("One Loader", AutoEnums.LoaderEnums.ONE_LOADER);
+      LoaderChooser.addOption("Two Loaders", AutoEnums.LoaderEnums.TWO_LOADERS);
 
       //sets the states for initial climb autos as part of the chooser options
       climbChooser.setDefaultOption("No Climb", AutoEnums.ClimbEnums.FALSE);
@@ -85,11 +86,11 @@ public class Robot extends LoggedRobot {
 
       //shows the driver all the choosers on smart dashboard
       SmartDashboard.putData("How many loaders?", LoaderChooser);
-      SmartDashboard.putData("Climb or not?", climbChooser);
+      SmartDashboard.putData("Go to Climb?", climbChooser);
       //alow the driver to decide whether to go into the middle of the field or not
-      SmartDashboard.putData("Middle or not?", middleChooser);
+      SmartDashboard.putData("Go to Middle?", middleChooser);
       //allows the driver to select position on the field
-      SmartDashboard.putData("Iniitial Position", positionChooser);
+      SmartDashboard.putData("Initial Position", positionChooser);
         
     }
   

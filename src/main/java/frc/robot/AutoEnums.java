@@ -4,7 +4,8 @@ public class AutoEnums {
 
     public enum LoaderEnums {
         ONE_LOADER,
-        ZERO_LOADERS;
+        ZERO_LOADERS,
+        TWO_LOADERS;
 
     } public enum ClimbEnums {
         FALSE,

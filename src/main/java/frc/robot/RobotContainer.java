@@ -540,6 +540,12 @@ public class RobotContainer {
             }      
           }
         }    
+
+
+
+        else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) { //go to outpost, shoot, go to depot, shoot
+      
+        }
       }
 
 
@@ -693,6 +699,52 @@ public class RobotContainer {
                 }      
               }
             }   
+      }
+
+
+
+      else if (chosenLoader.equals(AutoEnums.LoaderEnums.TWO_LOADERS)) { 
+
+        //new paths and autos have to be created to go from the hub to the outpost
+            PathPlannerPath HubToOutpostPath;
+            Command HubToOutpostAuto;
+
+            PathPlannerPath OutpostToDepotPath;
+            Command OutpostToDepotAuto;
+
+            PathPlannerPath LeaveDepotPath;
+            Command LeaveDepotAuto;
+
+            try {
+              if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
+                HubToOutpostPath = PathPlannerPath.fromPathFile("Hub to (Collect Outpost)");
+                OutpostToDepotPath = PathPlannerPath.fromPathFile("OUTPOST TO DEPOT RAAHH");
+                LeaveDepotPath = PathPlannerPath.fromPathFile("Return Depot");
+
+              } else {
+                HubToOutpostPath = PathPlannerPath.fromPathFile("Hub to (Collect Outpost)").flipPath();
+                OutpostToDepotPath = PathPlannerPath.fromPathFile("OUTPOST TO DEPOT RAAHH").flipPath();
+                LeaveDepotPath = PathPlannerPath.fromPathFile("Return Depot").flipPath();
+
+              }
+            } catch (Exception e) {
+              return Commands.none();
+            }
+
+          HubToOutpostAuto = AutoBuilder.followPath(HubToOutpostPath);
+          OutpostToDepotAuto = AutoBuilder.followPath(OutpostToDepotPath);
+          LeaveDepotAuto = AutoBuilder.followPath(LeaveDepotPath);
+
+
+          if (chosenPosition.equals(AutoEnums.PositionEnums.OUTPOST)) {
+            return new InstantCommand(() -> {drive.resetPosition(HubToOutpostPath.getStartingHolonomicPose().get());}).
+            andThen(HubToOutpostAuto).andThen(new WaitCommand(2)).
+            andThen(new ParallelRaceGroup(OutpostToDepotAuto, new WaitCommand(2).andThen(new IntakeCommand(intake)), new WaitCommand(3).andThen(new RevvAuto(shooter, drive, 0)))).
+            andThen(new ParallelRaceGroup(LeaveDepotAuto, new RevvAuto(shooter, drive, 0))).
+            andThen(new ParallelRaceGroup(new Shooting(shooter, drive, indexer, intake, controller,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, 3), new WaitUntilCommand(() -> {return intake.isReadyToClose();}).andThen(new ShuffleCommand(intake).getShuffleCommand())));
+
+
+          }
       }
 
       
