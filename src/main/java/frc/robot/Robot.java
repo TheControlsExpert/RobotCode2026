@@ -22,9 +22,11 @@ import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -51,6 +53,7 @@ public class Robot extends LoggedRobot {
 
   public static AutoWinner autoWinner = AutoWinner.US;
   public static ArrayList<String> DisconnectedMotorNames = new ArrayList<String>();
+  PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
 
 
   //creates the choosers that will hold possible enum states for each choice
@@ -62,13 +65,13 @@ public class Robot extends LoggedRobot {
 
 
     public Robot() {
+     pdh.setSwitchableChannel(true);
      m_robotContainer = new RobotContainer();
     }
 
     @Override
     public void robotInit() {
-      Pathfinding.setPathfinder(new LocalADStar());
-
+     
       //sets the states for initial autos as part of the chooser options
       LoaderChooser.setDefaultOption("Zero Loaders", AutoEnums.LoaderEnums.ZERO_LOADERS);
       LoaderChooser.addOption("One Loader", AutoEnums.LoaderEnums.ONE_LOADER);
@@ -77,7 +80,7 @@ public class Robot extends LoggedRobot {
       //sets the states for initial climb autos as part of the chooser options
       climbChooser.setDefaultOption("No Climb", AutoEnums.ClimbEnums.FALSE);
       climbChooser.addOption("Yes climb", AutoEnums.ClimbEnums.TRUE);
-
+      
       //sets the state for going into the middle of the field or not
       middleChooser.setDefaultOption("No middle", AutoEnums.MiddleEnums.FALSE);
       middleChooser.addOption("Yes middle", AutoEnums.MiddleEnums.TRUE);

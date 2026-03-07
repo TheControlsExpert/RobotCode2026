@@ -265,16 +265,8 @@ private final Field2d m_field = new Field2d();
 
  
  m_field.setRobotPose(SwervePoseEstimator.getEstimatedPosition()); 
- Pose2d cameraPoseSim = getEstimatedPosition().transformBy(simulatedLL);
- Pose2d cameraPoseLeftSim = new Pose2d(cameraPoseSim.getTranslation(), cameraPoseSim.getRotation().plus(Rotation2d.fromDegrees(59.6/2)));
- Pose2d cameraPoseRightSim = new Pose2d(cameraPoseSim.getTranslation(), cameraPoseSim.getRotation().minus(Rotation2d.fromDegrees(59.6/2)));
 
- 
-
-
- 
- SmartDashboard.putNumber("tester", tester);
- SmartDashboard.putNumber("distance", getEstimatedPosition().getTranslation().getDistance(calculateShootingPosition()));
+ //SmartDashboard.putNumber("distance", getEstimatedPosition().getTranslation().getDistance(calculateShootingPosition()));
  //SmartDashboard.putNumber("bop bop", numTimes);
  odometryLock.lock(); // Prevents odometry updates while reading data
  gyroIO.updateInputs(gyroInputs);
@@ -294,10 +286,6 @@ private final Field2d m_field = new Field2d();
  }
 
  // Log empty setpoint states when disabled
- if (DriverStation.isDisabled()) {
- Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
- Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
- }
 
  if (RobotBase.isReal()) {
  
@@ -674,7 +662,7 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", getRotation().getDegre
 
  SwervePoseEstimator.addVisionMeasurement(new Pose2d(measurement.pose().getTranslation(), getRotation()), measurement.timestamp(), stds);
 
- if (gyroResetTimer.hasElapsed(10) && getGyroSpeed() < 1 && getTranslationalSpeed() < 0.1 && measurement.numTags() >= 2 && measurement.avgDistance() < 3) {
+ if (gyroResetTimer.hasElapsed(60) && getGyroSpeed() < 1 && getTranslationalSpeed() < 0.1 && measurement.numTags() >= 2 && measurement.avgDistance() < 3) {
  SwervePoseEstimator.resetRotation(Rotation2d.fromDegrees(measurement.rotationDegreees()));
  gyroResetTimer.reset();
  }
