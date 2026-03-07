@@ -265,15 +265,8 @@ private final Field2d m_field = new Field2d();
 
  
  m_field.setRobotPose(SwervePoseEstimator.getEstimatedPosition()); 
- Pose2d cameraPoseSim = getEstimatedPosition().transformBy(simulatedLL);
- Pose2d cameraPoseLeftSim = new Pose2d(cameraPoseSim.getTranslation(), cameraPoseSim.getRotation().plus(Rotation2d.fromDegrees(59.6/2)));
- Pose2d cameraPoseRightSim = new Pose2d(cameraPoseSim.getTranslation(), cameraPoseSim.getRotation().minus(Rotation2d.fromDegrees(59.6/2)));
 
  
-
-
-
- //SmartDashboard.putNumber("bop bop", numTimes);
  odometryLock.lock(); // Prevents odometry updates while reading data
  gyroIO.updateInputs(gyroInputs);
  

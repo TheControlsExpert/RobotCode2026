@@ -21,6 +21,7 @@ import frc.robot.Subsystems.Drive.Drive;
 import frc.robot.Subsystems.Indexer.Indexer;
 import frc.robot.Subsystems.Intake.IntakeSubsystem;
 import frc.robot.Subsystems.Shooter.Shooter;
+import frc.robot.Subsystems.Vision.VisionSubsystem;
 
 public class ShootingAuto extends Command {
     Drive drive;
@@ -39,12 +40,14 @@ public class ShootingAuto extends Command {
     double speed;
     Timer timer = new Timer();
     double timeout;
-    public ShootingAuto(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, double kP_rotation, ShuffleCommand shuffle, double timeout, Translation2d targetPosition) {
+    VisionSubsystem vision;
+    public ShootingAuto(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, double kP_rotation, ShuffleCommand shuffle, double timeout, Translation2d targetPosition, VisionSubsystem vision) {
         this.shooter = shooter;
         this.drive = drive;
         this.indexer = indexer;
         this.kP_rotation = kP_rotation;
         this.shuffle = shuffle;
+        this.vision = vision;
         this.timeout = timeout;
         this.intake = intake;
         this.targetPosition = targetPosition;
@@ -54,6 +57,7 @@ public class ShootingAuto extends Command {
 
     @Override
     public void initialize() {
+        vision.ShootingMode(true);
         readyToShoot = false;
         hasShuffled = false;
         waiting = false;
@@ -162,11 +166,12 @@ public class ShootingAuto extends Command {
   
 @Override
 public void end(boolean interrupted) {
-    if (!DriverStation.isAutonomous()) {
+    vision.ShootingMode(false);
+
     shooter.setShooterVelocity(0);
-    }
     shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
     indexer.setIndexerDutyCycle(0);
+    shooter.setFeederVelocity(0);
 }
 
 @Override
