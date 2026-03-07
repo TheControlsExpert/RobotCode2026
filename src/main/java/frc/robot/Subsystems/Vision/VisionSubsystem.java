@@ -11,6 +11,7 @@ import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -40,6 +41,7 @@ public class VisionSubsystem extends SubsystemBase {
     boolean wasDisconnected_LL4 = false;
     boolean wasDisconnected_LL3GS = false;
     boolean wasDisconnected_LL3GF = false;
+    boolean disable_other_cameras = false;
  
 
             
@@ -103,7 +105,7 @@ public class VisionSubsystem extends SubsystemBase {
             }
         }
 
-         if (inputs.isNew_LL3GS && inputs.isConnected_LL3GS && inputs.tagCount_LL3GS > 0) {
+         if (inputs.isNew_LL3GS && inputs.isConnected_LL3GS && inputs.tagCount_LL3GS > 0 && !disable_other_cameras) {
             double std_LL3GS = (inputs.avgDistance_LL3GS * 0.02 ) / inputs.tagCount_LL3GS;
             double[] stds_LL3GS = {std_LL3GS, std_LL3GS};
             if (std_LL3GS < 0.1) {
@@ -111,7 +113,7 @@ public class VisionSubsystem extends SubsystemBase {
             }
         }
 
-        if (inputs.isNew_LL3GF && inputs.isConnected_LL3GF && inputs.tagCount_LL3GF > 0) {
+        if (inputs.isNew_LL3GF && inputs.isConnected_LL3GF && inputs.tagCount_LL3GF > 0 && !disable_other_cameras) {
                 double std_LL3GF = (inputs.avgDistance_LL3GF * 0.02 ) / inputs.tagCount_LL3GF;
                 double[] stds_LL3GF = {std_LL3GF, std_LL3GF};
                 if (std_LL3GF < 0.1) {
@@ -143,10 +145,6 @@ public class VisionSubsystem extends SubsystemBase {
         }  
         }
     
-    
-
-
-    
         public double[] times(double multiplier, double[] list) {
             for (int i = 0; i < list.length; i++) {
                 list[i] = list[i] * multiplier;
@@ -160,6 +158,24 @@ public class VisionSubsystem extends SubsystemBase {
             SmartDashboard.putBoolean("adding vision", true);
             drive.addVision(measurement);
 
+    }
+
+    public void ShootingMode(boolean isShooting) {
+        if (isShooting) {
+            disable_other_cameras = true;
+            if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
+                LimelightHelpers.SetFiducialIDFiltersOverride("limelight-four", new int[]{21,24, 25, 26, 27, 18});
+            }
+            
+            else {
+                LimelightHelpers.SetFiducialIDFiltersOverride("limelight-four", new int[]{9, 10, 11, 2, 8, 5});
+            }
+        }
+
+        else {
+            disable_other_cameras = false;
+            LimelightHelpers.SetFiducialIDFiltersOverride("limelight-four", new int[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32});
+        }
     }
     }
     

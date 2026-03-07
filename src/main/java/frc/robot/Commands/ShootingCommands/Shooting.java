@@ -28,6 +28,7 @@ import frc.robot.Subsystems.Drive.Drive;
 import frc.robot.Subsystems.Indexer.Indexer;
 import frc.robot.Subsystems.Intake.IntakeSubsystem;
 import frc.robot.Subsystems.Shooter.Shooter;
+import frc.robot.Subsystems.Vision.VisionSubsystem;
 
 public class Shooting extends Command {
     Drive drive;
@@ -50,11 +51,13 @@ public class Shooting extends Command {
     double minFuelCountDelay = 1.0;
     double shiftEndFuelCountExtension = 3.0;
     double bps = 9;
+    VisionSubsystem vision;
 
     
 
-    public Shooting(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, CommandXboxController controller, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier rotationSupplier, double kP_rotation) {
+    public Shooting(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, CommandXboxController controller, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier rotationSupplier, double kP_rotation, VisionSubsystem vision) {
         this.shooter = shooter;
+        this.vision = vision;
         this.drive = drive;
         this.indexer = indexer;
         this.xSupplier = xSupplier;
@@ -67,8 +70,9 @@ public class Shooting extends Command {
         
     }
 
-     public Shooting(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, CommandXboxController controller, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier rotationSupplier, double kP_rotation, double timeout) {
+     public Shooting(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, CommandXboxController controller, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier rotationSupplier, double kP_rotation, double timeout, VisionSubsystem vision) {
         this.shooter = shooter;
+        this.vision = vision;
         this.drive = drive;
         this.indexer = indexer;
         this.xSupplier = xSupplier;
@@ -85,6 +89,7 @@ public class Shooting extends Command {
 
     @Override
     public void initialize() {
+        vision.ShootingMode(true);   
         readyToShoot = false;
         hasShuffled = false;
         waiting = false;
@@ -243,8 +248,9 @@ else {
 @Override
 public void end(boolean interrupted) {
     // if (!DriverStation.isAutonomous()) {
-        shooter.setShooterVelocity(0);
-        shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
+    vision.ShootingMode(false);
+    shooter.setShooterVelocity(0);
+    shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
  //   }
 
     //CommandScheduler.getInstance().schedule(new Jam(indexer, shooter, 2.0)); //runs the indexer in the opposite direction to clear balls from the shooter

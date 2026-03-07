@@ -266,8 +266,7 @@ private final Field2d m_field = new Field2d();
  
  m_field.setRobotPose(SwervePoseEstimator.getEstimatedPosition()); 
 
- //SmartDashboard.putNumber("distance", getEstimatedPosition().getTranslation().getDistance(calculateShootingPosition()));
- //SmartDashboard.putNumber("bop bop", numTimes);
+ 
  odometryLock.lock(); // Prevents odometry updates while reading data
  gyroIO.updateInputs(gyroInputs);
  
@@ -348,7 +347,6 @@ private final Field2d m_field = new Field2d();
  }
  
  twist = kinematics.toTwist2d(moduleDeltas);
- SmartDashboard.putNumber("twist ", Units.radiansToDegrees(twist.dtheta / 0.02));
  simRotation = simRotation.plus(new Rotation2d(twist.dtheta));
  // if ( PathPlannerAuto.currentPathName != null) {
  // PathPlannerLogging.setLogTargetPoseCallback((pose) -> {simRotation = new Rotation2d(pose.getRotation().getRadians());});
@@ -358,17 +356,11 @@ private final Field2d m_field = new Field2d();
 
 
  SwervePoseEstimator.updateWithTime(timestamp, simRotation , modulePositions);
- SmartDashboard.putNumber("Delta Time", Timer.getFPGATimestamp() - prevTime);
 
  prevTime = Timer.getFPGATimestamp();
  
 
- 
 
- SmartDashboard.putNumber("x", SwervePoseEstimator.getEstimatedPosition().getX());
- SmartDashboard.putNumber("y", SwervePoseEstimator.getEstimatedPosition().getY());
- SmartDashboard.putNumber("Sim Rotation", simRotation.getRotations());
- SmartDashboard.putNumber("Gyro speed", getAngularSpeed());
  }
  
  // Update gyro alert
