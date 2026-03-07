@@ -274,7 +274,7 @@ private final Field2d m_field = new Field2d();
 
  
  SmartDashboard.putNumber("tester", tester);
- SmartDashboard.putNumber("distance", getEstimatedPosition().getTranslation().getDistance(calculateShootingPosition()));
+ //SmartDashboard.putNumber("distance", getEstimatedPosition().getTranslation().getDistance(calculateShootingPosition()));
  //SmartDashboard.putNumber("bop bop", numTimes);
  odometryLock.lock(); // Prevents odometry updates while reading data
  gyroIO.updateInputs(gyroInputs);

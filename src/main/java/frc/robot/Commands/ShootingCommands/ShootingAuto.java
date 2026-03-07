@@ -80,15 +80,14 @@ public class ShootingAuto extends Command {
         deltaRotation = Math.toDegrees(deltaRotation);
         double omega = deltaRotation * kP_rotation;
 
-        Translation2d directionOfTravel = targetPosition.minus(drive.getEstimatedPosition().getTranslation());
+        Translation2d distance2 = targetPosition.minus(drive.getEstimatedPosition().getTranslation());
         Translation2d linearVelocity;
 
         speed = drive.getEstimatedPosition().getTranslation().getDistance(targetPosition) / timeout; //sets the speed the bot will be moving at
         if (speed > ShooterConstants.maxMovingSpeed) { speed = ShooterConstants.maxMovingSpeed; }
 
-        if (directionOfTravel.getNorm() > 0.05) { // Prevent division by zero
-     linearVelocity = directionOfTravel.times(speed/directionOfTravel.getNorm());
-        }
+        if (distance2.getNorm() > 0.05) { // Prevent division by zero
+     linearVelocity = distance2.times(speed/distance2.getNorm());}
 
         else {
      linearVelocity = new Translation2d();
@@ -101,8 +100,8 @@ public class ShootingAuto extends Command {
               // Convert to field relative speeds & send command
               ChassisSpeeds speeds =
                   new ChassisSpeeds(
-                      linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                      linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                      linearVelocity.getX() ,
+                      linearVelocity.getY() ,
                    MathUtil.clamp(omega, -drive.getMaxAngularSpeedRadPerSec(), drive.getMaxAngularSpeedRadPerSec()));
               boolean isFlipped =
                   DriverStation.getAlliance().isPresent()
