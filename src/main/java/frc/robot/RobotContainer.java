@@ -551,7 +551,7 @@ public class RobotContainer {
               return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
               andThen(new ParallelRaceGroup(new IntakeCommand(intake), goMiddleAuto)).
               andThen(new ParallelRaceGroup(new RevvAuto(shooter, drive, trenchTimeout), leaveMiddleAuto)).
-              andThen(new ShootingAuto(shooter, drive, indexer, intake, drive.rotationkP, new ShuffleCommand(intake), 3, leaveMiddleAutoPath.getPathPoses().get(leaveMiddleAutoPath.getPathPoses().size() - 1).getTranslation())).
+              andThen(new ShootingAuto(shooter, drive, indexer, intake, drive.rotationkP, new ShuffleCommand(intake), 3, goLoaderAutoPath.getStartingHolonomicPose().get().getTranslation())).
               andThen(goLoaderAuto).andThen(new ParallelRaceGroup(new WaitCommand(2), new RevvAuto(shooter, drive, 0))).
               andThen(new ParallelRaceGroup(shootFromLoaderAuto, new RevvAuto(shooter, drive, 0))).
               andThen(new ShootingAuto(shooter, drive, indexer, intake, drive.rotationkP, new ShuffleCommand(intake), 3, shootFromLoaderAutoPath.getPathPoses().get(shootFromLoaderAutoPath.getPathPoses().size() - 1).getTranslation()));
@@ -730,7 +730,7 @@ public class RobotContainer {
                   return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
                   andThen(new ParallelRaceGroup(new IntakeCommand(intake), goMiddleAuto)).
                   andThen(new ParallelRaceGroup(new RevvAuto(shooter, drive, trenchTimeout), leaveMiddleAuto)).
-                  andThen(new ShootingAuto(shooter, drive, indexer, intake, drive.rotationkP, new ShuffleCommand(intake), 3, leaveMiddleAutoPath.getPathPoses().get(leaveMiddleAutoPath.getPathPoses().size() - 1).getTranslation())).
+                  andThen(new ShootingAuto(shooter, drive, indexer, intake, drive.rotationkP, new ShuffleCommand(intake), 3, goLoaderAutoPath.getStartingHolonomicPose().get().getTranslation())).
                   andThen(new ParallelRaceGroup(new IntakeCommand(intake), goLoaderAuto.andThen(returnFromLoaderAuto), new RevvAuto(shooter, drive, 0))).
                   andThen(new ShootingAuto(shooter, drive, indexer, intake, drive.rotationkP, new ShuffleCommand(intake), 3, returnFromLoaderAutoPath.getPathPoses().get(returnFromLoaderAutoPath.getPathPoses().size() - 1).getTranslation()));
                 }
@@ -741,7 +741,7 @@ public class RobotContainer {
                   return new InstantCommand(() -> {drive.resetPosition(goMiddleAutoPath.getStartingHolonomicPose().get());}).
                   andThen(new ParallelRaceGroup(new IntakeCommand(intake), goMiddleAuto)).
                   andThen(new ParallelRaceGroup(new RevvAuto(shooter, drive, trenchTimeout), leaveMiddleAuto)).
-                  andThen(new ShootingAuto(shooter, drive, indexer, intake, drive.rotationkP, new ShuffleCommand(intake), 3, leaveMiddleAutoPath.getPathPoses().get(leaveMiddleAutoPath.getPathPoses().size() - 1).getTranslation())).
+                  andThen(new ShootingAuto(shooter, drive, indexer, intake, drive.rotationkP, new ShuffleCommand(intake), 3, goLoaderAutoPath.getStartingHolonomicPose().get().getTranslation())).
                   andThen(new ParallelRaceGroup(new IntakeCommand(intake), goLoaderAuto.andThen(returnFromLoaderAuto), new RevvAuto(shooter, drive, 0))).
                   andThen(new ShootingAuto(shooter, drive, indexer, intake, drive.rotationkP, new ShuffleCommand(intake), 3, returnFromLoaderAutoPath.getPathPoses().get(returnFromLoaderAutoPath.getPathPoses().size() - 1).getTranslation())).
                   andThen(Commands.defer(() -> autoClimbing.getClimbingCommand(true), Set.of(drive)));
