@@ -86,11 +86,15 @@ public class ShootingAuto extends Command {
         speed = drive.getEstimatedPosition().getTranslation().getDistance(targetPosition) / timeout; //sets the speed the bot will be moving at
         if (speed > ShooterConstants.maxMovingSpeed) { speed = ShooterConstants.maxMovingSpeed; }
 
-        if (distance2.getNorm() > 0.05) { // Prevent division by zero
+        if (distance2.getNorm() > 0.01) { // Prevent division by zero
      linearVelocity = distance2.times(speed/distance2.getNorm());}
 
         else {
      linearVelocity = new Translation2d();
+        }
+
+        if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
+            linearVelocity = linearVelocity.unaryMinus();
         }
         
 
@@ -171,5 +175,3 @@ public boolean isFinished() {
 }
 
 }
-
-  
