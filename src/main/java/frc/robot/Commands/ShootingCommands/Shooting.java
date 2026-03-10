@@ -45,13 +45,16 @@ public class Shooting extends Command {
     boolean hasShuffled = false;
     boolean waiting = false;
     Timer timer = new Timer();
+    Timer shuffleTimer = new Timer();
     double timeout = 9999;
+
 
     double maxFuelCountDelay = 2.0;
     double minFuelCountDelay = 1.0;
     double shiftEndFuelCountExtension = 3.0;
     double bps = 9;
     VisionSubsystem vision;
+    boolean isShuffling = true;
 
     
 
@@ -68,6 +71,13 @@ public class Shooting extends Command {
         this.intake = intake;
         addRequirements(shooter, drive, indexer);
         
+    }
+
+    public Shooting(Shooter shooter, Indexer indexer, Drive drive) {
+        this.shooter = shooter;
+        this.indexer = indexer;
+        this.drive = drive;
+        addRequirements(shooter, indexer, drive);
     }
 
      public Shooting(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, CommandXboxController controller, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier rotationSupplier, double kP_rotation, double timeout, VisionSubsystem vision) {
@@ -89,127 +99,152 @@ public class Shooting extends Command {
 
     @Override
     public void initialize() {
-        vision.ShootingMode(true);   
+     //   vision.ShootingMode(true);   
         readyToShoot = false;
         hasShuffled = false;
+        isShuffling = true;
         waiting = false;
         timer.restart();
+        shuffleTimer.restart();
     }
 
 
     @Override
     public void execute() {
 
-        Translation2d linearVelocity;
+//         Translation2d linearVelocity;
 
-        if (DriverStation.isTeleop()) {
+//         if (DriverStation.isTeleop()) {
 
-        if (controller.rightStick().getAsBoolean()) {
-          linearVelocity =
-                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble() / 12, ySupplier.getAsDouble() / 12);
-        }
+//         if (controller.rightStick().getAsBoolean()) {
+//           linearVelocity =
+//                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble() / 12, ySupplier.getAsDouble() / 12);
+//         }
 
-        else {
-            linearVelocity =
-                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+//         else {
+//             linearVelocity =
+//                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
 
-        }
-    }
+//         }
+//     }
 
-    else {
-        linearVelocity = new Translation2d(0, 0);
-    }
+//     else {
+//         linearVelocity = new Translation2d(0, 0);
+//     }
 
               
-        Translation2d shootingPosition = drive.calculateShootingPosition();
+//         Translation2d shootingPosition = drive.calculateShootingPosition();
 
-        double distance = drive.getEstimatedPosition().getTranslation().getDistance(shootingPosition);
-        double[] shootingParameters = shooter.LookupTable_Shooting(drive);
-        double omega;
-        double angleToTarget_radians = shootingPosition.minus(drive.getEstimatedPosition().getTranslation()).getAngle().getRadians();
-        double deltaRotation = angleToTarget_radians - drive.getEstimatedPosition().getRotation().getRadians();
+//         double distance = drive.getEstimatedPosition().getTranslation().getDistance(shootingPosition);
+//         double[] shootingParameters = shooter.LookupTable_Shooting(drive);
+//         double omega;
+//         double angleToTarget_radians = shootingPosition.minus(drive.getEstimatedPosition().getTranslation()).getAngle().getRadians();
+//         double deltaRotation = angleToTarget_radians - drive.getEstimatedPosition().getRotation().getRadians();
         
-        deltaRotation = MathUtil.angleModulus(deltaRotation);
-        //Change back to degrees
-        deltaRotation = Math.toDegrees(deltaRotation);
+//         deltaRotation = MathUtil.angleModulus(deltaRotation);
+//         //Change back to degrees
+//         deltaRotation = Math.toDegrees(deltaRotation);
 
-        if (Robot.localizationState.equals(LocalizationState.OPERATIONAL)) {
-            shooter.setShooterVelocity(shootingParameters[0]);
-            shooter.setPositionPivot(shootingParameters[1]);
+//         if (Robot.localizationState.equals(LocalizationState.OPERATIONAL)) {
+//             shooter.setShooterVelocity(shootingParameters[0]);
+//             shooter.setPositionPivot(shootingParameters[1]);
 
         
-         omega = deltaRotation * kP_rotation;
+//          omega = deltaRotation * kP_rotation;
         
-        }
+//         }
 
-        else {
-            omega = MathUtil.applyDeadband(rotationSupplier.getAsDouble(), 0.2);
+//         else {
+//             omega = MathUtil.applyDeadband(rotationSupplier.getAsDouble(), 0.2);
 
-            if (controller.rightStick().getAsBoolean()) {
-                omega = omega / 12;
-            }
+//             if (controller.rightStick().getAsBoolean()) {
+//                 omega = omega / 12;
+//             }
 
-          // Square rotation value for more precise control
-            omega = Math.copySign(omega * omega, omega);
+//           // Square rotation value for more precise control
+//             omega = Math.copySign(omega * omega, omega);
  
-            if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
-                shooter.setShooterVelocity(ShooterConstants.HUB_SHOOTING_VELOCITY);
-                shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
-            }
-             else if (Robot.shootingState.equals(ShootingState.PASSING)) {
-                shooter.setShooterVelocity(ShooterConstants.BASIC_PASSING_VELOCITY);
-                shooter.setPositionPivot(ShooterConstants.BASIC_PASSING_PIVOT);
-            }
-        }
+//             if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
+//                 shooter.setShooterVelocity(ShooterConstants.HUB_SHOOTING_VELOCITY);
+//                 shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
+//             }
+//              else if (Robot.shootingState.equals(ShootingState.PASSING)) {
+//                 shooter.setShooterVelocity(ShooterConstants.BASIC_PASSING_VELOCITY);
+//                 shooter.setPositionPivot(ShooterConstants.BASIC_PASSING_PIVOT);
+//             }
+//         }
         
 
-              // Convert to field relative speeds & send command
-              ChassisSpeeds speeds =
-                  new ChassisSpeeds(
-                      linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                      linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                   MathUtil.clamp(omega, -drive.getMaxAngularSpeedRadPerSec(), drive.getMaxAngularSpeedRadPerSec()));
-              boolean isFlipped =
-                  DriverStation.getAlliance().isPresent()
-                      && DriverStation.getAlliance().get() == Alliance.Red;
-              drive.runVelocity(
-                  ChassisSpeeds.fromFieldRelativeSpeeds(
-                      speeds,
-                      isFlipped
-                          ? drive.getEstimatedPosition().getRotation().plus(new Rotation2d(Math.PI))
-                          : drive.getEstimatedPosition().getRotation()));
+//               // Convert to field relative speeds & send command
+//               ChassisSpeeds speeds =
+//                   new ChassisSpeeds(
+//                       linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+//                       linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+//                    MathUtil.clamp(omega, -drive.getMaxAngularSpeedRadPerSec(), drive.getMaxAngularSpeedRadPerSec()));
+//               boolean isFlipped =
+//                   DriverStation.getAlliance().isPresent()
+//                       && DriverStation.getAlliance().get() == Alliance.Red;
+//               drive.runVelocity(
+//                   ChassisSpeeds.fromFieldRelativeSpeeds(
+//                       speeds,
+//                       isFlipped
+//                           ? drive.getEstimatedPosition().getRotation().plus(new Rotation2d(Math.PI))
+//                           : drive.getEstimatedPosition().getRotation()));
     
-if ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - maxFuelCountDelay - shooter.getMaxTOF() - 1/bps) > 0) || 
-    (!Robot.isActive && (shooter.getMinTOF() +  minFuelCountDelay - Robot.combinedTimeLeft) > 0) || 
-    (Robot.shootingState.equals(ShootingState.PASSING)) ||
-    (!Robot.winner_selection_done)) {
+// if ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - maxFuelCountDelay - shooter.getMaxTOF() - 1/bps) > 0) || 
+//     (!Robot.isActive && (shooter.getMinTOF() +  minFuelCountDelay - Robot.combinedTimeLeft) > 0) || 
+//     (Robot.shootingState.equals(ShootingState.PASSING)) ||
+//     (!Robot.winner_selection_done)) {
 
-    //shooting parameters are close enough to START shooting
-    if (!readyToShoot && shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance) && (Robot.localizationState.equals(LocalizationState.DISABLED) || Math.abs(deltaRotation) < ShooterConstants.YawAngleTolerance)) {
-        readyToShoot = true;
-        SmartDashboard.putBoolean("Shooter is at Velocity", true);
+//     //shooting parameters are close enough to START shooting
+//     if (!readyToShoot && shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance) && (Robot.localizationState.equals(LocalizationState.DISABLED) || Math.abs(deltaRotation) < ShooterConstants.YawAngleTolerance)) {
+//         readyToShoot = true;
+//         SmartDashboard.putBoolean("Shooter is at Velocity", true);
         
-    }
-//shooting parameters are too far, STOP shooting
-    if (shooter.isShooterVelocityLow(distance) && readyToShoot && DriverStation.isTeleop() && Robot.shootingState.equals(ShootingState.SHOOTING)) {
-        readyToShoot = false;
-        waiting = true;
-    }
+//     }
+// //shooting parameters are too far, STOP shooting
+//     if (shooter.isShooterVelocityLow(distance) && readyToShoot && DriverStation.isTeleop() && Robot.shootingState.equals(ShootingState.SHOOTING)) {
+//         readyToShoot = false;
+//         waiting = true;
+//     }
 
-    if (!readyToShoot) {
-        SmartDashboard.putBoolean("Shooter is at Velocity", false);
-    }
+//     if (!readyToShoot) {
+//         SmartDashboard.putBoolean("Shooter is at Velocity", false);
+//     }
 
 
-    if (readyToShoot) {
-        indexer.setIndexerDutyCycle(1);
-        shooter.setFeederVelocity(1);
-    }
+//     if (readyToShoot) {
+        // if (shuffleTimer.hasElapsed(1) && !isShuffling) {
+        //     isShuffling = true;
+        //     shuffleTimer.restart();
+        //     indexer.setIndexerDutyCycle(-1);
+        // }
 
-    else if (waiting){
-        indexer.setIndexerDutyCycle(-0.5);
-        shooter.setFeederVelocity(-0.5);
-    }
+        // if (shuffleTimer.hasElapsed(0.2) && isShuffling && hasShuffled || shuffleTimer.hasElapsed(0.2) && isShuffling && !hasShuffled) {
+        //     isShuffling = false;
+        //     hasShuffled = true;
+        //     shuffleTimer.restart();
+          
+        // }
+
+
+        // if (!isShuffling) {
+            indexer.setIndexerDutyCycle(1);
+            shooter.setFeederVelocity(0.75);
+
+        }
+
+        // else {
+        //     indexer.setIndexerDutyCycle(-1);
+        //     shooter.setFeederVelocity(0.75);
+        // }
+      
+   // }
+//
+   // else if (waiting){
+   //     indexer.setIndexerDutyCycle(-0.5);
+    //    shooter.setFeederVelocity(-0.5);
+   // }
 
     // if (!intake.isHopperFull() && intake.isReadyToClose() && !hasShuffled && DriverStation.isAutonomous() && !intake.is_busy) {
     //     CommandScheduler.getInstance().schedule(shuffle);
@@ -219,14 +254,14 @@ if ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - ma
     //if (timer.hasElapsed(2)) {
        // intake.beep = true;
    // }
-}
 
-else {
-    indexer.setIndexerDutyCycle(0);
-    shooter.setFeederVelocity(0);
-    readyToShoot = false;
-}
-}  
+
+// else {
+//     indexer.setIndexerDutyCycle(0);
+//     shooter.setFeederVelocity(0);
+//     readyToShoot = false;
+//}
+//}  
 
 
     private static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
@@ -248,7 +283,7 @@ else {
 @Override
 public void end(boolean interrupted) {
     // if (!DriverStation.isAutonomous()) {
-    vision.ShootingMode(false);
+   // vision.ShootingMode(false);
     shooter.setShooterVelocity(0);
     shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
  //   }

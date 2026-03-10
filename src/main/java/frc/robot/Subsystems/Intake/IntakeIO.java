@@ -5,12 +5,15 @@ import org.littletonrobotics.junction.AutoLog;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.revrobotics.AbsoluteEncoder;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -18,17 +21,20 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.IntakeConstants;
+import com.ctre.phoenix6.hardware.TalonFXS;
 
 public class IntakeIO {
     TalonFX intakeMotor = new TalonFX(14);
-    TalonFX pivotMotor = new TalonFX(15);
-   // DutyCycleEncoder pivotEncoder = new DutyCycleEncoder(0);
+    TalonFXS pivotMotor = new TalonFXS(15);
+    DutyCycleEncoder pivotEncoder = new DutyCycleEncoder(0);
     PositionVoltage pivotPositionVoltage = new PositionVoltage(0);
     StatusSignal<Angle> pivotAngle = pivotMotor.getPosition();
     StatusSignal<AngularVelocity> intakeVel = intakeMotor.getVelocity();
+    double target = IntakeConstants.HOME_Position;
+    boolean Up = true;
     //DigitalInput ReadyToClose = new DigitalInput(1);
     //DigitalInput HopperFull = new DigitalInput(2);
-
+double offsetEncoder = 0;
     
 
 
@@ -45,19 +51,24 @@ public class IntakeIO {
 
         intakeMotor.getConfigurator().apply(intakeConfig);
 
-        TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
-        pivotConfig.MotorOutput.Inverted = com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
+        TalonFXSConfiguration pivotConfig = new TalonFXSConfiguration();
+        pivotConfig.MotorOutput.Inverted = com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive;
         pivotConfig.MotorOutput.NeutralMode = com.ctre.phoenix6.signals.NeutralModeValue.Brake;
+        pivotConfig.CurrentLimits.StatorCurrentLimit = 40;
+        pivotConfig.CurrentLimits.SupplyCurrentLimit = 40;
 
         pivotConfig.Slot0.kP = IntakeConstants.pivot_kP;
-        pivotConfig.Slot0.kG = IntakeConstants.pivot_kG;
-        pivotConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+       // pivotConfig.Slot0.kG = IntakeConstants.pivot_kG;
+        pivotConfig.Slot0.kG = 0;
+       // pivotConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         
-        pivotConfig.Feedback.RotorToSensorRatio = IntakeConstants.PivotGearRatio;
-        pivotConfig.Feedback.SensorToMechanismRatio = 1;
+        pivotConfig.ExternalFeedback.RotorToSensorRatio = 1;
+        pivotConfig.ExternalFeedback.SensorToMechanismRatio = 1;
+
+        pivotConfig.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
 
         pivotMotor.getConfigurator().apply(pivotConfig);
-      //  pivotMotor.setPosition(IntakeConstants.PivotGearRatio * -1 * (pivotEncoder.get() - IntakeConstants.offset));
+        pivotMotor.setPosition(IntakeConstants.PivotGearRatio * -1 * (pivotEncoder.get() - IntakeConstants.offset));
         
     }
 
@@ -65,6 +76,8 @@ public class IntakeIO {
     public static class IntakeIOInputs {
         public boolean isConnectedIntake = false;
         public boolean isConnectedPivot = false;
+        public double intakePos = 0.0;
+
 
         public double pivotEncoderRotations = 0.0;
         public boolean readyToClose = false;
@@ -72,10 +85,42 @@ public class IntakeIO {
     }
 
     public void updateInputs(IntakeIOInputs inputs) {
+        SmartDashboard.putNumber("target", target);
         inputs.isConnectedIntake = BaseStatusSignal.refreshAll(intakeVel).equals(com.ctre.phoenix6.StatusCode.OK);
         inputs.isConnectedPivot = BaseStatusSignal.refreshAll(pivotAngle).equals(com.ctre.phoenix6.StatusCode.OK);
 
-        inputs.pivotEncoderRotations = pivotAngle.getValue().magnitude();
+        inputs.pivotEncoderRotations = pivotEncoder.get();
+        inputs.intakePos = pivotAngle.getValueAsDouble();
+        
+       // double flipper = Math.signum(target - pivotAngle.getValueAsDouble());
+        SmartDashboard.putNumber("pivot feedforward", -5 * (target - pivotEncoder.get()));
+        SmartDashboard.putNumber("gravity feed", Math.cos(offsetEncoder * 2 * Math.PI) * IntakeConstants.pivot_kG * 12);
+        SmartDashboard.putNumber("spring feed", Math.abs(Math.sin(offsetEncoder * 2 * Math.PI)) * IntakeConstants.cf_spring * 12);
+       
+        // }
+        //TO-DO: add voltage limits
+        offsetEncoder = pivotEncoder.get() - IntakeConstants.offset;
+
+        if (!Up) {
+        pivotMotor.set(MathUtil.clamp(-0.3, -1 * (target - pivotEncoder.get()), 0.3));
+         SmartDashboard.putNumber("feedforward", MathUtil.clamp(-0.3, -1 * (target - pivotEncoder.get()), 0.3));
+        }
+
+        else {
+        pivotMotor.set(MathUtil.clamp(-0.3, -1.5 * (target - pivotEncoder.get()), 0.3));
+         SmartDashboard.putNumber("feedforward", MathUtil.clamp(-0.3, -1.5 * (target - pivotEncoder.get()), 0.3));
+        }
+
+        if (Up && pivotEncoder.get() > 0.60 ) {
+            pivotMotor.set(0);
+            SmartDashboard.putNumber("feedforward", 0);
+        }
+
+        if (!Up && pivotEncoder.get() < 0.24) {
+            pivotMotor.set(0);
+            SmartDashboard.putNumber("feedforward", 0);
+        }
+        SmartDashboard.putNumber("pivot voltage", pivotMotor.getDutyCycle().getValueAsDouble());
         //inputs.readyToClose = ReadyToClose.get();
         //inputs.hopperFull = !HopperFull.get();
     }
@@ -87,13 +132,16 @@ public class IntakeIO {
 
     public void setPosition(double position) {
         SmartDashboard.putNumber("intake position", position);
-        pivotMotor.setControl(pivotPositionVoltage.withPosition(position));
+        target = position;
+       // pivotMotor.setControl(pivotPositionVoltage.withPosition(position));
     }
 
    
     public void resetPosition() {
         //pivotMotor.setPosition(IntakeConstants.PivotGearRatio * (pivotEncoder.get() - IntakeConstants.offset));
     }
+
+
 
 
 

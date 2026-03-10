@@ -31,19 +31,20 @@ public class Revv extends Command {
   
     @Override
     public void execute() {
-        if (Robot.localizationState.equals(LocalizationState.OPERATIONAL)) {
-            double distance = drive.getEstimatedPosition().getTranslation().getDistance(drive.calculateShootingPosition());
-            double[] shootingValues = shooter.LookupTable_Shooting(drive);
-            shooter.setShooterVelocity(shootingValues[0]);
-        }
-        else {
-            if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
-                shooter.setShooterVelocity(ShooterConstants.HUB_SHOOTING_VELOCITY);
-            }
-             else if (Robot.shootingState.equals(ShootingState.PASSING)) {
-                shooter.setShooterVelocity(ShooterConstants.BASIC_PASSING_VELOCITY);
-            }
-        }
+        //shooter.setShooterVelocity(0.7);
+        // if (Robot.localizationState.equals(LocalizationState.OPERATIONAL)) {
+        //     double distance = drive.getEstimatedPosition().getTranslation().getDistance(drive.calculateShootingPosition());
+        //     double[] shootingValues = shooter.LookupTable_Shooting(drive);
+        //     shooter.setShooterVelocity(shootingValues[0]);
+        // }
+        // else {
+        //     if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
+        //         shooter.setShooterVelocity(ShooterConstants.HUB_SHOOTING_VELOCITY);
+        //     }
+        //      else if (Robot.shootingState.equals(ShootingState.PASSING)) {
+        //         shooter.setShooterVelocity(ShooterConstants.BASIC_PASSING_VELOCITY);
+        //     }
+        // }
     }
 
     @Override

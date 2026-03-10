@@ -1,0 +1,84 @@
+{
+ "name":"autopaths",
+ "version":2,
+ "type":"Swerve",
+ "variables":{
+  "expressions":{},
+  "poses":{}
+ },
+ "config":{
+  "frontLeft":{
+   "x":{
+    "exp":"0.282 m",
+    "val":0.282
+   },
+   "y":{
+    "exp":"-0.282 m",
+    "val":-0.282
+   }
+  },
+  "backLeft":{
+   "x":{
+    "exp":"-0.282 m",
+    "val":-0.282
+   },
+   "y":{
+    "exp":"0.282 m",
+    "val":0.282
+   }
+  },
+  "mass":{
+   "exp":"105 lbs",
+   "val":47.62719885
+  },
+  "inertia":{
+   "exp":"4 kg m ^ 2",
+   "val":4.0
+  },
+  "gearing":{
+   "exp":"5.36",
+   "val":5.36
+  },
+  "radius":{
+   "exp":"2 in",
+   "val":0.0508
+  },
+  "vmax":{
+   "exp":"6000 RPM",
+   "val":628.3185307179587
+  },
+  "tmax":{
+   "exp":"1.9 N * m",
+   "val":1.9
+  },
+  "cof":{
+   "exp":"1.54",
+   "val":1.54
+  },
+  "bumper":{
+   "front":{
+    "exp":"0.4315 m",
+    "val":0.4315
+   },
+   "side":{
+    "exp":"0.4315 m",
+    "val":0.4315
+   },
+   "back":{
+    "exp":"0.6475 m",
+    "val":0.6475
+   }
+  },
+  "differentialTrackWidth":{
+   "exp":"22 in",
+   "val":0.5588
+  }
+ },
+ "generationFeatures":[],
+ "codegen":{
+  "root":null,
+  "genVars":true,
+  "genTrajData":true,
+  "useChoreoLib":true
+ }
+}

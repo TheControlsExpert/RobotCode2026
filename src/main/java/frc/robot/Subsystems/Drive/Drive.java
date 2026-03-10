@@ -76,7 +76,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
  // TunerConstants doesn't include these constants, so they are declared locally
- static final double ODOMETRY_FREQUENCY = 250;
+ static final double ODOMETRY_FREQUENCY = 200;
  // Vector<N2> pose = VecBuilder.fill(0, 0);
  
 
@@ -240,7 +240,7 @@ private final Field2d m_field = new Field2d();
  
  @Override
  public void periodic() {
-
+if (DriverStation.isDisabled()) {
  if (!gyroInputs.connected && !wasGyroDisconnected) {
     Robot.reportDisconnection("Gyro");
     wasGyroDisconnected = true;
@@ -249,6 +249,7 @@ private final Field2d m_field = new Field2d();
     Robot.removeDisconnection("Gyro");
     wasGyroDisconnected = false;
  }
+}
  
  if (DriverStation.isAutonomous() && PathPlannerAuto.currentPathName != null) {
  PathPlannerLogging.setLogActivePathCallback((poses) -> {
@@ -270,7 +271,7 @@ private final Field2d m_field = new Field2d();
  odometryLock.lock(); // Prevents odometry updates while reading data
  gyroIO.updateInputs(gyroInputs);
  
- Logger.processInputs("Drive/Gyro", gyroInputs);
+ //Logger.processInputs("Drive/Gyro", gyroInputs);
  for (var module : modules) {
  module.periodic();
  }
@@ -286,8 +287,8 @@ private final Field2d m_field = new Field2d();
 
  // Log empty setpoint states when disabled
  if (DriverStation.isDisabled()) {
- Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
- Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
+ //Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
+ //Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
  }
 
  if (RobotBase.isReal()) {
@@ -319,7 +320,7 @@ private final Field2d m_field = new Field2d();
  if ( gyroInputs.connected) {
  // Use the real gyro angle
  rawGyroRotation = gyroInputs.odometryYawPositions[i];
- SmartDashboard.putNumber("gyro rediing", getEstimatedPosition().getRotation().getDegrees());
+ //SmartDashboard.putNumber("gyro rediing", getEstimatedPosition().getRotation().getDegrees());
  } else {
  // Use the angle delta from the kinematics and module deltas
  Twist2d twist = kinematics.toTwist2d(moduleDeltas);

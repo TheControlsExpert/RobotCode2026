@@ -75,13 +75,13 @@ public class Robot extends LoggedRobot {
     @Override
     public void robotInit() {
       if (isReal()) {
-      Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
-      Logger.addDataReceiver(new NT4Publisher());
+      //Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+      //Logger.addDataReceiver(new NT4Publisher());
       }
       else {
-      String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-      Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-      Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+     // String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
+      //Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+      //Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
       }
 
       Logger.start();
@@ -203,7 +203,7 @@ public class Robot extends LoggedRobot {
     String autoWinnerText = "";
 
 if (!winner_selection_done) {
- // autoWinnerText = "Winner not selected yet";
+  autoWinnerText = "Winner not selected yet";
 } else {
   autoWinnerText = autoWinner.toString();
 }

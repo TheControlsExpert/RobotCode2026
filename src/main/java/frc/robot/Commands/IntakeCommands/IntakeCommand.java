@@ -13,12 +13,12 @@ public class IntakeCommand extends Command{
 
     @Override
     public void initialize() {
-        intake.setIntakeDutyCycle(0.6);
+        intake.setIntakeDutyCycle(0.7);
         intake.Extend();
     }
 
     @Override
     public void end(boolean interrupted) {
-        intake.setIntakeDutyCycle(0.2);
+        intake.setIntakeDutyCycle(0.0);
     }   
 }
