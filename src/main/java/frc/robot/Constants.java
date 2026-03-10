@@ -260,7 +260,8 @@ public final class Constants {
   }
 
   public static class IntakeConstants {
-    public static final double pivot_kP = 0.0;
+    public static final double pivot_kP_up = -2.3;
+    public static final double pivot_kP_down = -1;
     public static final double pivot_kG = -0.155;
     public static final double offset = 0.42;
     public static final double PivotGearRatio = 45;
@@ -270,6 +271,7 @@ public final class Constants {
     public static final double intakeSupplyCurrentLimit = 40;
     public static final double HOME_Position = 0.59;
     public static final double INTAKING_Position = 0.25;
+    public static final double SHUFFLE_UP_POSITION = 0.5;
     public static final double BUMPING_Position = 25;
     public static final double cf_spring = 0.15;
   }

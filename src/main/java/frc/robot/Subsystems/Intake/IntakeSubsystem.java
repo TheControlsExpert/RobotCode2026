@@ -100,6 +100,11 @@ public class IntakeSubsystem extends SubsystemBase {
         io.Up = false;
     }
 
+    public void Shuffle() {
+        io.setPosition(IntakeConstants.SHUFFLE_UP_POSITION);
+        io.Up = true;
+    }
+
     public void retractBump() {
         io.setPosition(IntakeConstants.BUMPING_Position);
     }

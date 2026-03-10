@@ -57,7 +57,7 @@ double offsetEncoder = 0;
         pivotConfig.CurrentLimits.StatorCurrentLimit = 40;
         pivotConfig.CurrentLimits.SupplyCurrentLimit = 40;
 
-        pivotConfig.Slot0.kP = IntakeConstants.pivot_kP;
+        pivotConfig.Slot0.kP = 0;
        // pivotConfig.Slot0.kG = IntakeConstants.pivot_kG;
         pivotConfig.Slot0.kG = 0;
        // pivotConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
@@ -102,13 +102,13 @@ double offsetEncoder = 0;
         offsetEncoder = pivotEncoder.get() - IntakeConstants.offset;
 
         if (!Up) {
-        pivotMotor.set(MathUtil.clamp(-0.3, -1 * (target - pivotEncoder.get()), 0.3));
-         SmartDashboard.putNumber("feedforward", MathUtil.clamp(-0.3, -1 * (target - pivotEncoder.get()), 0.3));
+        pivotMotor.set(MathUtil.clamp(-0.3, IntakeConstants.pivot_kP_down * (target - pivotEncoder.get()), 0.3));
+         SmartDashboard.putNumber("feedforward", MathUtil.clamp(-0.3, IntakeConstants.pivot_kP_down * (target - pivotEncoder.get()), 0.3));
         }
 
         else {
-        pivotMotor.set(MathUtil.clamp(-0.3, -1.5 * (target - pivotEncoder.get()), 0.3));
-         SmartDashboard.putNumber("feedforward", MathUtil.clamp(-0.3, -1.5 * (target - pivotEncoder.get()), 0.3));
+        pivotMotor.set(MathUtil.clamp(-0.3, IntakeConstants.pivot_kP_up * (target - pivotEncoder.get()), 0.3));
+         SmartDashboard.putNumber("feedforward", MathUtil.clamp(-0.3, IntakeConstants.pivot_kP_up * (target - pivotEncoder.get()), 0.3));
         }
 
         if (Up && pivotEncoder.get() > 0.60 ) {
@@ -140,6 +140,12 @@ double offsetEncoder = 0;
     public void resetPosition() {
         //pivotMotor.setPosition(IntakeConstants.PivotGearRatio * (pivotEncoder.get() - IntakeConstants.offset));
     }
+
+    // public enum IntakeStates {
+    //     INTAKING,
+    //     HOME,
+    //     SHUFFLE_UP
+    // }
 
 
 
