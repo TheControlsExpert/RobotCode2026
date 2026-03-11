@@ -97,10 +97,10 @@ public final class Constants {
       public static final int driveMotorID = 2;
       public static final int angleMotorID = 1;
       public static final int canCoderID = 3;
-      public static final boolean invertDrive = true;
+      public static final boolean invertDrive = false;
       public static final boolean invertSteer = true;
       public static final boolean invertEncoder = false;
-      public static final double angleOffset = 0.16748;
+      public static final double angleOffset = 0.113;
       // 36.123046875 + 2.28515625)
       public static final SwerveModuleConstants constants =
           new SwerveModuleConstants(
@@ -118,7 +118,7 @@ public final class Constants {
       public static final int driveMotorID = 5;
       public static final int angleMotorID = 4;
       public static final int canCoderID = 6;
-      public static final boolean invertDrive = false;
+      public static final boolean invertDrive = true;
       public static final boolean invertSteer = true;
       public static final boolean invertEncoder = false;
 
@@ -139,7 +139,7 @@ public final class Constants {
       public static final int driveMotorID = 8;
       public static final int angleMotorID = 7;
       public static final int canCoderID = 9;
-      public static final boolean invertDrive = false;
+      public static final boolean invertDrive = true;
       public static final boolean invertSteer = true;
       public static final boolean invertEncoder = false;
       public static final double angleOffset = -0.263;
@@ -159,7 +159,7 @@ public final class Constants {
       public static final int driveMotorID = 11;
       public static final int angleMotorID = 10;
       public static final int canCoderID = 12;
-      public static final boolean invertDrive = true;
+      public static final boolean invertDrive = false;
       public static final boolean invertSteer = true;
       public static final boolean invertEncoder = false;
       public static final double angleOffset = 0.1545;
@@ -260,17 +260,20 @@ public final class Constants {
   }
 
   public static class IntakeConstants {
-    public static final double pivot_kP = 0.0;
-    public static final double pivot_kG = 0.0;
-    public static final double offset = 0.64;
-    public static final double PivotGearRatio = 5;
-    public static final boolean pivot_inverted = true;
+    public static final double pivot_kP_up = -2.3;
+    public static final double pivot_kP_down = -1;
+    public static final double pivot_kG = -0.155;
+    public static final double offset = 0.42;
+    public static final double PivotGearRatio = 45;
+    public static final boolean pivot_inverted = false;
     public static final boolean intake_inverted = true;
 
     public static final double intakeSupplyCurrentLimit = 40;
-    public static final double HOME_Position = 0;
-    public static final double INTAKING_Position = 100;
+    public static final double HOME_Position = 0.59;
+    public static final double INTAKING_Position = 0.25;
+    public static final double SHUFFLE_UP_POSITION = 0.5;
     public static final double BUMPING_Position = 25;
+    public static final double cf_spring = 0.15;
   }
 
   public static class IndexerConstants {

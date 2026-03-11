@@ -47,16 +47,16 @@ public class ActivePeriodTracker {
     Alliance us = DriverStation.getAlliance().get();
     Alliance winner = did_We_win ? us : (us.equals(Alliance.Blue) ? Alliance.Red : Alliance.Blue);
 
-    String message = DriverStation.getGameSpecificMessage();
-    if (message.length() > 0) {
-      Robot.winner_selection_done = true;
-      char character = message.charAt(0);
-      if (character == 'R') {
-        winner = Alliance.Blue;
-      } else if (character == 'B') {
-        winner = Alliance.Red;
-      }
-    }  
+    // String message = DriverStation.getGameSpecificMessage();
+    // if (message.length() > 0) {
+    //   Robot.winner_selection_done = true;
+    //   char character = message.charAt(0);
+    //   if (character == 'R') {
+    //     winner = Alliance.Blue;
+    //   } else if (character == 'B') {
+    //     winner = Alliance.Red;
+    //   }
+    // }  
 
     return winner;
   }

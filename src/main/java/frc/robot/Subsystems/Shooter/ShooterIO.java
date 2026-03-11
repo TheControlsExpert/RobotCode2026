@@ -16,6 +16,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.hardware.TalonFXS;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
@@ -84,6 +85,7 @@ public class ShooterIO {
         
         pivot.Slot0.kP = ShooterConstants.shooterPivot_kP;
         pivot.Slot0.kD = ShooterConstants.shooterPivot_kD;
+        pivot.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
 
         //note inverted value doesn't matter here, since we will be receving setpoint encoder positions from interpolating tree map
         pivot.MotorOutput.NeutralMode = NeutralModeValue.Brake;

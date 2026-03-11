@@ -54,7 +54,7 @@ public class VisionSubsystem extends SubsystemBase {
 
 
     public void getWebcamFeed() { //puts the webcam connected to dev port 0 onto the dashboard
-        CameraServer.startAutomaticCapture(0);
+      //  CameraServer.startAutomaticCapture(0);
     }
     
     
@@ -121,7 +121,7 @@ public class VisionSubsystem extends SubsystemBase {
                 }
         }
 
-        VisionMeasurement bestmeasurement = null;
+        VisionMeasurement bestmeasurement = new VisionMeasurement(new Pose2d(), 0, 0, new double[]{0,0}, 0, 0);
 
         if (!visionMeasurements.isEmpty()) {
             for (int i = 0; i < visionMeasurements.size(); i++) {
@@ -140,7 +140,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         visionMeasurements.clear();
 
-        if (bestmeasurement != null) {
+        if (!bestmeasurement.pose.equals(new Pose2d())) {
             addVisionMeasurement(bestmeasurement);
         }  
         }

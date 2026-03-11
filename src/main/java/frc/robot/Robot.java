@@ -203,7 +203,7 @@ public class Robot extends LoggedRobot {
     String autoWinnerText = "";
 
 if (!winner_selection_done) {
- // autoWinnerText = "Winner not selected yet";
+  autoWinnerText = "Winner not selected yet";
 } else {
   autoWinnerText = autoWinner.toString();
 }

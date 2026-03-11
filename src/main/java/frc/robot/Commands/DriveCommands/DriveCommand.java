@@ -56,6 +56,9 @@ public class DriveCommand extends Command {
 
           // Square rotation value for more precise control
           omega = Math.copySign(omega * omega, omega);
+           boolean isFlipped =
+                  DriverStation.getAlliance().isPresent()
+                      && DriverStation.getAlliance().get() == Alliance.Red;
 
               // Convert to field relative speeds & send command
               ChassisSpeeds speeds =
@@ -63,9 +66,7 @@ public class DriveCommand extends Command {
                       linearVelocity.getX() * swervyyy.getMaxLinearSpeedMetersPerSec(),
                       linearVelocity.getY() * swervyyy.getMaxLinearSpeedMetersPerSec(),
                       omega * swervyyy.getMaxAngularSpeedRadPerSec());
-              boolean isFlipped =
-                  DriverStation.getAlliance().isPresent()
-                      && DriverStation.getAlliance().get() == Alliance.Red;
+             
               swervyyy.runVelocity(
                   ChassisSpeeds.fromFieldRelativeSpeeds(
                       speeds,

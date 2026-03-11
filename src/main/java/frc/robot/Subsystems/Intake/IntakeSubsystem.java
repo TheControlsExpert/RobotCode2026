@@ -36,7 +36,11 @@ public class IntakeSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateInputs(inputs);
+       // setPivotPosition(0.725);
+       // io.Up = true;
         SmartDashboard.putBoolean("Hopper Full?", isHopperFull());
+        SmartDashboard.putNumber("Encoderabs", inputs.pivotEncoderRotations);
+        SmartDashboard.putNumber("encoder intake", inputs.intakePos);
 
         // if (IntakeFullHistory.size() > 20) {
         //     IntakeFullHistory.remove(0);
@@ -51,6 +55,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
        if (DriverStation.isDisabled()) {
 
+        if (DriverStation.isDisabled()) {
             if (!inputs.isConnectedIntake && !wasDisconnected_Intake) {
                 Robot.reportDisconnection("Intake Motor");
                 wasDisconnected_Intake = true;
@@ -89,10 +94,17 @@ public class IntakeSubsystem extends SubsystemBase {
 
    public void Retract() {
         io.setPosition(IntakeConstants.HOME_Position);
+        io.Up = true;
     }
 
     public void Extend() {
         io.setPosition(IntakeConstants.INTAKING_Position);
+        io.Up = false;
+    }
+
+    public void Shuffle() {
+        io.setPosition(IntakeConstants.SHUFFLE_UP_POSITION);
+        io.Up = true;
     }
 
     public void retractBump() {

@@ -95,7 +95,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     // Configure drive motor
 
     var driveConfig = new TalonFXConfiguration();
-    driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     driveConfig.Slot0 = SwerveConstants.intrinsicsD;
     driveConfig.Feedback.SensorToMechanismRatio = SwerveConstants.driveReduction;
     

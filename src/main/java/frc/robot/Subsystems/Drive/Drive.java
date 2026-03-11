@@ -241,9 +241,7 @@ private final Field2d m_field = new Field2d();
  
  @Override
  public void periodic() {
-
 if (DriverStation.isDisabled()) {
- 
  if (!gyroInputs.connected && !wasGyroDisconnected) {
     Robot.reportDisconnection("Gyro");
     wasGyroDisconnected = true;
@@ -289,7 +287,6 @@ if (DriverStation.isDisabled()) {
  }
 
  // Log empty setpoint states when disabled
-
 
  if (RobotBase.isReal()) {
  
