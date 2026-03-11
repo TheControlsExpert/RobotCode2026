@@ -77,6 +77,7 @@ import org.littletonrobotics.junction.Logger;
 public class Drive extends SubsystemBase {
  // TunerConstants doesn't include these constants, so they are declared locally
  static final double ODOMETRY_FREQUENCY = 250;
+ //Vector<N3> visionSTDs = VecBuilder.fill(0.1, 0.1, 999999999); 
  // Vector<N2> pose = VecBuilder.fill(0, 0);
  
 
@@ -241,6 +242,8 @@ private final Field2d m_field = new Field2d();
  @Override
  public void periodic() {
 
+if (DriverStation.isDisabled()) {
+ 
  if (!gyroInputs.connected && !wasGyroDisconnected) {
     Robot.reportDisconnection("Gyro");
     wasGyroDisconnected = true;
@@ -249,19 +252,20 @@ private final Field2d m_field = new Field2d();
     Robot.removeDisconnection("Gyro");
     wasGyroDisconnected = false;
  }
+}
  
- if (DriverStation.isAutonomous() && PathPlannerAuto.currentPathName != null) {
- PathPlannerLogging.setLogActivePathCallback((poses) -> {
- // Do whatever you want with the poses here
- m_field.getObject("path").setPoses(poses);
- });
- PathPlannerLogging.setLogTargetPoseCallback((pose) -> {SmartDashboard.putNumber("error x", pose.getX() - getEstimatedPosition().getX());
- SmartDashboard.putNumber("error y", pose.getY() - getEstimatedPosition().getY());
- SmartDashboard.putNumber("error rotation", pose.getRotation().getDegrees());
- });
+//  if (DriverStation.isAutonomous() && PathPlannerAuto.currentPathName != null) {
+//  PathPlannerLogging.setLogActivePathCallback((poses) -> {
+//  // Do whatever you want with the poses here
+//  m_field.getObject("path").setPoses(poses);
+//  });
+//  PathPlannerLogging.setLogTargetPoseCallback((pose) -> {SmartDashboard.putNumber("error x", pose.getX() - getEstimatedPosition().getX());
+//  SmartDashboard.putNumber("error y", pose.getY() - getEstimatedPosition().getY());
+//  SmartDashboard.putNumber("error rotation", pose.getRotation().getDegrees());
+//  });
 
  
- }
+//  }
 
  
  m_field.setRobotPose(SwervePoseEstimator.getEstimatedPosition()); 
@@ -270,7 +274,7 @@ private final Field2d m_field = new Field2d();
  odometryLock.lock(); // Prevents odometry updates while reading data
  gyroIO.updateInputs(gyroInputs);
  
- Logger.processInputs("Drive/Gyro", gyroInputs);
+ //Logger.processInputs("Drive/Gyro", gyroInputs);
  for (var module : modules) {
  module.periodic();
  }
@@ -285,10 +289,7 @@ private final Field2d m_field = new Field2d();
  }
 
  // Log empty setpoint states when disabled
- if (DriverStation.isDisabled()) {
- Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
- Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
- }
+
 
  if (RobotBase.isReal()) {
  
@@ -319,7 +320,6 @@ private final Field2d m_field = new Field2d();
  if ( gyroInputs.connected) {
  // Use the real gyro angle
  rawGyroRotation = gyroInputs.odometryYawPositions[i];
- SmartDashboard.putNumber("gyro rediing", getEstimatedPosition().getRotation().getDegrees());
  } else {
  // Use the angle delta from the kinematics and module deltas
  Twist2d twist = kinematics.toTwist2d(moduleDeltas);
@@ -430,11 +430,11 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", getRotation().getDegre
  SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, getMaxLinearSpeedMetersPerSec() );
 
 
- SmartDashboard.putNumber("accel", Math.abs(VecBuilder.fill(getRobotRelativeSpeeds().vxMetersPerSecond, getRobotRelativeSpeeds().vyMetersPerSecond).minus(VecBuilder.fill(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond)).norm()));
+ //SmartDashboard.putNumber("accel", Math.abs(VecBuilder.fill(getRobotRelativeSpeeds().vxMetersPerSecond, getRobotRelativeSpeeds().vyMetersPerSecond).minus(VecBuilder.fill(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond)).norm()));
  
  // Log unoptimized setpoints and setpoint speeds
- Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
- Logger.recordOutput("SwerveChassisSpeeds/Setpoints", discreteSpeeds);
+ //Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
+ //Logger.recordOutput("SwerveChassisSpeeds/Setpoints", discreteSpeeds);
  
  // Send setpoints to modules
  for (int i = 0; i < 4; i++) {
@@ -442,7 +442,7 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", getRotation().getDegre
  }
  
  // Log optimized setpoints (runSetpoint mutates each state)
- Logger.recordOutput("SwerveStates/SetpointsOptimized", setpointStates);
+ //Logger.recordOutput("SwerveStates/SetpointsOptimized", setpointStates);
  }
  
  /** Runs the drive in a straight line with the specified drive output. */
@@ -652,7 +652,7 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", getRotation().getDegre
 
  public void addVision(VisionMeasurement measurement) {
  Vector<N3> stds = VecBuilder.fill(measurement.std()[0], measurement.std()[1], 9999999);
- visionLock.lock();
+ //visionLock.lock();
 
  if (Math.abs(gyroInputs.rollDegrees) < 2 && Math.abs(gyroInputs.pitchDegrees) < 2 && getGyroSpeed() < 180 && getTranslationalSpeed() < 3) {
 
@@ -665,7 +665,7 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", getRotation().getDegre
 
  }
  
- visionLock.unlock();
+ //visionLock.unlock();
  }
 
  public Pose2d getEstimatedPosition() {

@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.robot.Constants.SwerveConstants;
@@ -17,6 +18,7 @@ import frc.robot.Subsystems.Drive.ModuleIO.ModuleIOInputs;
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
+  int sampleCount = 0;
   private final ModuleIO io;
   private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
   private final int index;
@@ -39,11 +41,11 @@ public class Module {
 
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
+    //Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
 
     // Calculate positions for odometry
     if (RobotBase.isReal()) {
-    int sampleCount = inputs.odometryTimestamps.length; // All signals are sampled together
+    sampleCount = inputs.odometryTimestamps.length; // All signals are sampled together
     odometryPositions = new SwerveModulePosition[sampleCount];
     for (int i = 0; i < sampleCount; i++) {
       double positionMeters = inputs.odometryDrivePositionsRad[i] * SwerveConstants.WheelRadius;
@@ -59,6 +61,8 @@ public class Module {
    }
 
     // Update alerts
+
+    if (DriverStation.isDisabled()) {
       if (!wasDisconnectedDrive && !inputs.driveConnected) {
         Robot.reportDisconnection("Drive Motor " + index);
         wasDisconnectedDrive = true;
@@ -84,6 +88,7 @@ public class Module {
         Robot.removeDisconnection("CANCoder " + index);
         wasDisconnectedTurnEncoder = false;
       }
+  }
   }
 
   /** Runs the module with the specified setpoint state. Mutates the state to optimize it. */

@@ -3,6 +3,7 @@ package frc.robot.Subsystems.Intake;
 import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -14,8 +15,8 @@ public class IntakeSubsystem extends SubsystemBase {
     
     private final IntakeIO io;
     private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
-    ArrayList<Double> IntakeFullHistory = new ArrayList<>();
-    ArrayList<Double> ReadyToCloseHistory = new ArrayList<>();
+    //ArrayList<Double> IntakeFullHistory = new ArrayList<>();
+    //ArrayList<Double> ReadyToCloseHistory = new ArrayList<>();
     //public boolean beep = false;
 
     double averageIntakeFull = 0;   
@@ -37,16 +38,18 @@ public class IntakeSubsystem extends SubsystemBase {
         io.updateInputs(inputs);
         SmartDashboard.putBoolean("Hopper Full?", isHopperFull());
 
-        if (IntakeFullHistory.size() > 20) {
-            IntakeFullHistory.remove(0);
-            ReadyToCloseHistory.remove(0);
-        }
+        // if (IntakeFullHistory.size() > 20) {
+        //     IntakeFullHistory.remove(0);
+        //     ReadyToCloseHistory.remove(0);
+        // }
 
-        IntakeFullHistory.add(inputs.hopperFull ? 1.0 : 0.0);
-        ReadyToCloseHistory.add(inputs.readyToClose ? 1.0 : 0.0);
+      // IntakeFullHistory.add(inputs.hopperFull ? 1.0 : 0.0);
+      //  ReadyToCloseHistory.add(inputs.readyToClose ? 1.0 : 0.0);
 
-        averageIntakeFull = IntakeFullHistory.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
-        averageReadyToClose = ReadyToCloseHistory.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+       // averageIntakeFull = IntakeFullHistory.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+       // averageReadyToClose = ReadyToCloseHistory.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+
+       if (DriverStation.isDisabled()) {
 
             if (!inputs.isConnectedIntake && !wasDisconnected_Intake) {
                 Robot.reportDisconnection("Intake Motor");
@@ -69,6 +72,7 @@ public class IntakeSubsystem extends SubsystemBase {
                     Robot.removeDisconnection("Intake Pivot");
                     wasDisconnected_Pivot = false;
             }
+        }
     }
 
     public void setIntakeDutyCycle(double dutyCycle) {

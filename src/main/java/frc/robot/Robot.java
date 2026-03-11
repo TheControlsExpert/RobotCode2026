@@ -74,17 +74,17 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void robotInit() {
-      if (isReal()) {
-      Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
-      Logger.addDataReceiver(new NT4Publisher());
-      }
-      else {
-      String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-      Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-      Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
-      }
+      // if (isReal()) {
+      // Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+      // Logger.addDataReceiver(new NT4Publisher());
+      // }
+      // else {
+      // String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
+      // Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+      // Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+      // }
 
-      Logger.start();
+      // Logger.start();
       //sets the states for initial autos as part of the chooser options
       LoaderChooser.setDefaultOption("Zero Loaders", AutoEnums.LoaderEnums.ZERO_LOADERS);
       LoaderChooser.addOption("One Loader", AutoEnums.LoaderEnums.ONE_LOADER);
