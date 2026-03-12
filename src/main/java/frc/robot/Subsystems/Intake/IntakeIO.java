@@ -32,7 +32,11 @@ public class IntakeIO {
     StatusSignal<AngularVelocity> intakeVel = intakeMotor.getVelocity();
     double target = IntakeConstants.HOME_Position;
     boolean Up = true;
-    //DigitalInput ReadyToClose = new DigitalInput(1);
+    DigitalInput ReadyToClose1 = new DigitalInput(1);
+    DigitalInput ReadyToClose2 = new DigitalInput(2);
+
+    
+
     //DigitalInput HopperFull = new DigitalInput(2);
 double offsetEncoder = 0;
     
@@ -80,22 +84,26 @@ double offsetEncoder = 0;
 
 
         public double pivotEncoderRotations = 0.0;
-        public boolean readyToClose = false;
+        public boolean readyToClose1 = false;
+        public boolean readyToClose2 = false;
         public boolean hopperFull = false;
     }
 
     public void updateInputs(IntakeIOInputs inputs) {
-        SmartDashboard.putNumber("target", target);
+       // SmartDashboard.putNumber("target", target);
         inputs.isConnectedIntake = BaseStatusSignal.refreshAll(intakeVel).equals(com.ctre.phoenix6.StatusCode.OK);
         inputs.isConnectedPivot = BaseStatusSignal.refreshAll(pivotAngle).equals(com.ctre.phoenix6.StatusCode.OK);
 
         inputs.pivotEncoderRotations = pivotEncoder.get();
         inputs.intakePos = pivotAngle.getValueAsDouble();
+
+        inputs.readyToClose1 = ReadyToClose1.get();
+        inputs.readyToClose2 = ReadyToClose2.get();
         
        // double flipper = Math.signum(target - pivotAngle.getValueAsDouble());
-        SmartDashboard.putNumber("pivot feedforward", -5 * (target - pivotEncoder.get()));
-        SmartDashboard.putNumber("gravity feed", Math.cos(offsetEncoder * 2 * Math.PI) * IntakeConstants.pivot_kG * 12);
-        SmartDashboard.putNumber("spring feed", Math.abs(Math.sin(offsetEncoder * 2 * Math.PI)) * IntakeConstants.cf_spring * 12);
+      //  SmartDashboard.putNumber("pivot feedforward", -5 * (target - pivotEncoder.get()));
+        // SmartDashboard.putNumber("gravity feed", Math.cos(offsetEncoder * 2 * Math.PI) * IntakeConstants.pivot_kG * 12);
+        // SmartDashboard.putNumber("spring feed", Math.abs(Math.sin(offsetEncoder * 2 * Math.PI)) * IntakeConstants.cf_spring * 12);
        
         // }
         //TO-DO: add voltage limits
@@ -120,7 +128,7 @@ double offsetEncoder = 0;
             pivotMotor.set(0);
             SmartDashboard.putNumber("feedforward", 0);
         }
-        SmartDashboard.putNumber("pivot voltage", pivotMotor.getDutyCycle().getValueAsDouble());
+       // SmartDashboard.putNumber("pivot voltage", pivotMotor.getDutyCycle().getValueAsDouble());
         //inputs.readyToClose = ReadyToClose.get();
         //inputs.hopperFull = !HopperFull.get();
     }

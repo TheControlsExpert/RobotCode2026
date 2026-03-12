@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -15,8 +16,12 @@ public class IntakeSubsystem extends SubsystemBase {
     
     private final IntakeIO io;
     private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+    boolean readyToClose = false;
+    double when_to_close = 0.25; //seconds
     //ArrayList<Double> IntakeFullHistory = new ArrayList<>();
     //ArrayList<Double> ReadyToCloseHistory = new ArrayList<>();
+    Timer readyToClose1_timer = new Timer();
+    Timer readyToClose2_timer = new Timer();
     //public boolean beep = false;
 
     double averageIntakeFull = 0;   
@@ -36,11 +41,25 @@ public class IntakeSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateInputs(inputs);
+
+        if (!inputs.readyToClose1) {
+            readyToClose1_timer.restart();
+        }
+        if (!inputs.readyToClose2) {
+            readyToClose2_timer.restart();
+        }
+
+        if (readyToClose1_timer.hasElapsed(when_to_close) || readyToClose2_timer.hasElapsed(when_to_close)) {
+            readyToClose = true;
+        }
+         else {
+            readyToClose = false;
+        }
        // setPivotPosition(0.725);
        // io.Up = true;
-        SmartDashboard.putBoolean("Hopper Full?", isHopperFull());
+       // SmartDashboard.putBoolean("Hopper Full?", isHopperFull());
         SmartDashboard.putNumber("Encoderabs", inputs.pivotEncoderRotations);
-        SmartDashboard.putNumber("encoder intake", inputs.intakePos);
+        //SmartDashboard.putNumber("encoder intake", inputs.intakePos);
 
         // if (IntakeFullHistory.size() > 20) {
         //     IntakeFullHistory.remove(0);
@@ -53,7 +72,7 @@ public class IntakeSubsystem extends SubsystemBase {
        // averageIntakeFull = IntakeFullHistory.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
        // averageReadyToClose = ReadyToCloseHistory.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
 
-       if (DriverStation.isDisabled()) {
+      
 
         if (DriverStation.isDisabled()) {
             if (!inputs.isConnectedIntake && !wasDisconnected_Intake) {
@@ -79,6 +98,7 @@ public class IntakeSubsystem extends SubsystemBase {
             }
         }
     }
+    
 
     public void setIntakeDutyCycle(double dutyCycle) {
         io.setIntakeDutyCycle(dutyCycle);
@@ -113,12 +133,12 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public boolean isReadyToClose() {
      //  return beep;
-       return averageReadyToClose > 0.75;
+       return readyToClose;
     }
 
-    public boolean isHopperFull() {
-        return averageIntakeFull > 0.9;
-    }
+    // public boolean isHopperFull() {
+    //     return averageIntakeFull > 0.9;
+    // }
 
 
 }

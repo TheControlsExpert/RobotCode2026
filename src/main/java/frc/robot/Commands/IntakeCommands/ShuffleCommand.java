@@ -14,16 +14,7 @@ public class ShuffleCommand {
         this.intake = intake;
     }
 
-   public Command getShuffleCommand() {
-    return new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)
-       .andThen(new InstantCommand(() -> {intake.Retract();}, intake))
-               .andThen(new WaitCommand(1))
-               .andThen(new InstantCommand(() -> {intake.Extend();}, intake))
-               .andThen(new WaitCommand(0.5)).repeatedly()
-               .handleInterrupt(() -> {intake.setIntakeDutyCycle(0);
-                                  intake.Extend();});
-
-   }
+  
     
     
 

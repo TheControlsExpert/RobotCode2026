@@ -40,9 +40,11 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ClimbConstants;
 import frc.robot.Constants.SwerveConstants.Mod0;
@@ -128,7 +130,7 @@ public class RobotContainer {
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
   //private final XboxController xbox = new XboxController(0);
- // private final CommandXboxController controller2 = new CommandXboxController(1);
+  private final CommandXboxController controller2 = new CommandXboxController(1);
 
   AutomaticTrenching autoTrenching;
   AutomaticClimbing autoClimbing;
@@ -267,14 +269,28 @@ public class RobotContainer {
                 controller));
 
 
-         controller.leftBumper().whileTrue(new IntakeCommand(intake));
+         controller.leftBumper().whileTrue(new InstantCommand(() -> {intake.is_busy = true; }).andThen(new IntakeCommand(intake))).onFalse(new InstantCommand(() -> {intake.is_busy = false;}));
          controller.rightBumper().onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), DriverStation.getAlliance().get().equals(Alliance.Blue) ? Rotation2d.kZero : Rotation2d.fromDegrees(180))), drive)
                  .ignoringDisable(true));
 
-
-       controller.rightTrigger().whileTrue(new Shooting(shooter, indexer, drive));
-        // controller.leftTrigger().whileTrue(new Revv(shooter, drive, controller));
-        // controller.rightTrigger().whileTrue(new ParallelCommandGroup(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, vision), 
+        Timer timeout_shuffle = new Timer();
+        new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {timeout_shuffle.restart();}));
+        new Trigger(() -> (shooter.isShooting  && !intake.is_busy)).onTrue(new WaitUntilCommand(() -> (intake.isReadyToClose() || timeout_shuffle.hasElapsed(2.0))).andThen(new InstantCommand(() -> {intake.Shuffle();}, intake)));
+         // .andThen(new WaitUntilCommand(() -> {return !intake.is_busy
+        
+       // && (intake.isReadyToClose() || timeout_shuffle.hasElapsed(2.0)))).onTrue(new InstantCommand(() -> {intake.Shuffle();}));
+         // .andThen(new WaitUntilCommand(() -> {return !intake.is_busy && (intake.isReadyToClose() || timeout_shuffle.hasElapsed(2.0));}))
+         // .andThen(new InstantCommand(() -> {intake.Shuffle(); shooter.needsShuffling = false;}, intake)));
+        
+      
+          
+        
+      
+         // controller.leftTrigger().whileTrue(new Revv(shooter, drive, controller));
+        controller.rightTrigger().
+        onTrue(new InstantCommand(() -> {shooter.isShooting = true;}))
+        .whileTrue(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, vision))
+        .onFalse(new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false;}, intake));
         //                                                              new WaitUntilCommand(() -> {return intake.isReadyToClose() && !intake.is_busy;}).andThen(new ShuffleCommand(intake).getShuffleCommand())))
         //                          .onFalse(new Jam(indexer, shooter, 1.0));                                 
         
@@ -310,7 +326,8 @@ public class RobotContainer {
       //COPILOT
 
       //intake overrides/fixes
-       controller.leftTrigger().whileTrue(new StartEndCommand(() -> {intake.Retract(); intake.is_busy = true;}, () -> {intake.Extend(); intake.is_busy = false;}, intake));
+       controller2.leftTrigger().whileTrue(new StartEndCommand(() -> {intake.Shuffle(); intake.is_busy = true;}, () -> {intake.Extend(); intake.is_busy = false;}, intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+
       // controller2.rightTrigger().whileTrue(new Jam(indexer, shooter));
          // controller.rightTrigger().whileTrue(
       // Commands.defer(() -> { 
@@ -375,7 +392,8 @@ public class RobotContainer {
       //             SmartDashboard.putBoolean("controller was told to rumble", false);
       //             controller2.setRumble(RumbleType.kBothRumble, 0);
       //           }));
-      } 
+        
+      }
   
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

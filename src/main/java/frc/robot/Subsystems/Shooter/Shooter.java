@@ -17,6 +17,8 @@ import frc.robot.Robot.ShootingState;
 import frc.robot.Subsystems.Drive.Drive;
 
 public class Shooter extends SubsystemBase {
+    public boolean isShooting = false;
+    public boolean needsShuffling = true;
     
     private ShooterIO io;
     private ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
