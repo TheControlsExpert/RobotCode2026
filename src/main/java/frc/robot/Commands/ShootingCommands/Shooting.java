@@ -111,6 +111,7 @@ public class Shooting extends Command {
 
     @Override
     public void execute() {
+        shooter.setShooterVelocity(0.6);
 
 //         Translation2d linearVelocity;
 

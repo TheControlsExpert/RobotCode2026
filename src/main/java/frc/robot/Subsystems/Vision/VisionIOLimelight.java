@@ -11,6 +11,7 @@ import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.PubSubOption;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.networktables.TimestampedDoubleArray;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,6 +21,9 @@ public class VisionIOLimelight implements VisionIO {
     Pose2d oldposeLL4 = new Pose2d();
     Pose2d oldposeLL3GS = new Pose2d();
     Pose2d oldposeLL3GF = new Pose2d();
+
+        StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault()
+  .getStructTopic("limelight pose", Pose2d.struct).publish(); 
 
     //private Field2d field = new Field2d();
 
@@ -48,7 +52,7 @@ public class VisionIOLimelight implements VisionIO {
    
         TimestampedDoubleArray data_LL4 = Limelight_4.getAtomic();
         TimestampedDoubleArray rotation_LL4 = ll4_rotation.getAtomic();
-    
+
         double timestamp_LL4 = data_LL4.serverTime/1000000.0 - data_LL4.value[6]/1000.0;
         inputs.MT2pose_LL4 = new Pose2d(new Translation2d(data_LL4.value[0], data_LL4.value[1]), Rotation2d.fromDegrees(data_LL4.value[5]));
         inputs.avgDistance_LL4 = data_LL4.value[9];
@@ -62,6 +66,9 @@ public class VisionIOLimelight implements VisionIO {
         
         TimestampedDoubleArray data_LL3GS = Limelight_3GS.getAtomic();
         TimestampedDoubleArray rotation_LL3GS = ll3gs_rotation.getAtomic();
+
+        publisher.set(new Pose2d(new Translation2d(rotation_LL3GS.value[0], rotation_LL3GS.value[1]), Rotation2d.fromDegrees(rotation_LL3GS.value[5])));
+
     
         double timestamp_LL3GS = data_LL3GS.serverTime/1000000.0 - data_LL3GS.value[6]/1000.0;
         inputs.MT2pose_LL3GS = new Pose2d(new Translation2d(data_LL3GS.value[0], data_LL3GS.value[1]), Rotation2d.fromDegrees(data_LL3GS.value[5]));

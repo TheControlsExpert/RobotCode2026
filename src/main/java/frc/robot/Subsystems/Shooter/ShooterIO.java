@@ -22,6 +22,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ShooterConstants;
 
@@ -31,6 +32,8 @@ public class ShooterIO {
     TalonFX shooterRight = new TalonFX(19);
     TalonFXS shooterPivot = new TalonFXS(20);
     TalonFX feeder = new TalonFX(17);
+
+    DutyCycleEncoder absoluteEncoder = new DutyCycleEncoder(1);
 
     VelocityVoltage shooterLeftVoltage = new VelocityVoltage(0);
     VelocityVoltage shooterRightVoltage = new VelocityVoltage(0);
@@ -42,6 +45,10 @@ public class ShooterIO {
     StatusSignal<AngularVelocity> shooterRightVelocity;
     StatusSignal<Angle> shooterPivotPosition;
     StatusSignal<AngularVelocity> feederVelocity;
+    StatusSignal<Double> errorClosedLoop;
+
+    boolean resetCorrectly = false;
+    boolean canMove = true;
     
   
     public ShooterIO() {
@@ -92,6 +99,8 @@ public class ShooterIO {
 
         shooterPivot.getConfigurator().apply(pivot);
 
+        errorClosedLoop = shooterPivot.getClosedLoopError();
+
         TalonFXConfiguration feederConfig = new TalonFXConfiguration();
         feederConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         feederConfig.CurrentLimits.SupplyCurrentLimit = ShooterConstants.feederSupplyCurrentLimit;
@@ -104,6 +113,8 @@ public class ShooterIO {
         shooterPivotPosition = shooterPivot.getPosition();
         feederVelocity = feeder.getVelocity();
 
+        resetCorrectly = absoluteEncoder.isConnected();
+        shooterPivot.setPosition(ShooterConstants.pivot_gear_ratio*(absoluteEncoder.get() - ShooterConstants.abs_offset));
 
     }
 
@@ -113,45 +124,83 @@ public class ShooterIO {
         public boolean isConnectedRightShooter = false;
         public boolean isConnectedPivot = false;
         public boolean isConnectedFeeder = false;
+        public boolean isConnectedPivotEncoder = false;
 
         public double shooterLeftVelocityRPM = 0.0;
         public double shooterRightVelocityRPM = 0.0;
         public double shooterPivotEncoderRotations = 0.0;
         public double feederVelocityRPM = 0.0;
+
+        public double rotationABS = 0.0;
          
     }
 
 
     public void updateInputs(ShooterIOInputs inputs) {
+      if (!resetCorrectly || !canMove) {
+        setOutputPivot(0);
+      }
+
+      //assume encoder and motor r both positive
+      //assume that abs encoder is connected
+      if (absoluteEncoder.isConnected()) {
+      if ((absoluteEncoder.get() > ShooterConstants.MAX_ENCODER_VAL && shooterPivot.getClosedLoopError().getValueAsDouble() > 0) ||  
+          (absoluteEncoder.get() < ShooterConstants.MIN_ENCODER_VAL && shooterPivot.getClosedLoopError().getValueAsDouble() < 0)) {
+            canMove = true;
+          }
+
+      else {
+        canMove = false;
+      } 
+    }
+    
+    else {
+      
+    }
+
         inputs.isConnectedLeftShooter = BaseStatusSignal.refreshAll(shooterLeftVelocity).equals(StatusCode.OK);
         inputs.isConnectedRightShooter = BaseStatusSignal.refreshAll(shooterRightVelocity).equals(StatusCode.OK);
         inputs.isConnectedPivot = BaseStatusSignal.refreshAll(shooterPivotPosition).equals(StatusCode.OK);
         inputs.isConnectedFeeder = BaseStatusSignal.refreshAll(feederVelocity).equals(StatusCode.OK);
+        inputs.isConnectedPivotEncoder = absoluteEncoder.isConnected();
         
         inputs.shooterLeftVelocityRPM = shooterLeftVelocity.getValue().in(RPM);
         inputs.shooterRightVelocityRPM = shooterRightVelocity.getValue().in(RPM);
         inputs.shooterPivotEncoderRotations = shooterPivotPosition.getValue().in(Rotations);    
         inputs.feederVelocityRPM = feederVelocity.getValue().in(RPM);
+
+        inputs.rotationABS = absoluteEncoder.get();
   }
 
   public void setOutputPivot(double dutycycle) {
     shooterPivot.setControl(shooterPivotDutyCycle.withOutput(dutycycle));
   }
 
+  public void resetShooterPivot() {
+    if (absoluteEncoder.isConnected()) {
+      shooterPivot.setPosition(ShooterConstants.pivot_gear_ratio*(absoluteEncoder.get() - ShooterConstants.abs_offset));
+      resetCorrectly = true;
+    }
+  }
+
   public void setPivotPosition(double position) {
-    SmartDashboard.putNumber("shooter pivot position", position);
+   // SmartDashboard.putNumber("shooter pivot position", position);
+   if (resetCorrectly && canMove) {
     shooterPivot.setControl(shooterPivotVoltage.withPosition(position));
+   }
   }
 
   public void setFeederVelocity(double velocity) {
-    SmartDashboard.putNumber("feeder velocity", velocity);
+  //  SmartDashboard.putNumber("feeder velocity", velocity);
     feeder.setControl(feederDutyCycle.withOutput(velocity));
   }
 
   public void setVelocityShooter(double velocity) {
-    SmartDashboard.putNumber("shooter velocity", velocity);
-    shooterLeft.setControl(shooterLeftVoltage.withVelocity(velocity));
-    shooterRight.setControl(shooterRightVoltage.withVelocity(velocity));
+  //  SmartDashboard.putNumber("shooter velocity", velocity);
+    shooterLeft.set(velocity);
+    shooterRight.set(velocity);
+  //  shooterLeft.setControl(shooterLeftVoltage.withVelocity(velocity));
+  //  shooterRight.setControl(shooterRightVoltage.withVelocity(velocity));
   }
 
   public void setOutputShooter(double dutycycle) {

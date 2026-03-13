@@ -59,7 +59,7 @@ public final class Constants {
   public static class SwerveConstants {
 
     // Gear Ratio
-    public static final double driveReduction = 5.35;
+    public static final double driveReduction = 5.36;
     public static final double steerReduction = 18.75;
 
     /* Steer Motor PID Values */
@@ -75,9 +75,9 @@ public final class Constants {
     public static final double driveKD = 0.0;
 
     /* Drive Motor Characterization Values From SYSID */
-    public static final double driveKS = 0.156; // TODO: This must be tuned to specific robot
-    public static final double driveKV = 0.60;
-    public static final double driveKA = 0.1;
+    public static final double driveKS = 0.1996; // TODO: This must be tuned to specific robot
+    public static final double driveKV = 0.6396;
+    public static final double driveKA = 0.0;
 
     public static final Slot0Configs intrinsicsD =
         new Slot0Configs().withKP(driveKP).withKD(driveKD).withKV(driveKV).withKS(driveKS).withKA(driveKA);
@@ -100,7 +100,7 @@ public final class Constants {
       public static final boolean invertDrive = false;
       public static final boolean invertSteer = true;
       public static final boolean invertEncoder = false;
-      public static final double angleOffset = 0.113;
+      public static final double angleOffset = 0.1113;
       // 36.123046875 + 2.28515625)
       public static final SwerveModuleConstants constants =
           new SwerveModuleConstants(
@@ -122,7 +122,7 @@ public final class Constants {
       public static final boolean invertSteer = true;
       public static final boolean invertEncoder = false;
 
-      public static final double angleOffset = 0.3149;
+      public static final double angleOffset = 0.3227539;
       public static final SwerveModuleConstants constants =
           new SwerveModuleConstants(
               driveMotorID,
@@ -142,7 +142,7 @@ public final class Constants {
       public static final boolean invertDrive = true;
       public static final boolean invertSteer = true;
       public static final boolean invertEncoder = false;
-      public static final double angleOffset = -0.263;
+      public static final double angleOffset = -0.2614746;
       public static final SwerveModuleConstants constants =
           new SwerveModuleConstants(
               driveMotorID,
@@ -162,7 +162,7 @@ public final class Constants {
       public static final boolean invertDrive = false;
       public static final boolean invertSteer = true;
       public static final boolean invertEncoder = false;
-      public static final double angleOffset = 0.1545;
+      public static final double angleOffset = 0.152832;
       ;
       // -120.937
       public static final SwerveModuleConstants constants =
@@ -188,8 +188,8 @@ public final class Constants {
 
     public static final double DRIVE_BASE_RADIUS =
         Math.sqrt(wheelBase * wheelBase / 4 + trackWidth * trackWidth / 4);
-    public static final double WheelRadius = 0.0508;
-    //public static final double WheelRadius = 0.0477;
+    //public static final double WheelRadius = 0.0508;
+    public static final double WheelRadius = 0.04826;
 
   }
 
@@ -207,12 +207,12 @@ public final class Constants {
   public static class ShooterConstants {
 
     public static final double shooterL_kV = 0;
-    public static final double shooterL_kS = 0;
+    public static final double shooterL_kS = 0.04*12;
     public static final double shooterL_kP = 0;
     public static final double shooterL_kD = 0;
 
     public static final double shooterR_kV = 0;
-    public static final double shooterR_kS = 0;
+    public static final double shooterR_kS = 0;   
     public static final double shooterR_kP = 0;
     public static final double shooterR_kD = 0;
  
@@ -256,6 +256,10 @@ public final class Constants {
     public static final double HUB_SHOOTING_VELOCITY = 0;
     public static final double BASIC_PASSING_VELOCITY = 0;
     public static final double BASIC_PASSING_PIVOT = 0;
+    public static final int pivot_gear_ratio = 25;
+    public static final double abs_offset = 0;
+    public static final double MAX_ENCODER_VAL = 0;
+    public static final double MIN_ENCODER_VAL = 0;
 
   }
 

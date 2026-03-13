@@ -8,6 +8,8 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
@@ -24,6 +26,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 
 public class VisionSubsystem extends SubsystemBase {
    //Field2d field = new Field2d();
+
 
 
     private VisionIO io;
@@ -98,13 +101,21 @@ public class VisionSubsystem extends SubsystemBase {
 
 
         if (inputs.isNew_LL4 && inputs.isConnected_LL4 && inputs.tagCount_LL4 > 0) {
+            SmartDashboard.putBoolean("sensor receiving data", true);
             double std_LL4 = (inputs.avgDistance_LL4 * 0.02 ) / inputs.tagCount_LL4;
+            SmartDashboard.putNumber("std_LL4", std_LL4);
             double[] stds_LL4 = {std_LL4, std_LL4};
             if (std_LL4 < 0.1) {
                visionMeasurements.add(new VisionMeasurement(inputs.MT2pose_LL4, inputs.rotation_LL4, inputs.time_LL4, stds_LL4, inputs.tagCount_LL4, inputs.avgDistance_LL4));
             }
         }
 
+        // else {
+        //     SmartDashboard.putBoolean("sensor receiving data", false);
+
+        // }
+        if (DriverStation.isDisabled()) {}
+ 
          if (inputs.isNew_LL3GS && inputs.isConnected_LL3GS && inputs.tagCount_LL3GS > 0 && !disable_other_cameras) {
             double std_LL3GS = (inputs.avgDistance_LL3GS * 0.02 ) / inputs.tagCount_LL3GS;
             double[] stds_LL3GS = {std_LL3GS, std_LL3GS};
@@ -125,7 +136,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         if (!visionMeasurements.isEmpty()) {
             for (int i = 0; i < visionMeasurements.size(); i++) {
-                if (bestmeasurement.equals(null)) {
+                if (bestmeasurement.pose().equals(new Pose2d())) {
                     bestmeasurement = visionMeasurements.get(i);
                 }
 
@@ -142,7 +153,8 @@ public class VisionSubsystem extends SubsystemBase {
 
         if (!bestmeasurement.pose.equals(new Pose2d())) {
             addVisionMeasurement(bestmeasurement);
-        }  
+        } 
+         
         }
     
         public double[] times(double multiplier, double[] list) {

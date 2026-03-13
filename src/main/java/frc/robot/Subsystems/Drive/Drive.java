@@ -76,12 +76,11 @@ import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
  // TunerConstants doesn't include these constants, so they are declared locally
- static final double ODOMETRY_FREQUENCY = 250;
+ static final double ODOMETRY_FREQUENCY = 150;
  //Vector<N3> visionSTDs = VecBuilder.fill(0.1, 0.1, 999999999); 
  // Vector<N2> pose = VecBuilder.fill(0, 0);
  
 
- public LinearFilter filter = LinearFilter.movingAverage(10);
  Timer gyroResetTimer = new Timer();
  public Rotation2d simRotation = new Rotation2d();
  public Pose2d estimatedPose = new Pose2d(0, 0, new Rotation2d());
@@ -138,14 +137,7 @@ private final Field2d m_field = new Field2d();
 
  private static final double ROBOT_MOI = 6.883;
  private static final double WHEEL_COF = 1.2;
- @AutoLogOutput
- double prevaccelX = 0;
 
- @AutoLogOutput
- double prevaccelY = 0;
-
- @AutoLogOutput
- double prevTime = 0;
 
  static final Lock odometryLock = new ReentrantLock();
 
@@ -196,7 +188,7 @@ private final Field2d m_field = new Field2d();
  modules[3] = new Module(brModuleIO, 3,SwerveConstants.Mod3.constants);
  
  // Usage reporting for swerve template
- HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_AdvantageKit);
+ //HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_AdvantageKit);
  SmartDashboard.putData("Field", m_field);
  // Start odometry thread
  PhoenixOdometryThread.getInstance().start();
@@ -241,6 +233,9 @@ private final Field2d m_field = new Field2d();
  
  @Override
  public void periodic() {
+    m_field.setRobotPose(SwervePoseEstimator.getEstimatedPosition()); 
+    SmartDashboard.putNumber("distance to center", SwervePoseEstimator.getEstimatedPosition().getTranslation().getDistance(new Translation2d(0, 0)));
+
 if (DriverStation.isDisabled()) {
  if (!gyroInputs.connected && !wasGyroDisconnected) {
     Robot.reportDisconnection("Gyro");
@@ -266,7 +261,6 @@ if (DriverStation.isDisabled()) {
 //  }
 
  
- m_field.setRobotPose(SwervePoseEstimator.getEstimatedPosition()); 
 
  
  odometryLock.lock(); // Prevents odometry updates while reading data
@@ -326,9 +320,9 @@ if (DriverStation.isDisabled()) {
  
 
  
- visionLock.lock();
+ //visionLock.lock();
  SwervePoseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
- visionLock.unlock();
+// visionLock.unlock();
  }
  }
 
@@ -358,7 +352,7 @@ if (DriverStation.isDisabled()) {
 
  SwervePoseEstimator.updateWithTime(timestamp, simRotation , modulePositions);
 
- prevTime = Timer.getFPGATimestamp();
+ //prevTime = Timer.getFPGATimestamp();
  
 
 
@@ -366,9 +360,9 @@ if (DriverStation.isDisabled()) {
  
  // Update gyro alert
  gyroDisconnectedAlert.set(!gyroInputs.connected);
-LimelightHelpers.SetRobotOrientation("limelight-four", getRotation().getDegrees(), 0, 0, 0, 0, 0);
-LimelightHelpers.SetRobotOrientation("limelight-threegf", getRotation().getDegrees(), 0, 0, 0, 0, 0);
-LimelightHelpers.SetRobotOrientation("limelight-threegs", getRotation().getDegrees(), 0, 0, 0, 0, 0);
+LimelightHelpers.SetRobotOrientation("limelight-four", SwervePoseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+LimelightHelpers.SetRobotOrientation("limelight-threegf", SwervePoseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
 
  
  }
@@ -561,7 +555,7 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", getRotation().getDegre
  // }
  
  /** Returns the module states (turn angles and drive velocities) for all of the modules. */
- @AutoLogOutput(key = "SwerveStates/Measured")
+ //@AutoLogOutput(key = "SwerveStates/Measured")
  private SwerveModuleState[] getModuleStates() {
  SwerveModuleState[] states = new SwerveModuleState[4];
  double totalSpeed = 0;
@@ -569,7 +563,7 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", getRotation().getDegre
  states[i] = modules[i].getState();
  totalSpeed += states[i].speedMetersPerSecond;
  }
- SmartDashboard.putNumber("avg motor speed", totalSpeed / 4);
+ //SmartDashboard.putNumber("avg motor speed", totalSpeed / 4);
 
  
  return states;
@@ -625,7 +619,7 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", getRotation().getDegre
  }
  
  /** Returns the measured chassis speeds of the robot. */
- @AutoLogOutput(key = "SwerveChassisSpeeds/Measured")
+ //@AutoLogOutput(key = "SwerveChassisSpeeds/Measured")
  public ChassisSpeeds getChassisSpeeds() {
  return kinematics.toChassisSpeeds(getModuleStates());
  }
@@ -649,16 +643,21 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", getRotation().getDegre
 
  public void addVision(VisionMeasurement measurement) {
  Vector<N3> stds = VecBuilder.fill(measurement.std()[0], measurement.std()[1], 9999999);
+ //SmartDashboard.putBoolean("adding vision", true);
  //visionLock.lock();
 
  if (Math.abs(gyroInputs.rollDegrees) < 2 && Math.abs(gyroInputs.pitchDegrees) < 2 && getGyroSpeed() < 180 && getTranslationalSpeed() < 3) {
 
  SwervePoseEstimator.addVisionMeasurement(new Pose2d(measurement.pose().getTranslation(), getRotation()), measurement.timestamp(), stds);
 
- if (gyroResetTimer.hasElapsed(10) && getGyroSpeed() < 1 && getTranslationalSpeed() < 0.1 && measurement.numTags() >= 2 && measurement.avgDistance() < 3) {
+ if (gyroResetTimer.hasElapsed(30) && getGyroSpeed() < 1 && getTranslationalSpeed() < 0.1 && measurement.numTags() >= 2 && measurement.avgDistance() < 2.35) {
  SwervePoseEstimator.resetRotation(Rotation2d.fromDegrees(measurement.rotationDegreees()));
- gyroResetTimer.reset();
+ //SmartDashboard.putBoolean("gyro reset", true);
+ gyroResetTimer.restart();
  }
+ /// SmartDashboard.putBoolean("gyro reset", false);
+
+ 
 
  }
  

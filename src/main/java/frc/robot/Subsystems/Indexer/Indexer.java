@@ -24,8 +24,8 @@ public class Indexer extends SubsystemBase {
     public void periodic() {
         io.updateInputs(inputs);
 
-        SmartDashboard.putBoolean("indexer is connected?", inputs.isConnected);
-        SmartDashboard.putBoolean("is indexer was disconnected", wasDisconnected_Indexer);
+     //   SmartDashboard.putBoolean("indexer is connected?", inputs.isConnected);
+      //  SmartDashboard.putBoolean("is indexer was disconnected", wasDisconnected_Indexer);
 
         if (!wasDisconnected_Indexer && !inputs.isConnected) {
             Robot.reportDisconnection("Indexer");

@@ -31,6 +31,7 @@ public class IntakeSubsystem extends SubsystemBase {
     //disconnection tracking
     private boolean wasDisconnected_Intake = false;
     private boolean wasDisconnected_Pivot = false;
+    private boolean wasDisconnected_PivotEncoder = false;
   
 
 
@@ -58,7 +59,7 @@ public class IntakeSubsystem extends SubsystemBase {
        // setPivotPosition(0.725);
        // io.Up = true;
        // SmartDashboard.putBoolean("Hopper Full?", isHopperFull());
-        SmartDashboard.putNumber("Encoderabs", inputs.pivotEncoderRotations);
+       // SmartDashboard.putNumber("Encoderabs", inputs.pivotEncoderRotations);
         //SmartDashboard.putNumber("encoder intake", inputs.intakePos);
 
         // if (IntakeFullHistory.size() > 20) {
@@ -95,6 +96,17 @@ public class IntakeSubsystem extends SubsystemBase {
             if (wasDisconnected_Pivot && inputs.isConnectedPivot) {
                     Robot.removeDisconnection("Intake Pivot");
                     wasDisconnected_Pivot = false;
+            }
+
+            if (!inputs.isConnectedPivotEncoder && !wasDisconnected_PivotEncoder) {
+                    Robot.reportDisconnection("Intake Pivot Encoder");
+                    wasDisconnected_Pivot = true;
+            }
+
+            if (wasDisconnected_PivotEncoder && inputs.isConnectedPivotEncoder) {
+                Robot.removeDisconnection("Intake Pivot Encoder");
+                wasDisconnected_PivotEncoder = false;
+
             }
         }
     }

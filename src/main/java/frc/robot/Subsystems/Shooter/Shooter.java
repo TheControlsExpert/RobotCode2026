@@ -8,6 +8,7 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -39,10 +40,12 @@ public class Shooter extends SubsystemBase {
     private boolean wasDisconnected_RightShooter = false;
     private boolean wasDisconnected_Pivot = false;
     private boolean wasDisconnected_Feeder = false;
+    private boolean wasDisconnected_PivotEncoder = false;
 
 
     public Shooter(ShooterIO io) {
         this.io = io;
+
 
         //put in values here
         ShootAngleMap.put(1.0, 0.5);
@@ -60,12 +63,18 @@ public class Shooter extends SubsystemBase {
         ShootTOFMap.put(0.0, 1.0);
         ShootTOFMap.put(1.0, 1.5);
 
+       // io.updateInputs(inputs);
+
+        
+
     }
 
     
      @Override
      public void periodic() {
          io.updateInputs(inputs);
+
+         if (DriverStation.isDisabled()) {
 
          if (!wasDisconnected_LeftShooter && !inputs.isConnectedLeftShooter) {
             Robot.reportDisconnection("Left Shooter");
@@ -106,6 +115,18 @@ public class Shooter extends SubsystemBase {
                 Robot.removeDisconnection("Feeder");
                 wasDisconnected_Feeder = false;
         }
+
+        if (!wasDisconnected_PivotEncoder && !inputs.isConnectedPivotEncoder) {
+                Robot.reportDisconnection("Feeder");
+                wasDisconnected_Feeder = true;
+        }
+        if (wasDisconnected_PivotEncoder && inputs.isConnectedPivotEncoder) {
+                Robot.removeDisconnection("Feeder");
+                wasDisconnected_Feeder = false;
+        }
+
+
+    }
      }
 
 
@@ -115,7 +136,7 @@ public class Shooter extends SubsystemBase {
         io.setOutputPivot(dutycycle);
      }
 
-     public void setPositionPivot(double position) { //tells the pivot what position it is at
+     public void setPositionPivot(double position) { 
         io.setPivotPosition(position);
      }
 

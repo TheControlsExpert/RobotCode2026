@@ -28,10 +28,15 @@ public class Revv extends Command {
 
         addRequirements(shooter);
     }
+
+    @Override
+    public void initialize() {
+        shooter.setShooterVelocity(0.6);
+    }
   
     @Override
     public void execute() {
-        //shooter.setShooterVelocity(0.7);
+        
         // if (Robot.localizationState.equals(LocalizationState.OPERATIONAL)) {
         //     double distance = drive.getEstimatedPosition().getTranslation().getDistance(drive.calculateShootingPosition());
         //     double[] shootingValues = shooter.LookupTable_Shooting(drive);

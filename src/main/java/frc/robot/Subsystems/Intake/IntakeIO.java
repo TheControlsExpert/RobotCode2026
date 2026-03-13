@@ -80,6 +80,7 @@ double offsetEncoder = 0;
     public static class IntakeIOInputs {
         public boolean isConnectedIntake = false;
         public boolean isConnectedPivot = false;
+        public boolean isConnectedPivotEncoder = false;
         public double intakePos = 0.0;
 
 
@@ -93,6 +94,7 @@ double offsetEncoder = 0;
        // SmartDashboard.putNumber("target", target);
         inputs.isConnectedIntake = BaseStatusSignal.refreshAll(intakeVel).equals(com.ctre.phoenix6.StatusCode.OK);
         inputs.isConnectedPivot = BaseStatusSignal.refreshAll(pivotAngle).equals(com.ctre.phoenix6.StatusCode.OK);
+        inputs.isConnectedPivotEncoder = pivotEncoder.isConnected();
 
         inputs.pivotEncoderRotations = pivotEncoder.get();
         inputs.intakePos = pivotAngle.getValueAsDouble();
@@ -109,14 +111,16 @@ double offsetEncoder = 0;
         //TO-DO: add voltage limits
         offsetEncoder = pivotEncoder.get() - IntakeConstants.offset;
 
+        if (pivotEncoder.isConnected()) {
+
         if (!Up) {
         pivotMotor.set(MathUtil.clamp(-0.3, IntakeConstants.pivot_kP_down * (target - pivotEncoder.get()), 0.3));
          SmartDashboard.putNumber("feedforward", MathUtil.clamp(-0.3, IntakeConstants.pivot_kP_down * (target - pivotEncoder.get()), 0.3));
         }
 
         else {
-        pivotMotor.set(MathUtil.clamp(-0.3, IntakeConstants.pivot_kP_up * (target - pivotEncoder.get()), 0.3));
-         SmartDashboard.putNumber("feedforward", MathUtil.clamp(-0.3, IntakeConstants.pivot_kP_up * (target - pivotEncoder.get()), 0.3));
+        pivotMotor.set(MathUtil.clamp(-0.4, -2 * (target - pivotEncoder.get()), 0.4));
+         SmartDashboard.putNumber("feedforward", MathUtil.clamp(-0.4, -2 * (target - pivotEncoder.get()), 0.4));
         }
 
         if (Up && pivotEncoder.get() > 0.60 ) {
@@ -128,6 +132,10 @@ double offsetEncoder = 0;
             pivotMotor.set(0);
             SmartDashboard.putNumber("feedforward", 0);
         }
+    }
+    else {
+        pivotMotor.set(0);
+    }
        // SmartDashboard.putNumber("pivot voltage", pivotMotor.getDutyCycle().getValueAsDouble());
         //inputs.readyToClose = ReadyToClose.get();
         //inputs.hopperFull = !HopperFull.get();

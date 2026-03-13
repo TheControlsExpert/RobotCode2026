@@ -129,6 +129,7 @@ public class RobotContainer {
        
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
+  private final XboxController co4Controller = new XboxController(0);
   //private final XboxController xbox = new XboxController(0);
   private final CommandXboxController controller2 = new CommandXboxController(1);
 
@@ -211,14 +212,15 @@ public class RobotContainer {
                
                 
 
-         //        vision = new VisionSubsystem(new VisionIO_Limelight(), drive);
+                vision = new VisionSubsystem(new VisionIOLimelight(), drive);
     
         //     constraints = new PathConstraints(
        //       2.0, 4.0,
           //    Units.degreesToRadians(400), Units.degreesToRadians(720));
       //
       // Since AutoBuilder is configured, we can use it to build pathfinding commands
-    
+    //controller.x().whileTrue(FeedforwardCharacterization.feedforwardCommand(drive, co4Controller));
+    controller.x().whileTrue(kACharacterization.feedforwardCommand(drive, co4Controller));
       
         // Set up SysId routines
         //autoChooser.addOption(
@@ -273,9 +275,10 @@ public class RobotContainer {
          controller.rightBumper().onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), DriverStation.getAlliance().get().equals(Alliance.Blue) ? Rotation2d.kZero : Rotation2d.fromDegrees(180))), drive)
                  .ignoringDisable(true));
 
-        Timer timeout_shuffle = new Timer();
-        new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {timeout_shuffle.restart();}));
-        new Trigger(() -> (shooter.isShooting  && !intake.is_busy)).onTrue(new WaitUntilCommand(() -> (intake.isReadyToClose() || timeout_shuffle.hasElapsed(2.0))).andThen(new InstantCommand(() -> {intake.Shuffle();}, intake)));
+
+       // Timer timeout_shuffle = new Timer();
+       // Trigger timeoutshuffle_trigger = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {timeout_shuffle.restart();}));
+      //  Trigger shuffle_trigger = new Trigger(() -> (shooter.isShooting  && !intake.is_busy)).onTrue(new WaitUntilCommand(() -> (intake.isReadyToClose() || timeout_shuffle.hasElapsed(2.0))).andThen(new InstantCommand(() -> {intake.Shuffle();}, intake)));
          // .andThen(new WaitUntilCommand(() -> {return !intake.is_busy
         
        // && (intake.isReadyToClose() || timeout_shuffle.hasElapsed(2.0)))).onTrue(new InstantCommand(() -> {intake.Shuffle();}));
@@ -291,6 +294,8 @@ public class RobotContainer {
         onTrue(new InstantCommand(() -> {shooter.isShooting = true;}))
         .whileTrue(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, vision))
         .onFalse(new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false;}, intake));
+
+        controller.leftTrigger().whileTrue(new Revv(shooter, drive, controller));
         //                                                              new WaitUntilCommand(() -> {return intake.isReadyToClose() && !intake.is_busy;}).andThen(new ShuffleCommand(intake).getShuffleCommand())))
         //                          .onFalse(new Jam(indexer, shooter, 1.0));                                 
         

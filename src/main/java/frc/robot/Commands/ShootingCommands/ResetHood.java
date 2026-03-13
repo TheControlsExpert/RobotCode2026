@@ -26,7 +26,7 @@ public class ResetHood extends Command {
 
     @Override
     public void execute() {
-        shooter.setOutputPivot(-0.1); //moves the pivot at o.5 speed       check constants
+       // shooter.setOutputPivot(-0.1); //moves the pivot at o.5 speed       check constants
     }
 
 
