@@ -33,7 +33,7 @@ public class ShooterIO {
     TalonFXS shooterPivot = new TalonFXS(20);
     TalonFX feeder = new TalonFX(17);
 
-    DutyCycleEncoder absoluteEncoder = new DutyCycleEncoder(1);
+    DutyCycleEncoder absoluteEncoder = new DutyCycleEncoder(1, 1, ShooterConstants.abs_offset - 0.1);
 
     VelocityVoltage shooterLeftVoltage = new VelocityVoltage(0);
     VelocityVoltage shooterRightVoltage = new VelocityVoltage(0);
@@ -96,6 +96,8 @@ public class ShooterIO {
 
         //note inverted value doesn't matter here, since we will be receving setpoint encoder positions from interpolating tree map
         pivot.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        pivot.MotorOutput.Inverted = ShooterConstants.shooterPivot_inverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+
 
         shooterPivot.getConfigurator().apply(pivot);
 
@@ -137,6 +139,7 @@ public class ShooterIO {
 
 
     public void updateInputs(ShooterIOInputs inputs) {
+      
       if (!resetCorrectly || !canMove) {
         setOutputPivot(0);
       }
@@ -187,7 +190,7 @@ public class ShooterIO {
 
   public void resetShooterPivot() {
     if (absoluteEncoder.isConnected()) {
-      shooterPivot.setPosition(ShooterConstants.pivot_gear_ratio*(absoluteEncoder.get() - ShooterConstants.abs_offset));
+      shooterPivot.setPosition(ShooterConstants.pivot_gear_ratio*(absoluteEncoder.get()));
       resetCorrectly = true;
     }
   }

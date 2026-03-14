@@ -126,17 +126,17 @@ public class IntakeSubsystem extends SubsystemBase {
 
    public void Retract() {
         io.setPosition(IntakeConstants.HOME_Position);
-        io.Up = true;
+       // io.Up = true;
     }
 
     public void Extend() {
         io.setPosition(IntakeConstants.INTAKING_Position);
-        io.Up = false;
+       // io.Up = false;
     }
 
     public void Shuffle() {
         io.setPosition(IntakeConstants.SHUFFLE_UP_POSITION);
-        io.Up = true;
+       // io.Up = true; 
     }
 
     // public void retractBump() {

@@ -227,7 +227,7 @@ public final class Constants {
 
     public static final boolean shooterL_inverted = false;
     public static final boolean shooterR_inverted = true;
-    public static final boolean shooterPivot_inverted = false;
+    public static final boolean shooterPivot_inverted = true;
     public static final boolean feederConfig_inverted = false;
 
     public static final double shooterPivot_kP = 0.0;
@@ -257,9 +257,9 @@ public final class Constants {
     public static final double BASIC_PASSING_VELOCITY = 0;
     public static final double BASIC_PASSING_PIVOT = 0;
     public static final int pivot_gear_ratio = 25;
-  //  public static final double abs_offset = 0;
-    public static final double MAX_ENCODER_VAL = 0;
-    public static final double MIN_ENCODER_VAL = 0;
+    public static final double abs_offset = 0.132714;
+    public static final double MAX_ENCODER_VAL = 0.871;
+    public static final double MIN_ENCODER_VAL = 0.129;
 
   }
 
