@@ -155,6 +155,15 @@ public class ShooterIO {
     }
     
     else {
+      double converted_internal_to_external = shooterPivot.getPosition().getValueAsDouble() / 25;
+      if ((converted_internal_to_external > ShooterConstants.MAX_ENCODER_VAL && shooterPivot.getClosedLoopError().getValueAsDouble() > 0) ||  
+          (converted_internal_to_external < ShooterConstants.MIN_ENCODER_VAL && shooterPivot.getClosedLoopError().getValueAsDouble() < 0)) {
+            canMove = true;
+          }
+
+      else {
+        canMove = false;
+      }
       
     }
 

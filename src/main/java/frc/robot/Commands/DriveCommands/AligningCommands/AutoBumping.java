@@ -51,7 +51,7 @@ public class AutoBumping extends Command {
 
     @Override
     public void initialize() {
-        intake.retractBump();
+       // intake.retractBump();
 
         deltaRotationABS = 99999;
         double currentAngle = drive.getEstimatedPosition().getRotation().getRadians() + (DriverStation.getAlliance().get().equals(Alliance.Red) ? Math.PI : 0);

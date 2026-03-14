@@ -139,9 +139,9 @@ public class IntakeSubsystem extends SubsystemBase {
         io.Up = true;
     }
 
-    public void retractBump() {
-        io.setPosition(IntakeConstants.BUMPING_Position);
-    }
+    // public void retractBump() {
+    //     io.setPosition(IntakeConstants.BUMPING_Position);
+    // }
 
     public boolean isReadyToClose() {
      //  return beep;

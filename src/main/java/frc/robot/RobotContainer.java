@@ -331,7 +331,7 @@ public class RobotContainer {
       //COPILOT
 
       //intake overrides/fixes
-       controller2.leftTrigger().whileTrue(new StartEndCommand(() -> {intake.Shuffle(); intake.is_busy = true;}, () -> {intake.Extend(); intake.is_busy = false;}, intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+       controller2.leftTrigger().or(controller.x()).whileTrue(new StartEndCommand(() -> {intake.Shuffle(); intake.is_busy = true;}, () -> {intake.Extend(); intake.is_busy = false;}, intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
       // controller2.rightTrigger().whileTrue(new Jam(indexer, shooter));
          // controller.rightTrigger().whileTrue(
