@@ -230,8 +230,10 @@ public final class Constants {
     public static final boolean shooterPivot_inverted = true;
     public static final boolean feederConfig_inverted = false;
 
-    public static final double shooterPivot_kP = 0.0;
+    public static final double shooterPivot_kP = 1.5;
+    public static final double shooterPivot_kS = 0.35;
     public static final double shooterPivot_kD = 0.0;
+
 
     public static final double Pivot_HOME = 0;
     public static final double YawAngleTolerance = 5;
@@ -273,13 +275,13 @@ public final class Constants {
     public static final boolean intake_inverted = true;
 
     public static final double intakeSupplyCurrentLimit = 40;
-    public static final double HOME_Position = 0.59;
-    public static final double INTAKING_Position = 0.25;
-    public static final double SHUFFLE_UP_POSITION = 0.5;
+    public static final double HOME_Position = 0.43;
+    public static final double INTAKING_Position = 0.097;
+    public static final double SHUFFLE_UP_POSITION = 0.372;
    // public static final double BUMPING_Position = 25;
     public static final double cf_spring = 0.15;
-    public static final double MAX_ENCODER_VAL = 0;
-    public static final double MIN_ENCODER_VAL = 0;
+    public static final double MAX_ENCODER_VAL = 0.44;
+    public static final double MIN_ENCODER_VAL = 0.097;
   }
 
   public static class IndexerConstants {

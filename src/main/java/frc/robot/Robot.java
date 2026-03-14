@@ -122,12 +122,12 @@ public class Robot extends LoggedRobot {
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
 
-         String fullList_disconnections = "";
-        for (String motorName : DisconnectedMotorNames) {
-            fullList_disconnections += motorName + ", " + "\n";
-        }
+        //  String fullList_disconnections = "";
+        // for (String motorName : DisconnectedMotorNames) {
+        //     fullList_disconnections += motorName + ", " + "\n";
+        // }
         
-        SmartDashboard.putString("Disconnected Motors", fullList_disconnections);
+        // SmartDashboard.putString("Disconnected Motors", fullList_disconnections);
     }
 
   

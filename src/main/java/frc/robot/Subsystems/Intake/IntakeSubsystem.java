@@ -42,15 +42,16 @@ public class IntakeSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateInputs(inputs);
+      //  SmartDashboard.put4
 
         if (!inputs.readyToClose1) {
             readyToClose1_timer.restart();
         }
-        if (!inputs.readyToClose2) {
-            readyToClose2_timer.restart();
-        }
+        // if (!inputs.readyToClose2) {
+        //     readyToClose2_timer.restart();
+        // }
 
-        if (readyToClose1_timer.hasElapsed(when_to_close) || readyToClose2_timer.hasElapsed(when_to_close)) {
+        if (readyToClose1_timer.hasElapsed(when_to_close))  {// || readyToClose2_timer.hasElapsed(when_to_close)) {
             readyToClose = true;
         }
          else {

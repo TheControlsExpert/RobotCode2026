@@ -220,7 +220,7 @@ public class RobotContainer {
       //
       // Since AutoBuilder is configured, we can use it to build pathfinding commands
     //controller.x().whileTrue(FeedforwardCharacterization.feedforwardCommand(drive, co4Controller));
-    controller.x().whileTrue(kACharacterization.feedforwardCommand(drive, co4Controller));
+  //  controller.x().whileTrue(kACharacterization.feedforwardCommand(drive, co4Controller));
       
         // Set up SysId routines
         //autoChooser.addOption(
@@ -276,14 +276,25 @@ public class RobotContainer {
                  .ignoringDisable(true));
 
 
-       // Timer timeout_shuffle = new Timer();
-       // Trigger timeoutshuffle_trigger = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {timeout_shuffle.restart();}));
-      //  Trigger shuffle_trigger = new Trigger(() -> (shooter.isShooting  && !intake.is_busy)).onTrue(new WaitUntilCommand(() -> (intake.isReadyToClose() || timeout_shuffle.hasElapsed(2.0))).andThen(new InstantCommand(() -> {intake.Shuffle();}, intake)));
-         // .andThen(new WaitUntilCommand(() -> {return !intake.is_busy
+       Timer timeout_shuffle = new Timer();
+       Trigger timeoutshuffle_trigger = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {timeout_shuffle.restart();}));
+       Trigger shuffle_trigger = new Trigger(() -> (shooter.isShooting  && !intake.is_busy)).onTrue(new WaitUntilCommand(() -> (intake.isReadyToClose() || timeout_shuffle.hasElapsed(3.5))).
+       
+       andThen(new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.2);}, intake).
+       andThen(new WaitCommand(0.65)).
+       andThen(new InstantCommand(() -> {intake.setIntakeDutyCycle(0.0); intake.Extend();}, intake)).
+       andThen(new WaitCommand(1.5)).
+       andThen(new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.2);}, intake))
+
+       ));
+
+
+
+      //    .andThen(new WaitUntilCommand(() -> {return !intake.is_busy
         
-       // && (intake.isReadyToClose() || timeout_shuffle.hasElapsed(2.0)))).onTrue(new InstantCommand(() -> {intake.Shuffle();}));
-         // .andThen(new WaitUntilCommand(() -> {return !intake.is_busy && (intake.isReadyToClose() || timeout_shuffle.hasElapsed(2.0));}))
-         // .andThen(new InstantCommand(() -> {intake.Shuffle(); shooter.needsShuffling = false;}, intake)));
+      //  && (intake.isReadyToClose() || timeout_shuffle.hasElapsed(2.0)))).onTrue(new InstantCommand(() -> {intake.Shuffle();}));
+      //    .andThen(new WaitUntilCommand(() -> {return !intake.is_busy && (intake.isReadyToClose() || timeout_shuffle.hasElapsed(2.0));}))
+      //    .andThen(new InstantCommand(() -> {intake.Shuffle(); shooter.needsShuffling = false;}, intake)));
         
       
           
@@ -293,7 +304,7 @@ public class RobotContainer {
         controller.rightTrigger().
         onTrue(new InstantCommand(() -> {shooter.isShooting = true;}))
         .whileTrue(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, vision))
-        .onFalse(new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false;}, intake));
+        .onFalse(new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; intake.setIntakeDutyCycle(0.0);}, intake));
 
         controller.leftTrigger().whileTrue(new Revv(shooter, drive, controller));
         //                                                              new WaitUntilCommand(() -> {return intake.isReadyToClose() && !intake.is_busy;}).andThen(new ShuffleCommand(intake).getShuffleCommand())))
@@ -331,7 +342,7 @@ public class RobotContainer {
       //COPILOT
 
       //intake overrides/fixes
-       controller2.leftTrigger().or(controller.x()).whileTrue(new StartEndCommand(() -> {intake.Shuffle(); intake.is_busy = true;}, () -> {intake.Extend(); intake.is_busy = false;}, intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+       controller2.leftTrigger().or(controller.x()).whileTrue(new StartEndCommand(() -> {intake.Retract(); intake.is_busy = true;}, () -> {intake.Extend(); intake.is_busy = false;}, intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
       // controller2.rightTrigger().whileTrue(new Jam(indexer, shooter));
          // controller.rightTrigger().whileTrue(

@@ -1,5 +1,7 @@
 package frc.robot.Subsystems.Intake;
 
+import static edu.wpi.first.units.Units.Rotations;
+
 import org.littletonrobotics.junction.AutoLog;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -27,14 +29,14 @@ import com.ctre.phoenix6.hardware.TalonFXS;
 public class IntakeIO {
     TalonFX intakeMotor = new TalonFX(14);
     TalonFXS pivotMotor = new TalonFXS(15);
-    DutyCycleEncoder pivotEncoder = new DutyCycleEncoder(0);
+    DutyCycleEncoder pivotEncoder = new DutyCycleEncoder(0, 1, 0.9210420730260518 - 0.1);
     PositionVoltage pivotPositionVoltage = new PositionVoltage(0);
     StatusSignal<Angle> pivotAngle = pivotMotor.getPosition();
     StatusSignal<AngularVelocity> intakeVel = intakeMotor.getVelocity();
     double target = IntakeConstants.HOME_Position;
     boolean Up = true;
-    DigitalInput ReadyToClose1 = new DigitalInput(1);
-    DigitalInput ReadyToClose2 = new DigitalInput(2);
+    DigitalInput ReadyToClose1 = new DigitalInput(2);
+    //DigitalInput ReadyToClose2 = new DigitalInput(2);
 
     boolean resetCorrectly = false;
 
@@ -60,7 +62,7 @@ public class IntakeIO {
         intakeMotor.getConfigurator().apply(intakeConfig);
 
         TalonFXSConfiguration pivotConfig = new TalonFXSConfiguration();
-        pivotConfig.MotorOutput.Inverted = com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive;
+        pivotConfig.MotorOutput.Inverted = com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
         pivotConfig.MotorOutput.NeutralMode = com.ctre.phoenix6.signals.NeutralModeValue.Brake;
         pivotConfig.CurrentLimits.StatorCurrentLimit = 40;
         pivotConfig.CurrentLimits.SupplyCurrentLimit = 40;
@@ -79,7 +81,7 @@ public class IntakeIO {
         if (pivotEncoder.isConnected()) {
         resetCorrectly = true;  
         }
-        pivotMotor.setPosition(IntakeConstants.PivotGearRatio * -1 * (pivotEncoder.get()));
+        pivotMotor.setPosition(IntakeConstants.PivotGearRatio * (pivotEncoder.get()));
         
     }
 
@@ -93,12 +95,17 @@ public class IntakeIO {
 
         public double pivotEncoderRotations = 0.0;
         public boolean readyToClose1 = false;
-        public boolean readyToClose2 = false;
+      //  public boolean readyToClose2 = false;
         public boolean hopperFull = false;
     }
 
     public void updateInputs(IntakeIOInputs inputs) {
-       // SmartDashboard.putNumber("target", target);
+        SmartDashboard.putBoolean("intake IR", ReadyToClose1.get());
+       SmartDashboard.putNumber("target", target);
+       SmartDashboard.putBoolean("up", Up);
+       SmartDashboard.putBoolean("intake encoder connected", pivotEncoder.isConnected());
+       SmartDashboard.putNumber("intake encoder", pivotEncoder.get());
+       SmartDashboard.putNumber("intake angle", pivotAngle.getValue().in(Rotations));
         inputs.isConnectedIntake = BaseStatusSignal.refreshAll(intakeVel).equals(com.ctre.phoenix6.StatusCode.OK);
         inputs.isConnectedPivot = BaseStatusSignal.refreshAll(pivotAngle).equals(com.ctre.phoenix6.StatusCode.OK);
         inputs.isConnectedPivotEncoder = pivotEncoder.isConnected();
@@ -107,7 +114,8 @@ public class IntakeIO {
         inputs.intakePos = pivotAngle.getValueAsDouble();
 
         inputs.readyToClose1 = ReadyToClose1.get();
-        inputs.readyToClose2 = ReadyToClose2.get();
+    //   //  inputs.readyToClose2 = ReadyToClose2.get();
+
 
         if (pivotEncoder.isConnected() && !resetCorrectly) {
             pivotMotor.setPosition(IntakeConstants.PivotGearRatio * (pivotEncoder.get()));
@@ -115,78 +123,126 @@ public class IntakeIO {
         }   
         
        // else if (!pivotEncoder.isConnected()) {
+       
 
        if (pivotEncoder.isConnected()) {
-      //  double adjustedEncoder = pivotEncoder.get() - IntakeConstants.offset;
-
-        if (target > pivotEncoder.get()) {
+         if (target > pivotEncoder.get()) {
             Up = true;
         }
 
         else {
             Up = false;
         }
+      //  double adjustedEncoder = pivotEncoder.get() - IntakeConstants.offset;
+         if (Up && pivotEncoder.get() > IntakeConstants.MAX_ENCODER_VAL) {
+            pivotMotor.set(0);
+            SmartDashboard.putNumber("feedforward", 0);
+        }
+
+        else if (!Up && pivotEncoder.get() < IntakeConstants.MIN_ENCODER_VAL) {
+            pivotMotor.set(0);
+            SmartDashboard.putNumber("feedforward", 0);
+        }
+        
+        else {
+
            
         if (!Up) {
             //set voltage limits + use kP for going down + 
-        pivotMotor.set(MathUtil.clamp(-0.3, IntakeConstants.pivot_kP_down * (target - pivotEncoder.get()), 0.3));
-         SmartDashboard.putNumber("feedforward", MathUtil.clamp(-0.3, IntakeConstants.pivot_kP_down * (target - pivotEncoder.get()), 0.3));
+        double clampedVal =  IntakeConstants.pivot_kP_down * (target - pivotEncoder.get());   
+        if ( IntakeConstants.pivot_kP_down * (target - pivotEncoder.get()) > 0.3) {
+            clampedVal = 0.3;
         }
 
-        else {
-        pivotMotor.set(MathUtil.clamp(-0.4, IntakeConstants.pivot_kP_up * (target - pivotEncoder.get()), 0.4));
-         SmartDashboard.putNumber("feedforward", MathUtil.clamp(-0.4, IntakeConstants.pivot_kP_up * (target - pivotEncoder.get()), 0.4));
-        }
-
-        if (Up && pivotEncoder.get() > IntakeConstants.MAX_ENCODER_VAL) {
-            pivotMotor.set(0);
-            SmartDashboard.putNumber("feedforward", 0);
-        }
-
-        if (!Up && pivotEncoder.get() < IntakeConstants.MIN_ENCODER_VAL) {
-            pivotMotor.set(0);
-            SmartDashboard.putNumber("feedforward", 0);
-        }
-    }
-
-    else if (!pivotEncoder.isConnected() && resetCorrectly) {
-        double adjustedTarget = IntakeConstants.PivotGearRatio * (target);
-
-        double adjustedLimit_MAX = IntakeConstants.PivotGearRatio * (IntakeConstants.MAX_ENCODER_VAL);
-        double adjustedLimit_MIN = IntakeConstants.PivotGearRatio * (IntakeConstants.MIN_ENCODER_VAL);
-
-        double adjustedkP_down = IntakeConstants.pivot_kP_down * IntakeConstants.PivotGearRatio;
-        double adjustedkP_up = IntakeConstants.pivot_kP_up * IntakeConstants.PivotGearRatio; 
-
-
-
-        if (adjustedTarget > inputs.intakePos) {
-            Up = true;
-        }
-
-        else {
-            Up = false;
+        else if ( IntakeConstants.pivot_kP_down * (target - pivotEncoder.get()) < -0.3) {
+            clampedVal = -0.3;
+         
         }  
         
-        if (!Up) {    
-        pivotMotor.set(MathUtil.clamp(-0.3, adjustedkP_down * (target - inputs.intakePos), 0.3));
-         SmartDashboard.putNumber("feedforward", MathUtil.clamp(-0.3, adjustedkP_down * (target - inputs.intakePos), 0.3));
+        pivotMotor.set(clampedVal);
+         SmartDashboard.putNumber("feedforward", clampedVal);
         }
 
         else {
-        pivotMotor.set(MathUtil.clamp(-0.4, adjustedkP_up * (target - inputs.intakePos), 0.4));
-         SmartDashboard.putNumber("feedforward", MathUtil.clamp(-0.4, adjustedkP_up * (target - inputs.intakePos), 0.4));
+        SmartDashboard.putNumber("target", target);
+        double clampedVal =  IntakeConstants.pivot_kP_up * (target - pivotEncoder.get());
+        
+       
+        if ( IntakeConstants.pivot_kP_up * (target - pivotEncoder.get()) > 0.4) {
+            clampedVal = 0.4;
+
         }
 
-        if (Up && inputs.intakePos > adjustedLimit_MAX) {
-            pivotMotor.set(0);
-            SmartDashboard.putNumber("feedforward", 0);
+        else if ( IntakeConstants.pivot_kP_up * (target - pivotEncoder.get()) < -0.4) {
+            clampedVal = -0.4;
+         
         }
+        SmartDashboard.putNumber("feedforward", clampedVal);
+         pivotMotor.set(clampedVal);
 
-        if (!Up && inputs.intakePos < adjustedLimit_MIN) {
-            pivotMotor.set(0);
-            SmartDashboard.putNumber("feedforward", 0);
-        }  
+        }
+        }}
+
+
+    else if (!pivotEncoder.isConnected() && resetCorrectly) {
+        // double adjustedTarget = IntakeConstants.PivotGearRatio * (target);
+
+        // double adjustedLimit_MAX = IntakeConstants.PivotGearRatio * (IntakeConstants.MAX_ENCODER_VAL);
+        // double adjustedLimit_MIN = IntakeConstants.PivotGearRatio * (IntakeConstants.MIN_ENCODER_VAL);
+
+        // double adjustedkP_down = IntakeConstants.pivot_kP_down * IntakeConstants.PivotGearRatio;
+        // double adjustedkP_up = IntakeConstants.pivot_kP_up * IntakeConstants.PivotGearRatio; 
+
+
+
+        // if (adjustedTarget > inputs.intakePos) {
+        //     Up = true;
+        // }
+
+        // else {
+        //     Up = false;
+        // }  
+        
+        // if (!Up) {    
+        // double clampedVal =  adjustedkP_down * (target - inputs.intakePos);
+
+        // if ( adjustedkP_down * (target - inputs.intakePos) > 0.3) {
+        //     clampedVal = 0.3;
+
+        // }
+
+        // else if ( adjustedkP_down * (target - inputs.intakePos) < -0.3) {
+        //     clampedVal = -0.3;
+         
+        // }
+        // pivotMotor.set(clampedVal);
+        //  SmartDashboard.putNumber("feedforward", clampedVal);
+        // }
+
+        // else {
+        // double clampedVal =  adjustedkP_up * (target - inputs.intakePos);
+        // if ( adjustedkP_up * (target - inputs.intakePos) > 0.4) {
+        //     clampedVal = 0.4;
+
+        // }
+
+        // else if ( adjustedkP_up * (target - inputs.intakePos) < -0.4) {
+        //     clampedVal = -0.4;
+         
+        // }
+        // pivotMotor.set(clampedVal);
+        //  SmartDashboard.putNumber("feedforward", clampedVal);
+        // }
+
+        // if (Up && inputs.intakePos > adjustedLimit_MAX) {
+        //     pivotMotor.set(0);
+        //     SmartDashboard.putNumber("feedforward", 0);
+        // }
+
+        // if (!Up && inputs.intakePos < adjustedLimit_MIN) {
+        //     pivotMotor.set(0);
+        //     SmartDashboard.putNumber("feedforward", 0);
+        // }  
     }
 
     else {

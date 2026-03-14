@@ -92,6 +92,7 @@ public class ShooterIO {
         
         pivot.Slot0.kP = ShooterConstants.shooterPivot_kP;
         pivot.Slot0.kD = ShooterConstants.shooterPivot_kD;
+        pivot.Slot0.kS = ShooterConstants.shooterPivot_kS;
         pivot.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
 
         //note inverted value doesn't matter here, since we will be receving setpoint encoder positions from interpolating tree map
@@ -139,6 +140,9 @@ public class ShooterIO {
 
 
     public void updateInputs(ShooterIOInputs inputs) {
+     SmartDashboard.putNumber("shooter i encoder", inputs.shooterPivotEncoderRotations);
+     SmartDashboard.putNumber(" abs encoder for shooter", absoluteEncoder.get());
+
       
       if (!resetCorrectly || !canMove) {
         setOutputPivot(0);
@@ -150,7 +154,7 @@ public class ShooterIO {
       if ((absoluteEncoder.get() > ShooterConstants.MAX_ENCODER_VAL && shooterPivot.getClosedLoopError().getValueAsDouble() > 0) ||  
           (absoluteEncoder.get() < ShooterConstants.MIN_ENCODER_VAL && shooterPivot.getClosedLoopError().getValueAsDouble() < 0)) {
             canMove = true;
-          }
+          }     
 
       else {
         canMove = false;

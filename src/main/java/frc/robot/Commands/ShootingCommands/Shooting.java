@@ -286,7 +286,7 @@ public void end(boolean interrupted) {
     // if (!DriverStation.isAutonomous()) {
    // vision.ShootingMode(false);
     shooter.setShooterVelocity(0);
-    shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
+   // shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
  //   }
 
     //CommandScheduler.getInstance().schedule(new Jam(indexer, shooter, 2.0)); //runs the indexer in the opposite direction to clear balls from the shooter
