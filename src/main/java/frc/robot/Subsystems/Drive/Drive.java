@@ -88,7 +88,7 @@ public class Drive extends SubsystemBase {
  public Pose2d lastodometrypose = new Pose2d();
  ReentrantLock visionLock = new ReentrantLock();
 public final double translationkP = 2.5;
-public final double rotationkP = 0.12;
+public final double rotationkP = 1;
 public PathConstraints constraints_auto = new PathConstraints(6, 4, 13, 26);
 public PathConstraints constraints_pathfinding = new PathConstraints(5, 3, 500, 500);
 
@@ -212,7 +212,7 @@ private final Field2d m_field = new Field2d();
  // Method that will drive the robot gn ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
  new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
  new PIDConstants(translationkP, 0.0, 0.8), // Translation PID constants
- new PIDConstants(rotationkP, 0.0, 0.0) // Rotation PID constants
+ new PIDConstants(1.5, 0.0, 0.0) // Rotation PID constants
  ),
  
  config, // The robot configuration

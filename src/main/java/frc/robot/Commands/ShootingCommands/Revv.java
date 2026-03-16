@@ -60,7 +60,7 @@ public class Revv extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        if (!controller.rightTrigger().getAsBoolean()) {
+        if (!controller.rightTrigger().getAsBoolean() && DriverStation.isTeleop()) {
             shooter.setShooterVelocity(0);
             shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
             vision.ShootingMode(false);

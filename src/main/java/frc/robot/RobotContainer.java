@@ -429,30 +429,30 @@ public class RobotContainer {
 
 
  
-  public Command getAutonomousCommand(AutoEnums.LoaderEnums chosenLoader, AutoEnums.ClimbEnums chosenClimb, AutoEnums.MiddleEnums chosenMiddle, AutoEnums.PositionEnums chosenPosition) {
+  public Command getAutonomousCommand() {
      
 
     PathPlannerPath firstMiddlePath;
     Command firstMiddleAuto;
 
-    PathPlannerPath secondMiddlePath;
-    Command secondMiddleAuto;
+    // PathPlannerPath secondMiddlePath;
+    // Command secondMiddleAuto;
 
     try {
-      firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost");
+      firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").flipPath();
       firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
       
-      secondMiddlePath = PathPlannerPath.fromChoreoTrajectory("SecondBumpOutpost");
-      secondMiddleAuto = AutoBuilder.followPath(secondMiddlePath);
+      // secondMiddlePath = PathPlannerPath.fromChoreoTrajectory("SecondBumpOutpost");
+      // secondMiddleAuto = AutoBuilder.followPath(secondMiddlePath);
 
     } catch (Exception e) {
       return Commands.none();
     } 
 
     
-
-    return new ParallelRaceGroup(firstMiddleAuto, new WaitCommand(1).andThen(new IntakeCommand(intake)), new WaitCommand(3).andThen(new RevvAuto(shooter, drive, 0))).
-    andThen(new ParallelRaceGroup(new Shooting(shooter, indexer, drive), new IntakeCommand(intake)));
+    drive.resetPosition(firstMiddlePath.getStartingHolonomicPose().get());
+    return new ParallelRaceGroup(firstMiddleAuto, new WaitCommand(1).andThen(new IntakeCommand(intake)), new WaitCommand(3).andThen(new Revv(shooter, drive, controller, vision))).
+    andThen(new ParallelCommandGroup(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, vision)), new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake));
   
     } 
-  }        
+  }             

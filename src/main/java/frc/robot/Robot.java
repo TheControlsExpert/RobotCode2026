@@ -143,14 +143,14 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
 
-    //reads the states the driver chose for this specific auto
-    AutoEnums.LoaderEnums chosenLoader = LoaderChooser.getSelected();
-    AutoEnums.ClimbEnums chosenClimb = climbChooser.getSelected();
-    AutoEnums.MiddleEnums chosenMiddle = middleChooser.getSelected();
-    AutoEnums.PositionEnums chosenPosition = positionChooser.getSelected();
+    // //reads the states the driver chose for this specific auto
+    // AutoEnums.LoaderEnums chosenLoader = LoaderChooser.getSelected();
+    // AutoEnums.ClimbEnums chosenClimb = climbChooser.getSelected();
+    // AutoEnums.MiddleEnums chosenMiddle = middleChooser.getSelected();
+    // AutoEnums.PositionEnums chosenPosition = positionChooser.getSelected();
 
     //passes in all the currently selected states to construct an auto program
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand(chosenLoader, chosenClimb, chosenMiddle, chosenPosition);
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
 
     if (m_autonomousCommand != null) {
