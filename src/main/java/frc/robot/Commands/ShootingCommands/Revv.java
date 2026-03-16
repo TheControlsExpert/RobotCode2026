@@ -12,6 +12,7 @@ import frc.robot.Robot.LocalizationState;
 import frc.robot.Robot.ShootingState;
 import frc.robot.Subsystems.Drive.Drive;
 import frc.robot.Subsystems.Shooter.Shooter;
+import frc.robot.Subsystems.Vision.VisionSubsystem;
 
 public class Revv extends Command {
 
@@ -19,25 +20,29 @@ public class Revv extends Command {
     private final Drive drive;
     private final CommandXboxController controller;
     private double when_to_start = -1000;
+    VisionSubsystem vision;
 
 
-    public Revv(Shooter shooter, Drive drive, CommandXboxController controller) {
+    public Revv(Shooter shooter, Drive drive, CommandXboxController controller, VisionSubsystem vision) {
         this.shooter = shooter;
         this.drive = drive;
         this.controller = controller;
+        this.vision = vision;
 
         addRequirements(shooter);
     }
 
     @Override
     public void initialize() {
-        shooter.setShooterVelocity(3020/60);
-        shooter.setPositionPivot(10);
+        vision.ShootingMode(true);
+      //  shooter.setShooterVelocity(3450/60);
+      //  shooter.setPositionPivot(4);
     }
   
     @Override
     public void execute() {
         
+        shooter.LookupTable_Shooting(drive);
         // if (Robot.localizationState.equals(LocalizationState.OPERATIONAL)) {
         //     double distance = drive.getEstimatedPosition().getTranslation().getDistance(drive.calculateShootingPosition());
         //     double[] shootingValues = shooter.LookupTable_Shooting(drive);
@@ -58,6 +63,7 @@ public class Revv extends Command {
         if (!controller.rightTrigger().getAsBoolean()) {
             shooter.setShooterVelocity(0);
             shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
+            vision.ShootingMode(false);
         }
 }
    

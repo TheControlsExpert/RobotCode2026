@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
@@ -149,11 +150,11 @@ public class Shooter extends SubsystemBase {
      }
 
      public double getMaxTOF() {
-        return 3.0;
+        return 1.5;
      }
 
     public double getMinTOF() {
-            return 1.5;
+            return 1.0;
      }
 
      public double[] LookupTable_Shooting(Drive drive) {
@@ -175,6 +176,16 @@ public class Shooter extends SubsystemBase {
     //Pose2d launcherPosition = estimatedPose.transformBy(ShooterConstants.robotToShooter);
     //double launcherToTargetDistance = target.getDistance(launcherPosition.getTranslation());
     double launcherToTargetDistance = target.getDistance(drive.getEstimatedPosition().getTranslation());
+
+    double pivotAngle = -0.36754 * launcherToTargetDistance*launcherToTargetDistance - 1.16034 * launcherToTargetDistance + 22.92513;
+    double shooterV = 1832.83 + 271.41197 * launcherToTargetDistance;
+
+    SmartDashboard.putNumber("interpolation velocity", shooterV);
+    SmartDashboard.putNumber("interpolation pivot angle", pivotAngle);
+    SmartDashboard.putNumber("launcher to target distance", launcherToTargetDistance);
+
+    setShooterVelocity(shooterV/60);
+    setPositionPivot(pivotAngle);
 
 
     // Calculate field relative launcher velocity
@@ -240,13 +251,15 @@ public class Shooter extends SubsystemBase {
     public boolean isAtShootingVelocity(double distance) {
         double velocity;
         boolean isShooting = Robot.shootingState.equals(ShootingState.SHOOTING);
+        
         if (isShooting) {
-             velocity = ShootVelocityMap.get(distance);
+             velocity =1832.83 + 271.41197 * distance;
         }
         else {
             velocity = PassVelocityMap.get(distance);
         }
 
+        SmartDashboard.putNumber("is at shooting vel", Math.abs((inputs.shooterLeftVelocityRPM + inputs.shooterRightVelocityRPM) / 2 - velocity));
         return Math.abs((inputs.shooterLeftVelocityRPM + inputs.shooterRightVelocityRPM) / 2 - velocity) < ShooterConstants.ShooterVelocityTolerance;
     }
 
@@ -254,12 +267,12 @@ public class Shooter extends SubsystemBase {
         double position;
         boolean isShooting = Robot.shootingState.equals(ShootingState.SHOOTING);
         if (isShooting) {
-            position = ShootAngleMap.get(distance);
+            position = -0.36754 * distance*distance - 1.16034 * distance + 22.92513;
         }
         else {
             position = PassAngleMap.get(distance);
         }
-
+        SmartDashboard.putNumber("is at pivot position", Math.abs(inputs.shooterPivotEncoderRotations - position));
         return Math.abs(inputs.shooterPivotEncoderRotations - position) < ShooterConstants.ShooterPivotTolerance;
     }
 

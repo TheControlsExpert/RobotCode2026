@@ -88,7 +88,7 @@ public class Drive extends SubsystemBase {
  public Pose2d lastodometrypose = new Pose2d();
  ReentrantLock visionLock = new ReentrantLock();
 public final double translationkP = 2.5;
-public final double rotationkP = 0.08;
+public final double rotationkP = 0.12;
 public PathConstraints constraints_auto = new PathConstraints(6, 4, 13, 26);
 public PathConstraints constraints_pathfinding = new PathConstraints(5, 3, 500, 500);
 
@@ -100,7 +100,7 @@ Transform2d simulatedLL = new Transform2d(new Translation2d(SwerveConstants.whee
 
 private Twist2d twist = new Twist2d();
 
-public double maxSpeed = 6;
+public double maxSpeed = 4;
 
 
 public boolean resettingLocalization = false;
@@ -211,7 +211,7 @@ private final Field2d m_field = new Field2d();
  (speeds, feedforwards) -> runVelocity(speeds),
  // Method that will drive the robot gn ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
  new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
- new PIDConstants(translationkP, 0.0, 0.3), // Translation PID constants
+ new PIDConstants(translationkP, 0.0, 0.8), // Translation PID constants
  new PIDConstants(2.5, 0.0, 0.0) // Rotation PID constants
  ),
  
@@ -651,8 +651,8 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
 
  SwervePoseEstimator.addVisionMeasurement(new Pose2d(measurement.pose().getTranslation(), getRotation()), measurement.timestamp(), stds);
 
- if (gyroResetTimer.hasElapsed(30) && getGyroSpeed() < 1 && getTranslationalSpeed() < 0.1 && measurement.numTags() >= 2 && measurement.avgDistance() < 2.35) {
- //SwervePoseEstimator.resetRotation(Rotation2d.fromDegrees(measurement.rotationDegreees()));
+ if (gyroResetTimer.hasElapsed(15) && getGyroSpeed() < 1 && getTranslationalSpeed() < 0.1 && measurement.numTags() >= 2 && measurement.avgDistance() < 2.35) {
+ SwervePoseEstimator.resetRotation(Rotation2d.fromDegrees(measurement.rotationDegreees()));
  //SmartDashboard.putBoolean("gyro reset", true);
  gyroResetTimer.restart();
  }

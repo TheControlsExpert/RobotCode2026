@@ -52,7 +52,7 @@ public class Shooting extends Command {
     double maxFuelCountDelay = 2.0;
     double minFuelCountDelay = 1.0;
     double shiftEndFuelCountExtension = 3.0;
-    double bps = 9;
+    double bps = 7;
     VisionSubsystem vision;
     boolean isShuffling = true;
 
@@ -99,7 +99,7 @@ public class Shooting extends Command {
 
     @Override
     public void initialize() {
-     //   vision.ShootingMode(true);   
+        vision.ShootingMode(true);   
         readyToShoot = false;
         hasShuffled = false;
         isShuffling = true;
@@ -111,9 +111,9 @@ public class Shooting extends Command {
 
     @Override
     public void execute() {
-        shooter.setShooterVelocity(3020/60);
-        shooter.setPositionPivot(10);
-        SmartDashboard.putBoolean("Shooting shuffle", isShuffling);
+      
+        shooter.LookupTable_Shooting(drive);
+       // SmartDashboard.putBoolean("Shooting shuffle", isShuffling);
 
         // if (shuffleTimer.hasElapsed(2) && isShuffling) {
         //     isShuffling = false;
@@ -133,8 +133,8 @@ public class Shooting extends Command {
         // }
 
         // else {
-            indexer.setIndexerDutyCycle(1);
-            shooter.setFeederVelocity(1);
+          //  indexer.setIndexerDutyCycle(1);
+           // shooter.setFeederVelocity(1);
     //   }
 
 
@@ -160,47 +160,47 @@ public class Shooting extends Command {
 
 
 
-//         Translation2d linearVelocity;
+        Translation2d linearVelocity;
 
-//         if (DriverStation.isTeleop()) {
+        if (DriverStation.isTeleop()) {
 
-//         if (controller.rightStick().getAsBoolean()) {
-//           linearVelocity =
-//                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble() / 12, ySupplier.getAsDouble() / 12);
-//         }
+        if (controller.rightStick().getAsBoolean()) {
+          linearVelocity =
+                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble() / 12, ySupplier.getAsDouble() / 12);
+        }
 
-//         else {
-//             linearVelocity =
-//                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+        else {
+            linearVelocity =
+                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
 
-//         }
-//     }
+        }
+    }
 
-//     else {
-//         linearVelocity = new Translation2d(0, 0);
-//     }
+    else {
+        linearVelocity = new Translation2d(0, 0);
+    }
 
               
-//         Translation2d shootingPosition = drive.calculateShootingPosition();
+        Translation2d shootingPosition = drive.calculateShootingPosition();
 
-//         double distance = drive.getEstimatedPosition().getTranslation().getDistance(shootingPosition);
-//         double[] shootingParameters = shooter.LookupTable_Shooting(drive);
-//         double omega;
-//         double angleToTarget_radians = shootingPosition.minus(drive.getEstimatedPosition().getTranslation()).getAngle().getRadians();
-//         double deltaRotation = angleToTarget_radians - drive.getEstimatedPosition().getRotation().getRadians();
+        double distance = drive.getEstimatedPosition().getTranslation().getDistance(shootingPosition);
+        //double[] shootingParameters = shooter.LookupTable_Shooting(drive);
+        double omega;
+        double angleToTarget_radians = shootingPosition.minus(drive.getEstimatedPosition().getTranslation()).getAngle().getRadians();
+        double deltaRotation = angleToTarget_radians - drive.getEstimatedPosition().getRotation().getRadians();
         
-//         deltaRotation = MathUtil.angleModulus(deltaRotation);
-//         //Change back to degrees
-//         deltaRotation = Math.toDegrees(deltaRotation);
+        deltaRotation = MathUtil.angleModulus(deltaRotation);
+        //Change back to degrees
+        deltaRotation = Math.toDegrees(deltaRotation);
 
-//         if (Robot.localizationState.equals(LocalizationState.OPERATIONAL)) {
-//             shooter.setShooterVelocity(shootingParameters[0]);
-//             shooter.setPositionPivot(shootingParameters[1]);
+     //   if (Robot.localizationState.equals(LocalizationState.OPERATIONAL)) {
+           // shooter.setShooterVelocity(shootingParameters[0]);
+           // shooter.setPositionPivot(shootingParameters[1]);
 
         
-//          omega = deltaRotation * kP_rotation;
+         omega = deltaRotation * kP_rotation;
         
-//         }
+    //    }
 
 //         else {
 //             omega = MathUtil.applyDeadband(rotationSupplier.getAsDouble(), 0.2);
@@ -224,44 +224,50 @@ public class Shooting extends Command {
         
 
 //               // Convert to field relative speeds & send command
-//               ChassisSpeeds speeds =
-//                   new ChassisSpeeds(
-//                       linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-//                       linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-//                    MathUtil.clamp(omega, -drive.getMaxAngularSpeedRadPerSec(), drive.getMaxAngularSpeedRadPerSec()));
-//               boolean isFlipped =
-//                   DriverStation.getAlliance().isPresent()
-//                       && DriverStation.getAlliance().get() == Alliance.Red;
-//               drive.runVelocity(
-//                   ChassisSpeeds.fromFieldRelativeSpeeds(
-//                       speeds,
-//                       isFlipped
-//                           ? drive.getEstimatedPosition().getRotation().plus(new Rotation2d(Math.PI))
-//                           : drive.getEstimatedPosition().getRotation()));
+              ChassisSpeeds speeds =
+                  new ChassisSpeeds(
+                      linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                      linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                   MathUtil.clamp(omega, -drive.getMaxAngularSpeedRadPerSec(), drive.getMaxAngularSpeedRadPerSec()));
+              boolean isFlipped =
+                  DriverStation.getAlliance().isPresent()
+                      && DriverStation.getAlliance().get() == Alliance.Red;
+              drive.runVelocity(
+                  ChassisSpeeds.fromFieldRelativeSpeeds(
+                      speeds,
+                      isFlipped
+                          ? drive.getEstimatedPosition().getRotation().plus(new Rotation2d(Math.PI))
+                          : drive.getEstimatedPosition().getRotation()));
     
-// if ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - maxFuelCountDelay - shooter.getMaxTOF() - 1/bps) > 0) || 
-//     (!Robot.isActive && (shooter.getMinTOF() +  minFuelCountDelay - Robot.combinedTimeLeft) > 0) || 
-//     (Robot.shootingState.equals(ShootingState.PASSING)) ||
-//     (!Robot.winner_selection_done)) {
+if ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - maxFuelCountDelay - shooter.getMaxTOF() - 1/bps) > 0) || 
+    (!Robot.isActive && (shooter.getMinTOF() +  minFuelCountDelay - Robot.combinedTimeLeft) > 0) || 
+    (Robot.shootingState.equals(ShootingState.PASSING)) ||
+    (!Robot.winner_selection_done)) {
 
-//     //shooting parameters are close enough to START shooting
-//     if (!readyToShoot && shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance) && (Robot.localizationState.equals(LocalizationState.DISABLED) || Math.abs(deltaRotation) < ShooterConstants.YawAngleTolerance)) {
-//         readyToShoot = true;
-//         SmartDashboard.putBoolean("Shooter is at Velocity", true);
+    //shooting parameters are close enough to START shooting
+    if (!readyToShoot && shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance) && drive.getGyroSpeed() < 2 && (Robot.localizationState.equals(LocalizationState.DISABLED) || Math.abs(deltaRotation) < ShooterConstants.YawAngleTolerance)) {
+        readyToShoot = true;
+        SmartDashboard.putBoolean("Shooter is at Velocity", true);
         
-//     }
-// //shooting parameters are too far, STOP shooting
-//     if (shooter.isShooterVelocityLow(distance) && readyToShoot && DriverStation.isTeleop() && Robot.shootingState.equals(ShootingState.SHOOTING)) {
-//         readyToShoot = false;
-//         waiting = true;
-//     }
+    }
+//shooting parameters are too far, STOP shooting
+    // if (shooter.isShooterVelocityLow(distance) && readyToShoot && DriverStation.isTeleop() && Robot.shootingState.equals(ShootingState.SHOOTING)) {
+    //     readyToShoot = false;
+    //     waiting = true;
+    // }
 
-//     if (!readyToShoot) {
-//         SmartDashboard.putBoolean("Shooter is at Velocity", false);
-//     }
+    if (!readyToShoot) {
+        SmartDashboard.putBoolean("Shooter is at Velocity", false);
+    }
+}
 
 
-//     if (readyToShoot) {
+    if (readyToShoot) {
+        indexer.setIndexerDutyCycle(1);
+        shooter.setFeederVelocity(1);
+
+
+    }
         // if (shuffleTimer.hasElapsed(1) && !isShuffling) {
         //     isShuffling = true;
         //     shuffleTimer.restart();
@@ -277,8 +283,8 @@ public class Shooting extends Command {
 
 
         // if (!isShuffling) {
-            indexer.setIndexerDutyCycle(1);
-            shooter.setFeederVelocity(0.75);
+          //  indexer.setIndexerDutyCycle(1);
+          //  shooter.setFeederVelocity(0.75);
 
         }
 
@@ -331,7 +337,7 @@ public class Shooting extends Command {
 @Override
 public void end(boolean interrupted) {
     // if (!DriverStation.isAutonomous()) {
-   // vision.ShootingMode(false);
+    vision.ShootingMode(false);
     shooter.setShooterVelocity(0);
     shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
  //   }

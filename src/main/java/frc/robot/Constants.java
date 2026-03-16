@@ -236,15 +236,15 @@ public final class Constants {
 
 
     public static final double Pivot_HOME = 17.8;
-    public static final double YawAngleTolerance = 5;
-    public static final double ShooterVelocityTolerance = 100;
+    public static final double YawAngleTolerance = 2;
+    public static final double ShooterVelocityTolerance = 75;
 
     //note that this value has to be MUCH higher bcs the shooter velocity drops by 200rpm+ when a ball is shot
     public static final double ShooterVelocity_NoGo_Tolerance = 1160000;
 
     //TODO: find corresponding encoder values for pivot that we can figure out what a good tolerance is
 
-    public static final double ShooterPivotTolerance = 0;
+    public static final double ShooterPivotTolerance = 0.25;
     public static final double feederSupplyCurrentLimit = 50;
 
 
@@ -260,7 +260,7 @@ public final class Constants {
     public static final double BASIC_PASSING_PIVOT = 0;
     public static final int pivot_gear_ratio = 25;
     public static final double abs_offset = 0.132714;
-    public static final double MAX_ENCODER_VAL = 0.95;
+    public static final double MAX_ENCODER_VAL = 0.894;
     public static final double MIN_ENCODER_VAL = 0.129;
 
   }
