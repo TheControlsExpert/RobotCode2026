@@ -132,7 +132,7 @@ public class RobotContainer {
   private final XboxController co4Controller = new XboxController(0);
   //private final XboxController xbox = new XboxController(0);
   private final CommandXboxController controller2 = new CommandXboxController(1);
-
+  public Timer timeout_shuffle;
   AutomaticTrenching autoTrenching;
   AutomaticClimbing autoClimbing;
 
@@ -276,17 +276,20 @@ public class RobotContainer {
                  .ignoringDisable(true));
 
 
-       Timer timeout_shuffle = new Timer();
+        timeout_shuffle = new Timer();
        Trigger timeoutshuffle_trigger = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {timeout_shuffle.restart();}));
-       Trigger shuffle_trigger = new Trigger(() -> (shooter.isShooting  && !intake.is_busy)).onTrue(new WaitUntilCommand(() -> (intake.isReadyToClose() || timeout_shuffle.hasElapsed(3.5))).
+       Trigger shuffle_trigger = new Trigger(() -> (shooter.isShooting  && !intake.is_busy)).onTrue(new WaitUntilCommand(() -> (timeout_shuffle.hasElapsed(1))).
+
        
-       andThen(new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.2);}, intake).
-       andThen(new WaitCommand(0.65)).
-       andThen(new InstantCommand(() -> {intake.setIntakeDutyCycle(0.0); intake.Extend();}, intake)).
-       andThen(new WaitCommand(1.5)).
-       andThen(new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.2);}, intake))
+       andThen((new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.4);}, intake).
+       andThen(new WaitCommand(0.5)).
+       andThen(new InstantCommand(() -> {intake.Extend();}, intake)).
+       andThen(new WaitCommand(0.5))).repeatedly()
+      // andThen(new InstantCommand(() -> {intake.Shuffle();}, intake))
 
        ));
+
+       Trigger IRsensorTimerResetter = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {intake.readyToClose1_timer.restart();}));
 
 
 

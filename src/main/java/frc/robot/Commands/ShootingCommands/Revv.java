@@ -31,7 +31,8 @@ public class Revv extends Command {
 
     @Override
     public void initialize() {
-        shooter.setShooterVelocity(0.6);
+        shooter.setShooterVelocity(3020/60);
+        shooter.setPositionPivot(10);
     }
   
     @Override
@@ -56,7 +57,7 @@ public class Revv extends Command {
     public void end(boolean interrupted) {
         if (!controller.rightTrigger().getAsBoolean()) {
             shooter.setShooterVelocity(0);
-            //shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
+            shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
         }
 }
    

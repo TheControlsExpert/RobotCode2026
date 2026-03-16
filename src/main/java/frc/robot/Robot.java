@@ -121,6 +121,7 @@ public class Robot extends LoggedRobot {
 
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
+        SmartDashboard.putNumber("timer for shooting", m_robotContainer.timeout_shuffle.get());
 
         //  String fullList_disconnections = "";
         // for (String motorName : DisconnectedMotorNames) {

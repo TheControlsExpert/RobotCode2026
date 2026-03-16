@@ -111,7 +111,54 @@ public class Shooting extends Command {
 
     @Override
     public void execute() {
-        shooter.setShooterVelocity(0.6);
+        shooter.setShooterVelocity(3020/60);
+        shooter.setPositionPivot(10);
+        SmartDashboard.putBoolean("Shooting shuffle", isShuffling);
+
+        // if (shuffleTimer.hasElapsed(2) && isShuffling) {
+        //     isShuffling = false;
+        //     shuffleTimer.restart();
+        //    // indexer.setIndexerDutyCycle(1);
+        // }
+
+        // if (shuffleTimer.hasElapsed(1) && !isShuffling) {
+        //     isShuffling = true;
+        //     shuffleTimer.restart();
+        // }
+
+
+        // if (isShuffling) {
+        //     indexer.setIndexerDutyCycle(-0.3);
+        //     shooter.setFeederVelocity(-0.3);
+        // }
+
+        // else {
+            indexer.setIndexerDutyCycle(1);
+            shooter.setFeederVelocity(1);
+    //   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //         Translation2d linearVelocity;
 
@@ -286,7 +333,7 @@ public void end(boolean interrupted) {
     // if (!DriverStation.isAutonomous()) {
    // vision.ShootingMode(false);
     shooter.setShooterVelocity(0);
-   // shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
+    shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
  //   }
 
     //CommandScheduler.getInstance().schedule(new Jam(indexer, shooter, 2.0)); //runs the indexer in the opposite direction to clear balls from the shooter

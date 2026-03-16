@@ -17,10 +17,10 @@ public class IntakeSubsystem extends SubsystemBase {
     private final IntakeIO io;
     private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
     boolean readyToClose = false;
-    double when_to_close = 0.25; //seconds
+    double when_to_close = 1.5; //seconds
     //ArrayList<Double> IntakeFullHistory = new ArrayList<>();
     //ArrayList<Double> ReadyToCloseHistory = new ArrayList<>();
-    Timer readyToClose1_timer = new Timer();
+    public Timer readyToClose1_timer = new Timer();
     Timer readyToClose2_timer = new Timer();
     //public boolean beep = false;
 
@@ -46,7 +46,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
         if (!inputs.readyToClose1) {
             readyToClose1_timer.restart();
+           // readyToClose1_timer.stop();
         }
+
+        
         // if (!inputs.readyToClose2) {
         //     readyToClose2_timer.restart();
         // }

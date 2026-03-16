@@ -233,8 +233,9 @@ private final Field2d m_field = new Field2d();
  
  @Override
  public void periodic() {
+    SmartDashboard.putNumber("gyro", SwervePoseEstimator.getEstimatedPosition().getRotation().getDegrees());
     m_field.setRobotPose(SwervePoseEstimator.getEstimatedPosition()); 
-    SmartDashboard.putNumber("distance to center", SwervePoseEstimator.getEstimatedPosition().getTranslation().getDistance(new Translation2d(0, 0)));
+    SmartDashboard.putNumber("distance to center", SwervePoseEstimator.getEstimatedPosition().getTranslation().getDistance(calculateShootingPosition()));
 
 if (DriverStation.isDisabled()) {
  if (!gyroInputs.connected && !wasGyroDisconnected) {
@@ -651,7 +652,7 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
  SwervePoseEstimator.addVisionMeasurement(new Pose2d(measurement.pose().getTranslation(), getRotation()), measurement.timestamp(), stds);
 
  if (gyroResetTimer.hasElapsed(30) && getGyroSpeed() < 1 && getTranslationalSpeed() < 0.1 && measurement.numTags() >= 2 && measurement.avgDistance() < 2.35) {
- SwervePoseEstimator.resetRotation(Rotation2d.fromDegrees(measurement.rotationDegreees()));
+ //SwervePoseEstimator.resetRotation(Rotation2d.fromDegrees(measurement.rotationDegreees()));
  //SmartDashboard.putBoolean("gyro reset", true);
  gyroResetTimer.restart();
  }
