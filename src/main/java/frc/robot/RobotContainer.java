@@ -430,25 +430,28 @@ public class RobotContainer {
  
   public Command getAutonomousCommand(AutoEnums.LoaderEnums chosenLoader, AutoEnums.ClimbEnums chosenClimb, AutoEnums.MiddleEnums chosenMiddle, AutoEnums.PositionEnums chosenPosition) {
      
+
     PathPlannerPath firstMiddlePath;
     Command firstMiddleAuto;
 
-    firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("First Bump Outpost");
-    firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
+    PathPlannerPath secondMiddlePath;
+    Command secondMiddleAuto;
 
-    if (chosenLoader.equals(LoaderEnums.ZERO_LOADERS)) {
-      if (chosenMiddle.equals(MiddleEnums.TRUE)) {
-
-        return new InstantCommand().
-        andThen(new ParallelRaceGroup(firstMiddleAuto, new WaitCommand(1).andThen(new IntakeCommand(intake)), new WaitCommand(3).andThen(new RevvAuto(shooter, drive, 0)))).
-        andThen(new Shooting(shooter, indexer, drive));
-
-
-      }
-    }
-
+    try {
+      firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost");
+      firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
       
+      secondMiddlePath = PathPlannerPath.fromChoreoTrajectory("SecondBumpOutpost");
+      secondMiddleAuto = AutoBuilder.followPath(secondMiddlePath);
+
+    } catch (Exception e) {
       return Commands.none();
+    } 
+
+    
+
+    return new ParallelRaceGroup(firstMiddleAuto, new WaitCommand(1).andThen(new IntakeCommand(intake)), new WaitCommand(3).andThen(new RevvAuto(shooter, drive, 0))).
+    andThen(new ParallelRaceGroup(new Shooting(shooter, indexer, drive), new IntakeCommand(intake)));
   
     } 
   }        
