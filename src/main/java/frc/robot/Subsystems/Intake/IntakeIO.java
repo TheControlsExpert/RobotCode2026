@@ -178,7 +178,7 @@ public class IntakeIO {
          
         }
         SmartDashboard.putNumber("feedforward", clampedVal);
-        // pivotMotor.set(clampedVal);
+      //   pivotMotor.set(clampedVal);
 
         }
         }}

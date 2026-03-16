@@ -305,11 +305,11 @@ public class RobotContainer {
       
          // controller.leftTrigger().whileTrue(new Revv(shooter, drive, controller));
         controller.rightTrigger().
-        onTrue(new InstantCommand(() -> {shooter.isShooting = true;}))
+        onTrue(new InstantCommand(() -> {shooter.isShooting = true; intake.setIntakeDutyCycle(0.3);}))
         .whileTrue(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, vision))
-        .onFalse(new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; intake.setIntakeDutyCycle(0.0);}, intake));
+        .onFalse(new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; intake.setIntakeDutyCycle(0.0);}, intake)).onFalse(new Jam(indexer, shooter, 1.5));
 
-        controller.leftTrigger().whileTrue(new Revv(shooter, drive, controller));
+        controller.leftTrigger().whileTrue(new Revv(shooter, drive, controller, vision));
         //                                                              new WaitUntilCommand(() -> {return intake.isReadyToClose() && !intake.is_busy;}).andThen(new ShuffleCommand(intake).getShuffleCommand())))
         //                          .onFalse(new Jam(indexer, shooter, 1.0));                                 
         
