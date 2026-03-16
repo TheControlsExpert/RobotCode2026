@@ -78,6 +78,7 @@ public final class Constants {
     public static final double driveKS = 0.1996; // TODO: This must be tuned to specific robot
     public static final double driveKV = 0.6396;
     public static final double driveKA = 0.0;
+    //public static final double driveKA = 0.3;
 
     public static final Slot0Configs intrinsicsD =
         new Slot0Configs().withKP(driveKP).withKD(driveKD).withKV(driveKV).withKS(driveKS).withKA(driveKA);

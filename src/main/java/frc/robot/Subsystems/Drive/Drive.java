@@ -100,7 +100,7 @@ Transform2d simulatedLL = new Transform2d(new Translation2d(SwerveConstants.whee
 
 private Twist2d twist = new Twist2d();
 
-public double maxSpeed = 4;
+public double maxSpeed = 5;
 
 
 public boolean resettingLocalization = false;
@@ -212,7 +212,7 @@ private final Field2d m_field = new Field2d();
  // Method that will drive the robot gn ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
  new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
  new PIDConstants(translationkP, 0.0, 0.8), // Translation PID constants
- new PIDConstants(2.5, 0.0, 0.0) // Rotation PID constants
+ new PIDConstants(rotationkP, 0.0, 0.0) // Rotation PID constants
  ),
  
  config, // The robot configuration
@@ -235,6 +235,7 @@ private final Field2d m_field = new Field2d();
  public void periodic() {
     SmartDashboard.putNumber("gyro", SwervePoseEstimator.getEstimatedPosition().getRotation().getDegrees());
     m_field.setRobotPose(SwervePoseEstimator.getEstimatedPosition()); 
+    SmartDashboard.putNumber("velocity of chassis", Math.hypot(getChassisSpeeds().vxMetersPerSecond, getChassisSpeeds().vyMetersPerSecond));
     SmartDashboard.putNumber("distance to center", SwervePoseEstimator.getEstimatedPosition().getTranslation().getDistance(calculateShootingPosition()));
 
 if (DriverStation.isDisabled()) {
@@ -737,7 +738,7 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
  /** Returns the maximum linear speed in meters per sec. */
  public double getMaxLinearSpeedMetersPerSec() {
  if (DriverStation.isAutonomous()) {
- return 5.5;
+ return 6;
  }
  else {
  return maxSpeed;

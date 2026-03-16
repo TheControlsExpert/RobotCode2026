@@ -63,8 +63,8 @@ public class DriveCommand extends Command {
               // Convert to field relative speeds & send command
               ChassisSpeeds speeds =
                   new ChassisSpeeds(
-                      linearVelocity.getX() * 3,//swervyyy.getMaxLinearSpeedMetersPerSec(),
-                      linearVelocity.getY() * 3, //swervyyy.getMaxLinearSpeedMetersPerSec(),
+                      linearVelocity.getX() * swervyyy.getMaxLinearSpeedMetersPerSec(),
+                      linearVelocity.getY() * swervyyy.getMaxLinearSpeedMetersPerSec(),
                       omega * swervyyy.getMaxAngularSpeedRadPerSec());
              
               swervyyy.runVelocity(
