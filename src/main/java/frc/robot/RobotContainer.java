@@ -431,16 +431,20 @@ public class RobotContainer {
 
 
  
-  public Command getAutonomousCommand(PathPlannerPath firstMiddlePath, Command firstMiddleAuto) {
+  public Command getAutonomousCommand(PositionEnums chosenPosition, PathPlannerPath firstMiddlePath, Command firstMiddleAuto) {
 
-    Pose2d endPose = new Pose2d(0.628, 0.652, new Rotation2d()); //blue outpost
+    Pose2d loaderPose = new Pose2d(0.628, 0.652, new Rotation2d()); //blue outpost position
 
-     if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
-      endPose = new Pose2d(FlipHorizontally_BtoR(endPose.getTranslation()), new Rotation2d());
+    if (DriverStation.getAlliance().get().equals(Alliance.Red)) { //adjusting for red alliance
+      loaderPose = new Pose2d(FlipHorizontally_BtoR(loaderPose.getTranslation()), new Rotation2d());
+    }
+
+    if (chosenPosition.equals(PositionEnums.DEPOT)) { //adjusting for depot loader
+      loaderPose = new Pose2d(FlipVertically_bottom_to_top(loaderPose.getTranslation()), new Rotation2d());
     }
 
     AutoAlign trapezoidalPath = new AutoAlign(0, 0.08, 1, 1);
-    ProfiledPIDCommand trapezoidalCommand = new ProfiledPIDCommand(trapezoidalPath, drive, endPose);
+    ProfiledPIDCommand trapezoidalCommand = new ProfiledPIDCommand(trapezoidalPath, drive, loaderPose);
 
     
      
@@ -449,9 +453,14 @@ public class RobotContainer {
     
     drive.resetPosition(firstMiddlePath.getStartingHolonomicPose().get());
     return new ParallelRaceGroup(firstMiddleAuto, new WaitCommand(1).andThen(new IntakeCommand(intake)), new WaitCommand(3).andThen(new Revv(shooter, drive, controller, vision))).
-    andThen(new ParallelCommandGroup(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, vision)), new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake));
+    andThen(new ParallelCommandGroup(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, vision)), new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)).
+    andThen(trapezoidalCommand).andThen(new WaitCommand(3));
   
     } 
+
+
+
+
 
 
 

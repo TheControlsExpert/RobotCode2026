@@ -42,6 +42,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.ActivePeriodTracker.ShiftInfo;
+import frc.robot.AutoEnums.PositionEnums;
 import frc.robot.Subsystems.Drive.GyroIOPigeon2;
 import frc.robot.Subsystems.Drive.PhoenixOdometryThread;
 
@@ -68,8 +69,11 @@ public class Robot extends LoggedRobot {
   public static SendableChooser<AutoEnums.MiddleEnums> middleChooser = new SendableChooser<>();
   public static SendableChooser<AutoEnums.PositionEnums> positionChooser = new SendableChooser<>();
 
+  //all our auto paths and commands
   PathPlannerPath firstMiddlePath = null; // the path that will bring our bot into the middle
   Command firstMiddleAuto = Commands.none(); //its corresponding auto
+  PathPlannerPath loaderToShooterPath = null;
+  Command loaderToShooterAuto = Commands.none();
 
 
 
@@ -119,18 +123,26 @@ public class Robot extends LoggedRobot {
 
 
 
-      try { //creates the paths that will be used in the autonomius, must be done here so 
+      try { //creates the paths that will be used in the autonomius, must be done here so as to save time when starting auto
 
-        firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost");
+        if (positionChooser.getSelected().equals(PositionEnums.DEPOT)) { //mirrors path if we're gonna go to the depot
+          firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").mirrorPath();
+          loaderToShooterPath = PathPlannerPath.fromPathFile(null);
+        }
+
+        else {
+          firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost");
+          loaderToShooterPath = PathPlannerPath.fromPathFile(null);
+        }
 
         if (DriverStation.getAlliance().get().equals(Alliance.Red)) { //flips path if we're on the red team
-          firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").flipPath();
+          firstMiddlePath = firstMiddlePath.flipPath();
+          loaderToShooterPath = loaderToShooterPath.flipPath();
         }
 
-        if (positionChooser.getSelected().equals(AutoEnums.PositionEnums.DEPOT)) { //mirrors path if we're gonna go to the depot
-          firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").mirrorPath();
-        }
+        
         firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
+        loaderToShooterAuto = AutoBuilder.followPath(loaderToShooterPath);
       
       } catch (Exception e) {
         firstMiddleAuto = Commands.none();
@@ -175,7 +187,7 @@ public class Robot extends LoggedRobot {
     // AutoEnums.PositionEnums chosenPosition = positionChooser.getSelected();
 
     //passes in all the currently selected states to construct an auto program
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand(firstMiddlePath, firstMiddleAuto);
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand(positionChooser.getSelected(), firstMiddlePath, firstMiddleAuto);
 
 
     if (m_autonomousCommand != null) {
