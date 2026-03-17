@@ -67,6 +67,7 @@ import frc.robot.Commands.DriveCommands.AligningCommands.AutoAlign;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutoBumping;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticClimbing;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticTrenching;
+import frc.robot.Commands.DriveCommands.AligningCommands.ProfiledPIDCommand;
 import frc.robot.Commands.IntakeCommands.IntakeCommand;
 import frc.robot.Commands.IntakeCommands.Jam;
 import frc.robot.Commands.IntakeCommands.ShuffleCommand;
@@ -432,11 +433,16 @@ public class RobotContainer {
  
   public Command getAutonomousCommand(PathPlannerPath firstMiddlePath, Command firstMiddleAuto) {
 
-    Pose2d endPose_OUTPOST = new Pose2d(0.628, 0.652, new Rotation2d());
-     if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
-     // endPose_OUTPOST = new Pose2d(FlipVertically_bottom_to_topFlipHorizontally_BtoR(endPose_OUTPOST)
+    Pose2d endPose = new Pose2d(0.628, 0.652, new Rotation2d()); //blue outpost
 
+     if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
+      endPose = new Pose2d(FlipHorizontally_BtoR(endPose.getTranslation()), new Rotation2d());
     }
+
+    AutoAlign trapezoidalPath = new AutoAlign(0, 0.08, 1, 1);
+    ProfiledPIDCommand trapezoidalCommand = new ProfiledPIDCommand(trapezoidalPath, drive, endPose);
+
+    
      
     
 

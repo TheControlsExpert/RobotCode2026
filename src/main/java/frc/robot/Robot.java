@@ -119,9 +119,7 @@ public class Robot extends LoggedRobot {
 
 
 
-      
-
-      try {
+      try { //creates the paths that will be used in the autonomius, must be done here so 
 
         firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost");
 
