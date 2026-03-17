@@ -439,7 +439,7 @@ public class RobotContainer {
     if (chosenPosition.equals(PositionEnums.OUTPOST)) {
       loaderPose = new Pose2d(0.628, 0.652, new Rotation2d()); //blue outpost position
     } else {
-      loaderPose = new Pose2d(null, null, new Rotation2d()); //figure out x and y for the start of the depot path later
+      loaderPose = new Pose2d(1, 1, new Rotation2d()); //figure out x and y for the start of the depot path later
     }
 
     Supplier<Pose2d> liveLoaderPose = () -> loaderPose; //need it to be in this form for the ProfiledPIDCommand
