@@ -67,6 +67,7 @@ import frc.robot.Commands.DriveCommands.AligningCommands.AutoAlign;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutoBumping;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticClimbing;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticTrenching;
+import frc.robot.Commands.DriveCommands.AligningCommands.ProfiledPIDCommand;
 import frc.robot.Commands.IntakeCommands.IntakeCommand;
 import frc.robot.Commands.IntakeCommands.Jam;
 import frc.robot.Commands.IntakeCommands.ShuffleCommand;
@@ -430,38 +431,20 @@ public class RobotContainer {
 
 
  
-  public Command getAutonomousCommand(AutoEnums.PositionEnums chosenPosition) {
+  public Command getAutonomousCommand(PathPlannerPath firstMiddlePath, Command firstMiddleAuto) {
+
+    Pose2d endPose = new Pose2d(0.628, 0.652, new Rotation2d()); //blue outpost
+
+     if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
+      endPose = new Pose2d(FlipHorizontally_BtoR(endPose.getTranslation()), new Rotation2d());
+    }
+
+    AutoAlign trapezoidalPath = new AutoAlign(0, 0.08, 1, 1);
+    ProfiledPIDCommand trapezoidalCommand = new ProfiledPIDCommand(trapezoidalPath, drive, endPose);
+
+    
      
-    PathPlannerPath firstMiddlePath; // the path starts out on blue alliance for outpost
-    Command firstMiddleAuto;
-
-    // Pose2d endPose_OUTPOST = new Pose2d(0.628, 0.652, new Rotation2d());
-
-    // if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
-    //  // endPose_OUTPOST = new Pose2d(FlipVertically_bottom_to_topFlipHorizontally_BtoR(endPose_OUTPOST)
-
-    // }
-
-
-
-    try {
-
-      firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").flipPath();
-
-    //   if (DriverStation.getAlliance().get().equals(Alliance.Red)) { //flips path if we're on the red team
-    //     firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").flipPath();
-    //   }
-
-    //   if (chosenPosition.equals(AutoEnums.PositionEnums.DEPOT)) { //mirrors path if we're gonna go to the depot
-    //     firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").mirrorPath();
-    //   }
-      
-
-    // } catch (Exception e) {
-    //   return Commands.none();
-    // } 
-
-    firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
+    
 
     
     drive.resetPosition(firstMiddlePath.getStartingHolonomicPose().get());
