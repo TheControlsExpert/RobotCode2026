@@ -34,7 +34,9 @@ public class Revv extends Command {
 
     @Override
     public void initialize() {
-        vision.ShootingMode(true);
+        if (DriverStation.isTeleop()) {
+            vision.ShootingMode(true);
+        }
       //  shooter.setShooterVelocity(3450/60);
       //  shooter.setPositionPivot(4);
     }

@@ -455,4 +455,15 @@ public class RobotContainer {
     andThen(new ParallelCommandGroup(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, vision)), new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake));
   
     } 
+
+
+
+    public Translation2d FlipHorizontally_BtoR(Translation2d point) {
+        return new Translation2d( 2* (8.219694 - point.getX()) + point.getX(), point.getY()); 
+    }
+    //flips translation2d from bottom of blue to top of blue
+    public Translation2d FlipVertically_bottom_to_top(Translation2d point) {
+        return new Translation2d( point.getX(), 2* (4.021328 - point.getY()) + point.getY()); 
+     }
+
   }             
