@@ -433,14 +433,12 @@ public class RobotContainer {
  
   public Command getAutonomousCommand(PositionEnums chosenPosition, PathPlannerPath firstMiddlePath, Command firstMiddleAuto) {
 
-    Pose2d loaderPose = new Pose2d(0.628, 0.652, new Rotation2d()); //blue outpost position
-
-    if (DriverStation.getAlliance().get().equals(Alliance.Red)) { //adjusting for red alliance
-      loaderPose = new Pose2d(FlipHorizontally_BtoR(loaderPose.getTranslation()), new Rotation2d());
-    }
-
-    if (chosenPosition.equals(PositionEnums.DEPOT)) { //adjusting for depot loader
-      loaderPose = new Pose2d(FlipVertically_bottom_to_top(loaderPose.getTranslation()), new Rotation2d());
+    Pose2d loaderPose;
+    
+    if (chosenPosition.equals(PositionEnums.OUTPOST)) {
+      loaderPose = new Pose2d(0.628, 0.652, new Rotation2d()); //blue outpost position
+    } else {
+      loaderPose = new Pose2d(null, null, new Rotation2d()); //figure out x and y for the start of the depot path later
     }
 
     AutoAlign trapezoidalPath = new AutoAlign(0, 0.08, 1, 1);
