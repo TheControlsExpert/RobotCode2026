@@ -435,6 +435,14 @@ public class RobotContainer {
     PathPlannerPath firstMiddlePath; // the path starts out on blue alliance for outpost
     Command firstMiddleAuto;
 
+    Pose2d endPose_OUTPOST = new Pose2d(0.628, 0.652, new Rotation2d());
+
+    if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
+     // endPose_OUTPOST = new Pose2d(FlipVertically_bottom_to_topFlipHorizontally_BtoR(endPose_OUTPOST)
+
+    }
+
+
 
     try {
 
