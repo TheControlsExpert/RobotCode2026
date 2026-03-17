@@ -165,20 +165,25 @@ public class Robot extends LoggedRobot {
       if (positionChooser.getSelected().equals(PositionEnums.DEPOT)) { //mirrors path if we're gonna go to the depot
         firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").mirrorPath();
         loaderToShooterPath = PathPlannerPath.fromPathFile(null);
-      } else {
+      } 
+      else if (positionChooser.getSelected().equals(PositionEnums.OUTPOST)){
         firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost");
         loaderToShooterPath = PathPlannerPath.fromPathFile(null);
+      } 
+      else {
+        firstMiddlePath = null;
+        loaderToShooterPath = PathPlannerPath.fromPathFile(null);
       }
-      if (DriverStation.getAlliance().get().equals(Alliance.Red)) { //flips path if we're on the red team
+    } catch (Exception e) { firstMiddleAuto = Commands.none(); }
+
+
+    if (DriverStation.getAlliance().get().equals(Alliance.Red)) { //flips path if we're on the red team
         firstMiddlePath = firstMiddlePath.flipPath();
-        loaderToShooterPath = loaderToShooterPath.flipPath();
+       // loaderToShooterPath = loaderToShooterPath.flipPath();
       }
 
       firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
-      loaderToShooterAuto = AutoBuilder.followPath(loaderToShooterPath);
-    } 
-
-    catch (Exception e) { firstMiddleAuto = Commands.none(); }
+     // loaderToShooterAuto = AutoBuilder.followPath(loaderToShooterPath);
 
 
 
