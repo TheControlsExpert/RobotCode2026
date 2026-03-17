@@ -64,10 +64,10 @@ public class Robot extends LoggedRobot {
 
 
   //creates the choosers that will hold possible enum states for each choice
-  public static SendableChooser<AutoEnums.LoaderEnums> LoaderChooser = new SendableChooser<>();
-  public static SendableChooser<AutoEnums.ClimbEnums> climbChooser = new SendableChooser<>();
-  public static SendableChooser<AutoEnums.MiddleEnums> middleChooser = new SendableChooser<>();
-  public static SendableChooser<AutoEnums.PositionEnums> positionChooser = new SendableChooser<>();
+  // public static SendableChooser<AutoEnums.LoaderEnums> LoaderChooser = new SendableChooser<>();
+  // public static SendableChooser<AutoEnums.ClimbEnums> climbChooser = new SendableChooser<>();
+  // public static SendableChooser<AutoEnums.MiddleEnums> middleChooser = new SendableChooser<>();
+  public static SendableChooser<PositionEnums> positionChooser = new SendableChooser<>();
 
   //all our auto paths and commands
   PathPlannerPath firstMiddlePath = null; // the path that will bring our bot into the middle
@@ -97,56 +97,36 @@ public class Robot extends LoggedRobot {
 
       // Logger.start();
       //sets the states for initial autos as part of the chooser options
-      LoaderChooser.setDefaultOption("Zero Loaders", AutoEnums.LoaderEnums.ZERO_LOADERS);
-      LoaderChooser.addOption("One Loader", AutoEnums.LoaderEnums.ONE_LOADER);
-      LoaderChooser.addOption("Two Loaders", AutoEnums.LoaderEnums.TWO_LOADERS);
+      // LoaderChooser.setDefaultOption("Zero Loaders", AutoEnums.LoaderEnums.ZERO_LOADERS);
+      // LoaderChooser.addOption("One Loader", AutoEnums.LoaderEnums.ONE_LOADER);
+      // LoaderChooser.addOption("Two Loaders", AutoEnums.LoaderEnums.TWO_LOADERS);
 
-      //sets the states for initial climb autos as part of the chooser options
-      climbChooser.setDefaultOption("No Climb", AutoEnums.ClimbEnums.FALSE);
-      climbChooser.addOption("Yes climb", AutoEnums.ClimbEnums.TRUE);
+      // //sets the states for initial climb autos as part of the chooser options
+      // climbChooser.setDefaultOption("No Climb", AutoEnums.ClimbEnums.FALSE);
+      // climbChooser.addOption("Yes climb", AutoEnums.ClimbEnums.TRUE);
 
-      //sets the state for going into the middle of the field or not
-      middleChooser.setDefaultOption("No middle", AutoEnums.MiddleEnums.FALSE);
-      middleChooser.addOption("Yes middle", AutoEnums.MiddleEnums.TRUE);
+      // //sets the state for going into the middle of the field or not
+      // middleChooser.setDefaultOption("No middle", AutoEnums.MiddleEnums.FALSE);
+      // middleChooser.addOption("Yes middle", AutoEnums.MiddleEnums.TRUE);
    
-      //sets the inital field position
-      positionChooser.setDefaultOption("Depot", AutoEnums.PositionEnums.DEPOT);
-      positionChooser.addOption("Outpost", AutoEnums.PositionEnums.OUTPOST);
+      //where da bot at?
+      positionChooser.setDefaultOption("Outpost", PositionEnums.OUTPOST);
+      positionChooser.addOption("Depot", PositionEnums.DEPOT);
+      positionChooser.addOption("Hub", PositionEnums.HUB);
 
-      //shows the driver all the choosers on smart dashboard
-      SmartDashboard.putData("How many loaders?", LoaderChooser);
-      SmartDashboard.putData("Go to Climb?", climbChooser);
-      //alow the driver to decide whether to go into the middle of the field or not
-      SmartDashboard.putData("Go to Middle?", middleChooser);
-      //allows the driver to select position on the field
       SmartDashboard.putData("Initial Position", positionChooser);
 
-
-
-      try { //creates the paths that will be used in the autonomius, must be done here so as to save time when starting auto
-
-        if (positionChooser.getSelected().equals(PositionEnums.DEPOT)) { //mirrors path if we're gonna go to the depot
-          firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").mirrorPath();
-          loaderToShooterPath = PathPlannerPath.fromPathFile(null);
-        }
-
-        else {
-          firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost");
-          loaderToShooterPath = PathPlannerPath.fromPathFile(null);
-        }
-
-        if (DriverStation.getAlliance().get().equals(Alliance.Red)) { //flips path if we're on the red team
-          firstMiddlePath = firstMiddlePath.flipPath();
-          loaderToShooterPath = loaderToShooterPath.flipPath();
-        }
-
-        
-        firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
-        loaderToShooterAuto = AutoBuilder.followPath(loaderToShooterPath);
+      // //shows the driver all the choosers on smart dashboard
+      // SmartDashboard.putData("How many loaders?", LoaderChooser);
+      // SmartDashboard.putData("Go to Climb?", climbChooser);
+      // //alow the driver to decide whether to go into the middle of the field or not
+      // SmartDashboard.putData("Go to Middle?", middleChooser);
+      // //allows the driver to select position on the field
       
-      } catch (Exception e) {
-        firstMiddleAuto = Commands.none();
-      }       
+
+
+
+             
 
     }
   
@@ -180,14 +160,32 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
 
-    // //reads the states the driver chose for this specific auto
-    // AutoEnums.LoaderEnums chosenLoader = LoaderChooser.getSelected();
-    // AutoEnums.ClimbEnums chosenClimb = climbChooser.getSelected();
-    // AutoEnums.MiddleEnums chosenMiddle = middleChooser.getSelected();
-    // AutoEnums.PositionEnums chosenPosition = positionChooser.getSelected();
+    try { //creates the paths that will be used in the autonomius, must be done here so as to save time when starting auto
 
+      if (positionChooser.getSelected().equals(PositionEnums.DEPOT)) { //mirrors path if we're gonna go to the depot
+        firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").mirrorPath();
+        loaderToShooterPath = PathPlannerPath.fromPathFile(null);
+      } else {
+        firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost");
+        loaderToShooterPath = PathPlannerPath.fromPathFile(null);
+      }
+      if (DriverStation.getAlliance().get().equals(Alliance.Red)) { //flips path if we're on the red team
+        firstMiddlePath = firstMiddlePath.flipPath();
+        loaderToShooterPath = loaderToShooterPath.flipPath();
+      }
+
+      firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
+      loaderToShooterAuto = AutoBuilder.followPath(loaderToShooterPath);
+    } 
+
+    catch (Exception e) { firstMiddleAuto = Commands.none(); }
+
+
+
+  
     //passes in all the currently selected states to construct an auto program
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand(positionChooser.getSelected(), firstMiddlePath, firstMiddleAuto);
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand(positionChooser.getSelected(), firstMiddlePath);
+
 
 
     if (m_autonomousCommand != null) {

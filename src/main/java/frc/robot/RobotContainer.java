@@ -14,8 +14,6 @@
 package frc.robot;
 
 import frc.robot.AutoEnums;
-import frc.robot.AutoEnums.LoaderEnums;
-import frc.robot.AutoEnums.MiddleEnums;
 import frc.robot.AutoEnums.PositionEnums;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -432,21 +430,21 @@ public class RobotContainer {
 
 
  
-  public Command getAutonomousCommand(PositionEnums chosenPosition, PathPlannerPath firstMiddlePath, Command firstMiddleAuto) {
+  public Command getAutonomousCommand(PositionEnums chosenPosition, PathPlannerPath firstMiddlePath) {
 
     Pose2d loaderPose;
-
     if (chosenPosition.equals(PositionEnums.OUTPOST)) {
       loaderPose = new Pose2d(0.628, 0.652, new Rotation2d()); //blue outpost position
     } else {
       loaderPose = new Pose2d(1, 1, new Rotation2d()); //figure out x and y for the start of the depot path later
     }
-
     Supplier<Pose2d> liveLoaderPose = () -> loaderPose; //need it to be in this form for the ProfiledPIDCommand
+
 
     AutoAlign trapezoidalPath = new AutoAlign(0, 0.08, 1, 1);
     ProfiledPIDCommand trapezoidalCommand = new ProfiledPIDCommand(trapezoidalPath, drive, liveLoaderPose);
 
+    Command firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
     
 
     

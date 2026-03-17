@@ -2,21 +2,22 @@ package frc.robot;
 
 public class AutoEnums {
 
-    public enum LoaderEnums {
-        ONE_LOADER,
-        ZERO_LOADERS,
-        TWO_LOADERS;
+    // public enum LoaderEnums {
+    //     ONE_LOADER,
+    //     ZERO_LOADERS,
+    //     TWO_LOADERS;
 
-    } public enum ClimbEnums {
-        FALSE,
-        TRUE;
+    // } public enum ClimbEnums {
+    //     FALSE,
+    //     TRUE;
        
-    } public enum MiddleEnums {
-        TRUE,
-        FALSE;
+    // } public enum MiddleEnums {
+    //     TRUE,
+    //     FALSE;
 
-    } public enum PositionEnums {
+     public enum PositionEnums {
         DEPOT,
-        OUTPOST;
+        OUTPOST,
+        HUB;
     }
 }
