@@ -101,6 +101,7 @@ import frc.robot.Subsystems.Vision.VisionSubsystem;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -434,18 +435,18 @@ public class RobotContainer {
   public Command getAutonomousCommand(PositionEnums chosenPosition, PathPlannerPath firstMiddlePath, Command firstMiddleAuto) {
 
     Pose2d loaderPose;
-    
+
     if (chosenPosition.equals(PositionEnums.OUTPOST)) {
       loaderPose = new Pose2d(0.628, 0.652, new Rotation2d()); //blue outpost position
     } else {
       loaderPose = new Pose2d(null, null, new Rotation2d()); //figure out x and y for the start of the depot path later
     }
 
-    AutoAlign trapezoidalPath = new AutoAlign(0, 0.08, 1, 1);
-    ProfiledPIDCommand trapezoidalCommand = new ProfiledPIDCommand(trapezoidalPath, drive, loaderPose);
+    Supplier<Pose2d> liveLoaderPose = () -> loaderPose; //need it to be in this form for the ProfiledPIDCommand
 
-    
-     
+    AutoAlign trapezoidalPath = new AutoAlign(0, 0.08, 1, 1);
+    ProfiledPIDCommand trapezoidalCommand = new ProfiledPIDCommand(trapezoidalPath, drive, liveLoaderPose);
+
     
 
     

@@ -344,7 +344,7 @@ public void end(boolean interrupted) {
 
     //CommandScheduler.getInstance().schedule(new Jam(indexer, shooter, 2.0)); //runs the indexer in the opposite direction to clear balls from the shooter
    
-    indexer.setIndexerDutyCycle(0);
+  //  indexer.setIndexerDutyCycle(0);
     shooter.setFeederVelocity(0);
     //CommandScheduler.getInstance().cancel(shuffle);
 }
