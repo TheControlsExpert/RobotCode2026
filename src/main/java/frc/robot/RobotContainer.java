@@ -430,38 +430,15 @@ public class RobotContainer {
 
 
  
-  public Command getAutonomousCommand(AutoEnums.PositionEnums chosenPosition) {
-     
-    PathPlannerPath firstMiddlePath; // the path starts out on blue alliance for outpost
-    Command firstMiddleAuto;
+  public Command getAutonomousCommand(PathPlannerPath firstMiddlePath, Command firstMiddleAuto) {
 
     Pose2d endPose_OUTPOST = new Pose2d(0.628, 0.652, new Rotation2d());
-
-    if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
+     if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
      // endPose_OUTPOST = new Pose2d(FlipVertically_bottom_to_topFlipHorizontally_BtoR(endPose_OUTPOST)
 
     }
-
-
-
-    try {
-
-      firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost");
-
-      if (DriverStation.getAlliance().get().equals(Alliance.Red)) { //flips path if we're on the red team
-        firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").flipPath();
-      }
-
-      if (chosenPosition.equals(AutoEnums.PositionEnums.DEPOT)) { //mirrors path if we're gonna go to the depot
-        firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").mirrorPath();
-      }
-      
-
-    } catch (Exception e) {
-      return Commands.none();
-    } 
-
-    firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
+     
+    
 
     
     drive.resetPosition(firstMiddlePath.getStartingHolonomicPose().get());
