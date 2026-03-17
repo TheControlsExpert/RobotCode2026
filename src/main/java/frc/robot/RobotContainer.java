@@ -16,6 +16,7 @@ package frc.robot;
 import frc.robot.AutoEnums;
 import frc.robot.AutoEnums.LoaderEnums;
 import frc.robot.AutoEnums.MiddleEnums;
+import frc.robot.AutoEnums.PositionEnums;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -429,25 +430,30 @@ public class RobotContainer {
 
 
  
-  public Command getAutonomousCommand() {
+  public Command getAutonomousCommand(AutoEnums.PositionEnums chosenPosition) {
      
-
-    PathPlannerPath firstMiddlePath;
+    PathPlannerPath firstMiddlePath; // the path starts out on blue alliance for outpost
     Command firstMiddleAuto;
 
-    // PathPlannerPath secondMiddlePath;
-    // Command secondMiddleAuto;
 
     try {
-      firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").flipPath();
-      firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
+
+      firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost");
+
+      if (DriverStation.getAlliance().get().equals(Alliance.Red)) { //flips path if we're on the red team
+        firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").flipPath();
+      }
+
+      if (chosenPosition.equals(AutoEnums.PositionEnums.DEPOT)) { //mirrors path if we're gonna go to the depot
+        firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").mirrorPath();
+      }
       
-      // secondMiddlePath = PathPlannerPath.fromChoreoTrajectory("SecondBumpOutpost");
-      // secondMiddleAuto = AutoBuilder.followPath(secondMiddlePath);
 
     } catch (Exception e) {
       return Commands.none();
     } 
+
+    firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
 
     
     drive.resetPosition(firstMiddlePath.getStartingHolonomicPose().get());
