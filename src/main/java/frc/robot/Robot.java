@@ -180,7 +180,8 @@ public class Robot extends LoggedRobot {
 
     if (DriverStation.getAlliance().get().equals(Alliance.Red)) { //flips path if we're on the red team
         firstMiddlePath = firstMiddlePath.flipPath();
-        collectLoaderPath = collectLoaderPath.flipPath();
+        if (positionChooser.getSelected().equals(PositionEnums.DEPOT)) { collectLoaderPath = collectLoaderPath.flipPath(); }  
+        leaveLoaderPath = leaveLoaderPath.flipPath();
       }
       
 

@@ -3,28 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.05,
-        "y": 5.637652
+        "x": 1.4391055456171733,
+        "y": 5.993
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.6401636967523627,
-        "y": 5.762598628907677
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.1656552810033372,
-        "y": 5.993
-      },
-      "prevControl": {
-        "x": 1.4156552810033372,
-        "y": 5.993
-      },
-      "nextControl": {
-        "x": 0.5636552810033373,
+        "x": 1.1891055456171733,
         "y": 5.993
       },
       "isLocked": false,
@@ -46,15 +30,15 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.65,
+      "waypointRelativePos": 0.35,
       "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.6,
-      "maxWaypointRelativePos": 2.0,
+      "minWaypointRelativePos": 0.3,
+      "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 0.65,
         "maxAcceleration": 4.0,
@@ -83,7 +67,7 @@
   "folder": "Auto Depot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -44.215
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

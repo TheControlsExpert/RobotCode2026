@@ -449,7 +449,7 @@ public class RobotContainer {
       loaderPose = new Pose2d(0.628, 0.652, new Rotation2d()); //blue outpost position
     } 
     else if (chosenPosition.equals(PositionEnums.DEPOT)) {
-      loaderPose = new Pose2d(1, 1, new Rotation2d()); //figure out x and y for the start of the depot path later
+      loaderPose = new Pose2d(1.439, 5.993, new Rotation2d()); //figure out x and y for the start of the depot path later
     }
     else {
       loaderPose = new Pose2d(0, 0, new Rotation2d());
@@ -461,21 +461,32 @@ public class RobotContainer {
 
     final Pose2d finalLoaderPose = loaderPose;
     Supplier<Pose2d> liveLoaderPose = () -> finalLoaderPose; //need it to be in this form for the ProfiledPIDCommand
-
     AutoAlign trapezoidalPath = new AutoAlign(1.5, 0.08, 1, 1);
     ProfiledPIDCommand trapezoidalCommand = new ProfiledPIDCommand(trapezoidalPath, drive, liveLoaderPose);
 
     
     
 
-    
-    drive.resetPosition(firstMiddlePath.getStartingHolonomicPose().get());
-    return new ParallelRaceGroup(firstMiddleAuto, new WaitCommand(1).andThen(new IntakeCommand(intake)), new WaitCommand(3).andThen(new Revv(shooter, drive, controller, vision))).
-    andThen(new ParallelCommandGroup(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, 3, vision)), new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)).
-    andThen(trapezoidalCommand).andThen(new WaitCommand(3)).
-    andThen(collectLoaderAuto).andThen(leaveLoaderAuto).
-    andThen(new ParallelCommandGroup(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, 3, vision)), new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake));
-    } 
+    if (chosenPosition.equals(PositionEnums.OUTPOST)) {
+      drive.resetPosition(firstMiddlePath.getStartingHolonomicPose().get());
+      return new ParallelRaceGroup(firstMiddleAuto, new WaitCommand(1).andThen(new IntakeCommand(intake)), new WaitCommand(3).andThen(new Revv(shooter, drive, controller, vision))).
+      andThen(new ParallelCommandGroup(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, 3, vision)), new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)).
+      andThen(trapezoidalCommand).andThen(new WaitCommand(3)).
+      andThen(collectLoaderAuto).andThen(leaveLoaderAuto).
+      andThen(new ParallelCommandGroup(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, 3, vision)), new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)); 
+    }
+
+    if (chosenPosition.equals(PositionEnums.DEPOT)) {
+      drive.resetPosition(firstMiddlePath.getStartingHolonomicPose().get());
+      return new ParallelRaceGroup(firstMiddleAuto, new WaitCommand(1).andThen(new IntakeCommand(intake)), new WaitCommand(3).andThen(new Revv(shooter, drive, controller, vision))).
+      andThen(new ParallelCommandGroup(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, 3, vision)), new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)).
+      andThen(trapezoidalCommand).andThen(collectLoaderAuto).andThen(leaveLoaderAuto).
+      andThen(new ParallelCommandGroup(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, 3, vision)), new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)); 
+    }
+
+    return Commands.none();
+  }
+     
 
 
 
