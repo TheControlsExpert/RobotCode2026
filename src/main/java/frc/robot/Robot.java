@@ -145,14 +145,16 @@ public class Robot extends LoggedRobot {
 
     if (positionChooser.getSelected().equals(PositionEnums.OUTPOST)) {
       firstMiddlePath = firstMiddlePathOutpost;
+      secondMiddlePath = secondMiddlePathOutpost;
     }
 
     else { //need to add the selection for hub paths later on
       firstMiddlePath = firstMiddlePathDepot;
+      secondMiddlePath = secondMiddlePathDepot;
     }
     
 
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand(firstMiddlePath, secondMiddlePath);
 
 
     if (m_autonomousCommand != null) {

@@ -427,16 +427,25 @@ public class RobotContainer {
 
 
 
+
+
+
+
  
-  public Command getAutonomousCommand() {
+  public Command getAutonomousCommand(PathPlannerPath firstMiddlePath, PathPlannerPath secondMiddlePath) {
 
+    Command firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
+    Command secondMiddleAuto = AutoBuilder.followPath(secondMiddlePath);
+    
+    return firstMiddleAuto.
+    andThen(new Shooting(shooter, drive, indexer, intake, controller, null, null, null, 0, 3, vision)).
+    andThen(secondMiddleAuto); 
+
+   // ParallelRaceGroup(firstMiddleAuto, new WaitCommand(2).andThen(new ParallelRaceGroup(new WaitCommand(4), new IntakeCommand(intake))), new WaitCommand(4).andThen(new Revv(shooter, drive, controller, vision))).
+    
 
     
-     
-    
-
-    
-    return Commands.none();
+  
      }
 
   }             
