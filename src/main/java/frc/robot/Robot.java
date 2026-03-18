@@ -71,6 +71,9 @@ public class Robot extends LoggedRobot {
   PathPlannerPath secondMiddlePathOutpost = null;
   PathPlannerPath secondMiddlePathDepot = null;
 
+  PathPlannerPath firstMiddlePath;
+  PathPlannerPath secondMiddlePath;
+
 
 
     public Robot() {
@@ -123,13 +126,32 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
 
-    // //reads the states the driver chose for this specific auto
-    // AutoEnums.LoaderEnums chosenLoader = LoaderChooser.getSelected();
-    // AutoEnums.ClimbEnums chosenClimb = climbChooser.getSelected();
-    // AutoEnums.MiddleEnums chosenMiddle = middleChooser.getSelected();
-    // AutoEnums.PositionEnums chosenPosition = positionChooser.getSelected();
+    try {
+      firstMiddlePathOutpost = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost");
+      firstMiddlePathDepot = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").mirrorPath();
 
-    //passes in all the currently selected states to construct an auto program
+      secondMiddlePathOutpost = PathPlannerPath.fromChoreoTrajectory("SecondBumpOutpost");
+      secondMiddlePathDepot = PathPlannerPath.fromChoreoTrajectory("SecondBumpOutpost").mirrorPath();
+
+      if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) {
+        firstMiddlePathOutpost = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").flipPath();
+        firstMiddlePathDepot = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").mirrorPath().flipPath();
+
+        secondMiddlePathOutpost = PathPlannerPath.fromChoreoTrajectory("SecondBumpOutpost").flipPath();
+        secondMiddlePathDepot = PathPlannerPath.fromChoreoTrajectory("SecondBumpOutpost").mirrorPath().flipPath();
+      }
+
+    } catch (Exception e) { }
+
+    if (positionChooser.getSelected().equals(PositionEnums.OUTPOST)) {
+      firstMiddlePath = firstMiddlePathOutpost;
+    }
+
+    else { //need to add the selection for hub paths later on
+      firstMiddlePath = firstMiddlePathDepot;
+    }
+    
+
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
 
