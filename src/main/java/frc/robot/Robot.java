@@ -175,7 +175,7 @@ public class Robot extends LoggedRobot {
     // AutoEnums.PositionEnums chosenPosition = positionChooser.getSelected();
 
     //passes in all the currently selected states to construct an auto program
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand(firstMiddlePath, firstMiddleAuto);
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
 
     if (m_autonomousCommand != null) {
