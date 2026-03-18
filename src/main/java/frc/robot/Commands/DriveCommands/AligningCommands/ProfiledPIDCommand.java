@@ -19,9 +19,9 @@ public class ProfiledPIDCommand extends Command {
     Double translationMOE;
     AutoAlign autoAlign;
     Drive drive;
-    Pose2d target;
+    Supplier<Pose2d> target;
     
-    public ProfiledPIDCommand(AutoAlign autoAlign, Drive drive, Pose2d target) {
+    public ProfiledPIDCommand(AutoAlign autoAlign, Drive drive, Supplier<Pose2d> target) {
         this.autoAlign = autoAlign;
         this.drive = drive;
         this.rotationMOE = autoAlign.rotationMarge;
@@ -39,7 +39,7 @@ public class ProfiledPIDCommand extends Command {
        boolean isFlipped = DriverStation.getAlliance().get().equals(Alliance.Red);
           drive.runVelocity(
               ChassisSpeeds.fromFieldRelativeSpeeds(
-                autoAlign.getTargetSpeeds(drive.getEstimatedPosition(), target),
+                autoAlign.getTargetSpeeds(drive.getEstimatedPosition(), target.get()),
                   
                 isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI))
                       : drive.getRotation()));
@@ -48,9 +48,9 @@ public class ProfiledPIDCommand extends Command {
 
     @Override
     public boolean isFinished() {
-     double  deltarotation = Math.abs(Units.radiansToDegrees(MathUtil.angleModulus(drive.getEstimatedPosition().getRotation().minus(target.getRotation()).getRadians())));
+     double  deltarotation = Math.abs(Units.radiansToDegrees(MathUtil.angleModulus(drive.getEstimatedPosition().getRotation().minus(target.get().getRotation()).getRadians())));
         SmartDashboard.putNumber("is finished aligning", deltarotation );
-        return deltarotation < rotationMOE && drive.getEstimatedPosition().getTranslation().minus(target.getTranslation()).getNorm() < translationMOE;
+        return deltarotation < rotationMOE && drive.getEstimatedPosition().getTranslation().minus(target.get().getTranslation()).getNorm() < translationMOE;
     }
 
 
