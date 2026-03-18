@@ -446,18 +446,18 @@ public class RobotContainer {
 
     Pose2d loaderPose;
     if (chosenPosition.equals(PositionEnums.OUTPOST)) {
-      loaderPose = new Pose2d(0.628, 0.652, new Rotation2d()); //blue outpost position
+      loaderPose = new Pose2d(0.628, 0.652, new Rotation2d(Math.PI)); //blue outpost position
     } 
     else if (chosenPosition.equals(PositionEnums.DEPOT)) {
-      loaderPose = new Pose2d(1.439, 5.993, new Rotation2d()); 
+      loaderPose = new Pose2d(1.439, 5.993, new Rotation2d(Math.PI)); 
     }
     else {
-      loaderPose = new Pose2d(0, 0, new Rotation2d());
+      loaderPose = new Pose2d(0, 0, new Rotation2d(Math.PI));
     }
 
     if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) {
-      loaderPose = new Pose2d(FlipHorizontally_BtoR(loaderPose.getTranslation()), new Rotation2d());
-      loaderPose = new Pose2d(FlipVertically_bottom_to_top(loaderPose.getTranslation()), new Rotation2d());
+      loaderPose = new Pose2d(FlipHorizontally_BtoR(loaderPose.getTranslation()), loaderPose.getRotation());
+      loaderPose = new Pose2d(FlipVertically_bottom_to_top(loaderPose.getTranslation()), loaderPose.getRotation());
     }
 
     final Pose2d finalLoaderPose = loaderPose;
