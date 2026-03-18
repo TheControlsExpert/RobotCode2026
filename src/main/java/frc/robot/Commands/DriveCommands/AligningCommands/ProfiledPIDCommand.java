@@ -54,4 +54,10 @@ public class ProfiledPIDCommand extends Command {
     }
 
 
+    @Override
+    public void end(boolean interrupted) {
+        drive.runVelocity(new ChassisSpeeds());
+    }
+
+
 }
