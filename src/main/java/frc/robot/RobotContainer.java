@@ -462,7 +462,7 @@ public class RobotContainer {
 
     final Pose2d finalLoaderPose = loaderPose;
     Supplier<Pose2d> liveLoaderPose = () -> finalLoaderPose; //need it to be in this form for the ProfiledPIDCommand
-    AutoAlign trapezoidalPath = new AutoAlign(1, 0.08, 1, 1);
+    AutoAlign trapezoidalPath = new AutoAlign(1, 0.08, .02, 5);
     ProfiledPIDCommand trapezoidalCommand = new ProfiledPIDCommand(trapezoidalPath, drive, liveLoaderPose);
 
     

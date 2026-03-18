@@ -70,8 +70,14 @@ public class Robot extends LoggedRobot {
   public static SendableChooser<PositionEnums> positionChooser = new SendableChooser<>();
 
   //all our auto paths and commands
-  PathPlannerPath firstMiddlePath = null; // the path that will bring our bot into the middle
-  PathPlannerPath collectLoaderPath = null; 
+  PathPlannerPath firstMiddlePathOutpost = null; // the path that will bring our bot into the middle
+  PathPlannerPath firstMiddlePathDepot = null; // the path that will bring our bot into the middle
+  PathPlannerPath collectLoaderPathDepot = null; 
+  PathPlannerPath leaveLoaderPathOutpost = null;
+  PathPlannerPath leaveLoaderPathDepot = null;
+
+  PathPlannerPath firstMiddlePath = null;
+  PathPlannerPath collectLoaderPath = null;
   PathPlannerPath leaveLoaderPath = null;
 
 
@@ -162,31 +168,37 @@ public class Robot extends LoggedRobot {
 
     try { //creates the paths that will be used in the autonomius, must be done here so as to save time when starting auto
 
-      if (positionChooser.getSelected().equals(PositionEnums.DEPOT)) { //mirrors path if we're gonna go to the depot
-        firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost");
-        collectLoaderPath = PathPlannerPath.fromPathFile("Collect Depot");
-        leaveLoaderPath = PathPlannerPath.fromPathFile("Return Depot");
+      firstMiddlePathOutpost = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost");
+      firstMiddlePathDepot = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").mirrorPath();
+      collectLoaderPathDepot = PathPlannerPath.fromPathFile("Collect Depot");
+      leaveLoaderPathOutpost = PathPlannerPath.fromPathFile("Outpost To Climb");
+      leaveLoaderPathDepot = PathPlannerPath.fromPathFile("Return Depot");
 
-        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) { //flips path if we're on the red team
-          firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").flipPath().mirrorPath();
-          collectLoaderPath = PathPlannerPath.fromPathFile("Collect Depot").mirrorPath().flipPath();
-          leaveLoaderPath = PathPlannerPath.fromPathFile("Return Depot").mirrorPath().flipPath();
-        } 
-      }  
-      else if (positionChooser.getSelected().equals(PositionEnums.OUTPOST)) {
-        firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost");
-        leaveLoaderPath = PathPlannerPath.fromPathFile("Outpost To Climb");
-
-        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) { //flips path if we're on the red team
-          firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").flipPath();
-          leaveLoaderPath = PathPlannerPath.fromPathFile("Return Depot").mirrorPath().flipPath();
+      if (positionChooser.getSelected().equals(PositionEnums.OUTPOST)) {
+        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) {
+          firstMiddlePath = firstMiddlePathOutpost.flipPath();
+          leaveLoaderPath = leaveLoaderPathOutpost.flipPath(); 
+        } else {
+          firstMiddlePath = firstMiddlePathOutpost;
+          leaveLoaderPath = leaveLoaderPathOutpost;
         }
-      } 
-      else { //these are the hub paths -- not made yet
-        // firstMiddlePath = null;
-        // loaderToShooterPath = PathPlannerPath.fromPathFile(null);
       }
-    } catch (Exception e) { }
+
+      else {
+        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) {
+          firstMiddlePath = firstMiddlePathDepot.flipPath();
+          leaveLoaderPath = leaveLoaderPathDepot.flipPath();
+          collectLoaderPath = collectLoaderPathDepot.flipPath();
+        } else {
+          firstMiddlePath = firstMiddlePathDepot;
+          leaveLoaderPath = leaveLoaderPathDepot;
+          collectLoaderPath = collectLoaderPathDepot;
+        }
+      }
+
+    } catch (Exception e) { 
+      SmartDashboard.putBoolean("Errer", true);
+    }
       
 
 
