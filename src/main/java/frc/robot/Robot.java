@@ -72,8 +72,10 @@ public class Robot extends LoggedRobot {
   //all our auto paths and commands
   PathPlannerPath firstMiddlePath = null; // the path that will bring our bot into the middle
   Command firstMiddleAuto = Commands.none(); //its corresponding auto
-  PathPlannerPath loaderToShooterPath = null;
-  Command loaderToShooterAuto = Commands.none();
+  PathPlannerPath collectLoaderPath = null;
+  PathPlannerPath leaveLoaderPath = null;
+  Command collectLoaderAuto = Commands.none();
+  Command leaveLoaderAuto = Commands.none();
 
 
 
@@ -164,32 +166,34 @@ public class Robot extends LoggedRobot {
 
       if (positionChooser.getSelected().equals(PositionEnums.DEPOT)) { //mirrors path if we're gonna go to the depot
         firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").mirrorPath();
-        loaderToShooterPath = PathPlannerPath.fromPathFile(null);
+        collectLoaderPath = PathPlannerPath.fromPathFile("Collect Depot");
+        leaveLoaderPath = PathPlannerPath.fromPathFile("Return Depot");
       } 
       else if (positionChooser.getSelected().equals(PositionEnums.OUTPOST)){
         firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost");
-        loaderToShooterPath = PathPlannerPath.fromPathFile(null);
+        leaveLoaderPath = PathPlannerPath.fromPathFile("Outpost To Climb");
       } 
-      else {
-        firstMiddlePath = null;
-        loaderToShooterPath = PathPlannerPath.fromPathFile(null);
+      else { //these are the hub paths -- not made yet
+        // firstMiddlePath = null;
+        // loaderToShooterPath = PathPlannerPath.fromPathFile(null);
       }
     } catch (Exception e) { firstMiddleAuto = Commands.none(); }
 
 
     if (DriverStation.getAlliance().get().equals(Alliance.Red)) { //flips path if we're on the red team
         firstMiddlePath = firstMiddlePath.flipPath();
-       // loaderToShooterPath = loaderToShooterPath.flipPath();
+        collectLoaderPath = collectLoaderPath.flipPath();
       }
 
       firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
-     // loaderToShooterAuto = AutoBuilder.followPath(loaderToShooterPath);
+      leaveLoaderAuto = AutoBuilder.followPath(leaveLoaderPath);
+      
 
 
 
   
     //passes in all the currently selected states to construct an auto program
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand(positionChooser.getSelected(), firstMiddlePath);
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand(positionChooser.getSelected(), firstMiddlePath, collectLoaderPath, leaveLoaderPath);
 
 
 

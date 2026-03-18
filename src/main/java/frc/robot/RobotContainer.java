@@ -430,10 +430,19 @@ public class RobotContainer {
 
 
  
-  public Command getAutonomousCommand(PositionEnums chosenPosition, PathPlannerPath firstMiddlePath) {
+  public Command getAutonomousCommand(PositionEnums chosenPosition, PathPlannerPath firstMiddlePath, PathPlannerPath collectLoaderPath, PathPlannerPath leaveLoaderPath) {
 
     Command firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
+    if (chosenPosition.equals(PositionEnums.DEPOT)) {
+      Command collectLoaderAuto = AutoBuilder.followPath(collectLoaderPath);
+    } else {
+      Command collectLoaderAuto = Commands.none();
+    }
+    Command leaveLoaderAuto = AutoBuilder.followPath(leaveLoaderPath);
 
+
+
+    
     Pose2d loaderPose;
     if (chosenPosition.equals(PositionEnums.OUTPOST)) {
       loaderPose = new Pose2d(0.628, 0.652, new Rotation2d()); //blue outpost position
