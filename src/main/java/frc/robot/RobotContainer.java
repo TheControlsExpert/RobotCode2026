@@ -433,16 +433,17 @@ public class RobotContainer {
   public Command getAutonomousCommand(PositionEnums chosenPosition, PathPlannerPath firstMiddlePath, PathPlannerPath collectLoaderPath, PathPlannerPath leaveLoaderPath) {
 
     Command firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
+    Command collectLoaderAuto;
     if (chosenPosition.equals(PositionEnums.DEPOT)) {
-      Command collectLoaderAuto = AutoBuilder.followPath(collectLoaderPath);
+      collectLoaderAuto = AutoBuilder.followPath(collectLoaderPath);
     } else {
-      Command collectLoaderAuto = Commands.none();
+      collectLoaderAuto = Commands.none();
     }
     Command leaveLoaderAuto = AutoBuilder.followPath(leaveLoaderPath);
 
 
 
-    
+
     Pose2d loaderPose;
     if (chosenPosition.equals(PositionEnums.OUTPOST)) {
       loaderPose = new Pose2d(0.628, 0.652, new Rotation2d()); //blue outpost position
@@ -471,8 +472,9 @@ public class RobotContainer {
     drive.resetPosition(firstMiddlePath.getStartingHolonomicPose().get());
     return new ParallelRaceGroup(firstMiddleAuto, new WaitCommand(1).andThen(new IntakeCommand(intake)), new WaitCommand(3).andThen(new Revv(shooter, drive, controller, vision))).
     andThen(new ParallelCommandGroup(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, 3, vision)), new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)).
-    andThen(trapezoidalCommand).andThen(new WaitCommand(3));
-  
+    andThen(trapezoidalCommand).andThen(new WaitCommand(3)).
+    andThen(collectLoaderAuto).andThen(leaveLoaderAuto).
+    andThen(new ParallelCommandGroup(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, 3, vision)), new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake));
     } 
 
 
