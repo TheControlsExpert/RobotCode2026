@@ -449,19 +449,20 @@ public class RobotContainer {
       loaderPose = new Pose2d(0.628, 0.652, new Rotation2d()); //blue outpost position
     } 
     else if (chosenPosition.equals(PositionEnums.DEPOT)) {
-      loaderPose = new Pose2d(1.439, 5.993, new Rotation2d()); //figure out x and y for the start of the depot path later
+      loaderPose = new Pose2d(1.439, 5.993, new Rotation2d()); 
     }
     else {
       loaderPose = new Pose2d(0, 0, new Rotation2d());
     }
 
-    if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
+    if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) {
       loaderPose = new Pose2d(FlipHorizontally_BtoR(loaderPose.getTranslation()), new Rotation2d());
+      loaderPose = new Pose2d(FlipVertically_bottom_to_top(loaderPose.getTranslation()), new Rotation2d());
     }
 
     final Pose2d finalLoaderPose = loaderPose;
     Supplier<Pose2d> liveLoaderPose = () -> finalLoaderPose; //need it to be in this form for the ProfiledPIDCommand
-    AutoAlign trapezoidalPath = new AutoAlign(1.5, 0.08, 1, 1);
+    AutoAlign trapezoidalPath = new AutoAlign(1, 0.08, 1, 1);
     ProfiledPIDCommand trapezoidalCommand = new ProfiledPIDCommand(trapezoidalPath, drive, liveLoaderPose);
 
     

@@ -71,7 +71,7 @@ public class Robot extends LoggedRobot {
 
   //all our auto paths and commands
   PathPlannerPath firstMiddlePath = null; // the path that will bring our bot into the middle
-  PathPlannerPath collectLoaderPath = null;
+  PathPlannerPath collectLoaderPath = null; 
   PathPlannerPath leaveLoaderPath = null;
 
 
@@ -163,26 +163,30 @@ public class Robot extends LoggedRobot {
     try { //creates the paths that will be used in the autonomius, must be done here so as to save time when starting auto
 
       if (positionChooser.getSelected().equals(PositionEnums.DEPOT)) { //mirrors path if we're gonna go to the depot
-        firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").mirrorPath();
+        firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost");
         collectLoaderPath = PathPlannerPath.fromPathFile("Collect Depot");
         leaveLoaderPath = PathPlannerPath.fromPathFile("Return Depot");
-      } 
-      else if (positionChooser.getSelected().equals(PositionEnums.OUTPOST)){
+
+        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) { //flips path if we're on the red team
+          firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").flipPath().mirrorPath();
+          collectLoaderPath = PathPlannerPath.fromPathFile("Collect Depot").mirrorPath().flipPath();
+          leaveLoaderPath = PathPlannerPath.fromPathFile("Return Depot").mirrorPath().flipPath();
+        } 
+      }  
+      else if (positionChooser.getSelected().equals(PositionEnums.OUTPOST)) {
         firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost");
         leaveLoaderPath = PathPlannerPath.fromPathFile("Outpost To Climb");
+
+        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) { //flips path if we're on the red team
+          firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").flipPath();
+          leaveLoaderPath = PathPlannerPath.fromPathFile("Return Depot").mirrorPath().flipPath();
+        }
       } 
       else { //these are the hub paths -- not made yet
         // firstMiddlePath = null;
         // loaderToShooterPath = PathPlannerPath.fromPathFile(null);
       }
     } catch (Exception e) { }
-
-
-    if (DriverStation.getAlliance().get().equals(Alliance.Red)) { //flips path if we're on the red team
-        firstMiddlePath = firstMiddlePath.flipPath();
-        if (positionChooser.getSelected().equals(PositionEnums.DEPOT)) { collectLoaderPath = collectLoaderPath.flipPath(); }  
-        leaveLoaderPath = leaveLoaderPath.flipPath();
-      }
       
 
 
