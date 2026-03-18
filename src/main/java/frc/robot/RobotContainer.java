@@ -13,10 +13,7 @@
 
 package frc.robot;
 
-import frc.robot.AutoEnums;
-import frc.robot.AutoEnums.LoaderEnums;
-import frc.robot.AutoEnums.MiddleEnums;
-import frc.robot.AutoEnums.PositionEnums;
+import frc.robot.PositionEnums;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
