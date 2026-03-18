@@ -71,11 +71,9 @@ public class Robot extends LoggedRobot {
 
   //all our auto paths and commands
   PathPlannerPath firstMiddlePath = null; // the path that will bring our bot into the middle
-  Command firstMiddleAuto = Commands.none(); //its corresponding auto
   PathPlannerPath collectLoaderPath = null;
   PathPlannerPath leaveLoaderPath = null;
-  Command collectLoaderAuto = Commands.none();
-  Command leaveLoaderAuto = Commands.none();
+
 
 
 
@@ -177,16 +175,13 @@ public class Robot extends LoggedRobot {
         // firstMiddlePath = null;
         // loaderToShooterPath = PathPlannerPath.fromPathFile(null);
       }
-    } catch (Exception e) { firstMiddleAuto = Commands.none(); }
+    } catch (Exception e) { }
 
 
     if (DriverStation.getAlliance().get().equals(Alliance.Red)) { //flips path if we're on the red team
         firstMiddlePath = firstMiddlePath.flipPath();
         collectLoaderPath = collectLoaderPath.flipPath();
       }
-
-      firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
-      leaveLoaderAuto = AutoBuilder.followPath(leaveLoaderPath);
       
 
 
