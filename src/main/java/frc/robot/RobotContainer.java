@@ -432,25 +432,36 @@ public class RobotContainer {
  
   public Command getAutonomousCommand(PositionEnums chosenPosition, PathPlannerPath firstMiddlePath) {
 
+    Command firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
+
     Pose2d loaderPose;
     if (chosenPosition.equals(PositionEnums.OUTPOST)) {
       loaderPose = new Pose2d(0.628, 0.652, new Rotation2d()); //blue outpost position
-    } else {
+    } 
+    else if (chosenPosition.equals(PositionEnums.DEPOT)) {
       loaderPose = new Pose2d(1, 1, new Rotation2d()); //figure out x and y for the start of the depot path later
     }
-    Supplier<Pose2d> liveLoaderPose = () -> loaderPose; //need it to be in this form for the ProfiledPIDCommand
+    else {
+      loaderPose = new Pose2d(0, 0, new Rotation2d());
+    }
 
+    if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
+      loaderPose = new Pose2d(FlipHorizontally_BtoR(loaderPose.getTranslation()), new Rotation2d());
+    }
 
-    AutoAlign trapezoidalPath = new AutoAlign(0, 0.08, 1, 1);
+    final Pose2d finalLoaderPose = loaderPose;
+    Supplier<Pose2d> liveLoaderPose = () -> finalLoaderPose; //need it to be in this form for the ProfiledPIDCommand
+
+    AutoAlign trapezoidalPath = new AutoAlign(1.5, 0.08, 1, 1);
     ProfiledPIDCommand trapezoidalCommand = new ProfiledPIDCommand(trapezoidalPath, drive, liveLoaderPose);
 
-    Command firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
+    
     
 
     
     drive.resetPosition(firstMiddlePath.getStartingHolonomicPose().get());
     return new ParallelRaceGroup(firstMiddleAuto, new WaitCommand(1).andThen(new IntakeCommand(intake)), new WaitCommand(3).andThen(new Revv(shooter, drive, controller, vision))).
-    andThen(new ParallelCommandGroup(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, vision)), new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)).
+    andThen(new ParallelCommandGroup(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, 3, vision)), new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)).
     andThen(trapezoidalCommand).andThen(new WaitCommand(3));
   
     } 
