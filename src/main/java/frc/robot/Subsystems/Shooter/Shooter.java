@@ -276,6 +276,14 @@ public class Shooter extends SubsystemBase {
         return Math.abs(inputs.shooterPivotEncoderRotations - position) < ShooterConstants.ShooterPivotTolerance;
     }
 
+    public void setManual() {
+        double distance = 2.05; //default to some value so that it doesn't break when you switch to manual mode    
+        double velocity =1832.83 + 271.41197 * distance;
+        double position = -0.36754 * distance*distance - 1.16034 * distance + 22.92513;
+        setShooterVelocity(velocity);
+        setPositionPivot(position);
+    }
+
     public void setFeederVelocity(double velocity) {
         io.setFeederVelocity(velocity);
      }

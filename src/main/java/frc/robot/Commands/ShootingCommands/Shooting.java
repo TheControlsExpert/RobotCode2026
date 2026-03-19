@@ -112,7 +112,7 @@ public class Shooting extends Command {
     @Override
     public void execute() {
       
-        shooter.LookupTable_Shooting(drive);
+     
        // SmartDashboard.putBoolean("Shooting shuffle", isShuffling);
 
         // if (shuffleTimer.hasElapsed(2) && isShuffling) {
@@ -156,9 +156,54 @@ public class Shooting extends Command {
 
 
 
+        if (Robot.localizationState.equals(LocalizationState.DISABLED)) {
+          Translation2d linearVelocity;
+
+        if (controller.rightStick().getAsBoolean()) {
+          linearVelocity =
+                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble() / 12, ySupplier.getAsDouble() / 12);
+        }
+
+        else {
+            linearVelocity =
+                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+
+        }
+
+              // Calculate angular speed
+              double omega = MathUtil.applyDeadband(rotationSupplier.getAsDouble(), 0.2);
+
+         if (controller.rightStick().getAsBoolean()) {
+             omega = omega / 12;
+         }
+
+          // Square rotation value for more precise control
+          omega = Math.copySign(omega * omega, omega);
+           boolean isFlipped =
+                  DriverStation.getAlliance().isPresent()
+                      && DriverStation.getAlliance().get() == Alliance.Red;
+
+              // Convert to field relative speeds & send command
+              ChassisSpeeds speeds =
+                  new ChassisSpeeds(
+                      linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                      linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                      omega * drive.getMaxAngularSpeedRadPerSec());
+             
+              drive.runVelocity(
+                  ChassisSpeeds.fromFieldRelativeSpeeds(
+                      speeds,
+                      isFlipped
+                          ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                          : drive.getRotation()));
+        
+
+    shooter.setManual();
+    }
 
 
-
+    else {
+        shooter.LookupTable_Shooting(drive);
 
         Translation2d linearVelocity;
 
@@ -287,6 +332,7 @@ if ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - ma
           //  shooter.setFeederVelocity(0.75);
 
         }
+    }
 
         // else {
         //     indexer.setIndexerDutyCycle(-1);

@@ -7,6 +7,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
@@ -37,6 +38,7 @@ public class VisionSubsystem extends SubsystemBase {
     double lastUsedTimestamp = -1000;
     private double minTranslation = 10000.0;   
     double velocity_of_servo = 0.0;
+    public boolean ruin = false;
     public record VisionMeasurement(Pose2d pose, double rotationDegreees, double timestamp, double[] std, int numTags, double avgDistance) {}
     ArrayList<VisionMeasurement> visionMeasurements = new ArrayList<>();
 
@@ -168,7 +170,14 @@ public class VisionSubsystem extends SubsystemBase {
 
         public void addVisionMeasurement(VisionMeasurement measurement) {
             SmartDashboard.putBoolean("adding vision", true);
+            if (ruin) {
+            drive.addVision(new VisionMeasurement(measurement.pose().plus(new Transform2d(0.5,0.1, new Rotation2d())), measurement.rotationDegreees, measurement.timestamp, measurement.std, measurement.numTags, measurement.avgDistance));
+            }
+
+            else {
             drive.addVision(measurement);
+            }
+            
 
     }
 

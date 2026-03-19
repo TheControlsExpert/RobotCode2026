@@ -29,7 +29,7 @@ import com.ctre.phoenix6.hardware.TalonFXS;
 public class IntakeIO {
     TalonFX intakeMotor = new TalonFX(14);
     TalonFXS pivotMotor = new TalonFXS(15);
-    DutyCycleEncoder pivotEncoder = new DutyCycleEncoder(0, 1, 0.9210420730260518 - 0.1);
+    DutyCycleEncoder pivotEncoder = new DutyCycleEncoder(0, 1, 0);
     PositionVoltage pivotPositionVoltage = new PositionVoltage(0);
     StatusSignal<Angle> pivotAngle = pivotMotor.getPosition();
     StatusSignal<AngularVelocity> intakeVel = intakeMotor.getVelocity();
@@ -148,7 +148,8 @@ public class IntakeIO {
 
            
         if (!Up) {
-            //set voltage limits + use kP for going down + 
+            //set voltage limits + use kP for going down +     
+        
         double clampedVal =  IntakeConstants.pivot_kP_down * (target - pivotEncoder.get());   
         if ( IntakeConstants.pivot_kP_down * (target - pivotEncoder.get()) > 0.3) {
             clampedVal = 0.3;

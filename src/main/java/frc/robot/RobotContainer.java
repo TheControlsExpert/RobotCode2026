@@ -133,6 +133,7 @@ public class RobotContainer {
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
   private final XboxController co4Controller = new XboxController(0);
+  private final CommandXboxController controller3 = new CommandXboxController(2);
   //private final XboxController xbox = new XboxController(0);
   private final CommandXboxController controller2 = new CommandXboxController(1);
   public Timer timeout_shuffle;
@@ -279,20 +280,20 @@ public class RobotContainer {
                  .ignoringDisable(true));
 
 
-        timeout_shuffle = new Timer();
-       Trigger timeoutshuffle_trigger = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {timeout_shuffle.restart();}));
-       Trigger shuffle_trigger = new Trigger(() -> (shooter.isShooting  && !intake.is_busy)).onTrue(new WaitUntilCommand(() -> (timeout_shuffle.hasElapsed(1))).
+      //  timeout_shuffle = new Timer();
+       //Trigger timeoutshuffle_trigger = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {timeout_shuffle.restart();}));
+       Trigger shuffle_trigger = new Trigger(() -> (shooter.isShooting  && !intake.is_busy)).onTrue(
 
        
-       andThen((new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.4);}, intake).
+       (new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.4);}, intake).
        andThen(new WaitCommand(0.5)).
        andThen(new InstantCommand(() -> {intake.Extend();}, intake)).
        andThen(new WaitCommand(0.5))).repeatedly()
       // andThen(new InstantCommand(() -> {intake.Shuffle();}, intake))
 
-       ));
+       );
 
-       Trigger IRsensorTimerResetter = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {intake.readyToClose1_timer.restart();}));
+      //Trigger IRsensorTimerResetter = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {intake.readyToClose1_timer.restart();}));
 
 
 
@@ -348,14 +349,16 @@ public class RobotContainer {
       //COPILOT
 
       //intake overrides/fixes
-      controller.x().whileTrue(kACharacterization.feedforwardCommand(drive, co4Controller));
-      // controller2.leftTrigger().or(controller.x()).whileTrue(new StartEndCommand(() -> {intake.Retract(); intake.is_busy = true;}, () -> {intake.Extend(); intake.is_busy = false;}, intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+     // controller.x().whileTrue(kACharacterization.feedforwardCommand(drive, co4Controller));
+      controller2.leftTrigger().or(controller.x()).whileTrue(new StartEndCommand(() -> {intake.Retract(); intake.is_busy = true;}, () -> {intake.Extend(); intake.is_busy = false;}, intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+
+      controller3.x().whileTrue(new StartEndCommand(() -> {vision.ruin = true;}, () -> {vision.ruin = false;}));
 
       // controller2.rightTrigger().whileTrue(new Jam(indexer, shooter));
          // controller.rightTrigger().whileTrue(
       // Commands.defer(() -> { 
       //   if (intake.isShuffling) {
-      // return Commands.none();}
+      // return Commands.none();}vis
 
       //   else {
       //     return new InstantCommand(() -> {
@@ -387,14 +390,14 @@ public class RobotContainer {
       //   }
       //  }));
 
-      //  controller2.rightBumper().onTrue(new InstantCommand(() -> {
-      //   if (Robot.localizationState.equals(LocalizationState.OPERATIONAL)) {
-      //     Robot.localizationState = LocalizationState.DISABLED;
-      //   }
-      //   else {
-      //     Robot.localizationState = LocalizationState.OPERATIONAL;
-      //   }
-      //  }));
+       controller2.rightBumper().onTrue(new InstantCommand(() -> {
+        if (Robot.localizationState.equals(LocalizationState.OPERATIONAL)) {
+          Robot.localizationState = LocalizationState.DISABLED;
+        }
+        else {
+          Robot.localizationState = LocalizationState.OPERATIONAL;
+        }
+       }));
 
       //  //decide auto winner
       //  controller2.y().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.US; Robot.winner_selection_done = true;}));
