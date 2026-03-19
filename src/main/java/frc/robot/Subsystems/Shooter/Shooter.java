@@ -161,28 +161,31 @@ public class Shooter extends SubsystemBase {
 
     // Calculate estimated pose while accounting for phase delay
    
-    // ChassisSpeeds robotRelativeVelocity = drive.getRobotRelativeSpeeds();
-    // Pose2d beforeEstimatedPose = drive.getEstimatedPosition();
-    // Pose2d estimatedPose = beforeEstimatedPose.exp(
+   // ChassisSpeeds robotRelativeVelocity = drive.getRobotRelativeSpeeds();
+   /// Pose2d beforeEstimatedPose = drive.getEstimatedPosition();
+  //  Pose2d estimatedPose = beforeEstimatedPose.exp(
         
-    //         new Twist2d(
-    //             robotRelativeVelocity.vxMetersPerSecond * phaseDelay,
-    //             robotRelativeVelocity.vyMetersPerSecond * phaseDelay,
-    //             robotRelativeVelocity.omegaRadiansPerSecond * phaseDelay));
+   //         new Twist2d(
+    //            robotRelativeVelocity.vxMetersPerSecond * phaseDelay,
+   //             robotRelativeVelocity.vyMetersPerSecond * phaseDelay,
+   //             robotRelativeVelocity.omegaRadiansPerSecond * phaseDelay));
 
     // Calculate target
     Translation2d target = drive.calculateShootingPosition();
-        
-    //Pose2d launcherPosition = estimatedPose.transformBy(ShooterConstants.robotToShooter);
-    //double launcherToTargetDistance = target.getDistance(launcherPosition.getTranslation());
     double launcherToTargetDistance = target.getDistance(drive.getEstimatedPosition().getTranslation());
+        
+  //  Pose2d launcherPosition = estimatedPose.transformBy(ShooterConstants.robotToShooter);
+   // double launcherToTargetDistance = target.getDistance(launcherPosition.getTranslation());
+
+
+  // launcherToTargetDistance = launcherToTargetDistance + ShooterConstants.x; //account for interpolation being based on distance from center of robot instead of distance from launcher
 
     double pivotAngle = -0.36754 * launcherToTargetDistance*launcherToTargetDistance - 1.16034 * launcherToTargetDistance + 22.92513;
     double shooterV = 1832.83 + 271.41197 * launcherToTargetDistance;
 
-    SmartDashboard.putNumber("interpolation velocity", shooterV);
-    SmartDashboard.putNumber("interpolation pivot angle", pivotAngle);
-    SmartDashboard.putNumber("launcher to target distance", launcherToTargetDistance);
+    //SmartDashboard.putNumber("interpolation velocity", shooterV);
+   // SmartDashboard.putNumber("interpolation pivot angle", pivotAngle);
+   // SmartDashboard.putNumber("launcher to target distance", launcherToTargetDistance);
 
     setShooterVelocity(shooterV/60);
     setPositionPivot(pivotAngle);
@@ -218,7 +221,7 @@ public class Shooter extends SubsystemBase {
     //     io.setPivotPosition(ShootAngleMap.get(launcherToTargetDistance));
     //     io.setVelocityShooter(ShootVelocityMap.get(launcherToTargetDistance));
     return new double[] {ShootVelocityMap.get(launcherToTargetDistance), ShootAngleMap.get(launcherToTargetDistance)};
-     }
+    }
     
 
      public boolean isShooterVelocityLow(double distance) {

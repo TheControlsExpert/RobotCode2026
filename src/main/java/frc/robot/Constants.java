@@ -251,9 +251,9 @@ public final class Constants {
 
 
     //Shoot-on-the-fly constants
-    public static final double z = 405.559;
+    //public static final double z = 405.559;
     public static final double y = 0;
-    public static final double x = 246.244;
+    public static final double x = 0.246244;
 
     public static final Transform2d robotToShooter = new Transform2d(new Translation2d(x, y), new Rotation2d());
     public static final double HUB_SHOOTING_VELOCITY = 0;
