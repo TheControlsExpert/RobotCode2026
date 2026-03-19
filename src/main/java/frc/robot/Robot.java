@@ -7,7 +7,7 @@ package frc.robot;
 
 //Brings in the different enum states necessary for auto
 
-import frc.robot.AutoEnums;
+import frc.robot.PositionEnums;
 
 import java.util.ArrayList;
 
@@ -64,6 +64,7 @@ public class Robot extends LoggedRobot {
 
 
   //creates the choosers that will hold possible enum states for each choice
+<<<<<<< HEAD
   // public static SendableChooser<AutoEnums.LoaderEnums> LoaderChooser = new SendableChooser<>();
   // public static SendableChooser<AutoEnums.ClimbEnums> climbChooser = new SendableChooser<>();
   // public static SendableChooser<AutoEnums.MiddleEnums> middleChooser = new SendableChooser<>();
@@ -80,6 +81,15 @@ public class Robot extends LoggedRobot {
   PathPlannerPath collectLoaderPath = null;
   PathPlannerPath leaveLoaderPath = null;
 
+=======
+
+  public static SendableChooser<PositionEnums> positionChooser = new SendableChooser<>();
+
+  PathPlannerPath firstMiddlePathOutpost = null; // the path that will bring our bot into the middle
+  PathPlannerPath firstMiddlePathDepot = null;
+  PathPlannerPath secondMiddlePathOutpost = null;
+  PathPlannerPath secondMiddlePathDepot = null;
+>>>>>>> origin/develop
 
 
 
@@ -205,8 +215,12 @@ public class Robot extends LoggedRobot {
 
   
     //passes in all the currently selected states to construct an auto program
+<<<<<<< HEAD
     m_autonomousCommand = m_robotContainer.getAutonomousCommand(positionChooser.getSelected(), firstMiddlePath, collectLoaderPath, leaveLoaderPath);
 
+=======
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+>>>>>>> origin/develop
 
 
     if (m_autonomousCommand != null) {

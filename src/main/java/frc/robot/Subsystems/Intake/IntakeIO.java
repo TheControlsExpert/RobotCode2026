@@ -27,15 +27,17 @@ import frc.robot.Constants.IntakeConstants;
 import com.ctre.phoenix6.hardware.TalonFXS;
 
 public class IntakeIO {
+ 
     TalonFX intakeMotor = new TalonFX(14);
-    TalonFXS pivotMotor = new TalonFXS(15);
-    DutyCycleEncoder pivotEncoder = new DutyCycleEncoder(0, 1, 0);
+    TalonFX pivotMotor = new TalonFX(15);
+    DutyCycleEncoder pivotEncoder; 
     PositionVoltage pivotPositionVoltage = new PositionVoltage(0);
     StatusSignal<Angle> pivotAngle = pivotMotor.getPosition();
     StatusSignal<AngularVelocity> intakeVel = intakeMotor.getVelocity();
     double target = IntakeConstants.HOME_Position;
     boolean Up = true;
     DigitalInput ReadyToClose1 = new DigitalInput(2);
+    double pivotEncoderZero;
     //DigitalInput ReadyToClose2 = new DigitalInput(2);
 
     boolean resetCorrectly = false;
@@ -51,6 +53,14 @@ public class IntakeIO {
 
 
     public IntakeIO() {
+            if(pivotEncoder.get() >= 0.1){
+           pivotEncoderZero = pivotEncoder.get() - 0.1;
+           }
+           else {
+           pivotEncoderZero = 0.9 + pivotEncoder.get();
+           }
+           pivotEncoder = new DutyCycleEncoder(0, 1,pivotEncoderZero);
+     
         TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
 
         intakeConfig.MotorOutput.Inverted = com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
@@ -61,9 +71,9 @@ public class IntakeIO {
 
         intakeMotor.getConfigurator().apply(intakeConfig);
 
-        TalonFXSConfiguration pivotConfig = new TalonFXSConfiguration();
+        TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
         pivotConfig.MotorOutput.Inverted = com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
-        pivotConfig.MotorOutput.NeutralMode = com.ctre.phoenix6.signals.NeutralModeValue.Brake;
+        pivotConfig.MotorOutput.NeutralMode = com.ctre.phoenix6.signals.NeutralModeValue.Coast;
         pivotConfig.CurrentLimits.StatorCurrentLimit = 40;
         pivotConfig.CurrentLimits.SupplyCurrentLimit = 40;
 
@@ -72,10 +82,8 @@ public class IntakeIO {
         pivotConfig.Slot0.kG = 0;
        // pivotConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         
-        pivotConfig.ExternalFeedback.RotorToSensorRatio = 1;
-        pivotConfig.ExternalFeedback.SensorToMechanismRatio = 1;
-
-        pivotConfig.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
+        pivotConfig.Feedback.RotorToSensorRatio = 1;
+        pivotConfig.Feedback.SensorToMechanismRatio = 1;
 
         pivotMotor.getConfigurator().apply(pivotConfig);
         if (pivotEncoder.isConnected()) {
@@ -281,5 +289,3 @@ public class IntakeIO {
 
 
     }
-  
-
