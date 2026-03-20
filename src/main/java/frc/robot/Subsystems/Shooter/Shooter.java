@@ -242,10 +242,10 @@ public class Shooter extends SubsystemBase {
         }
      }
 
-    public void LookupTable_Passing(double distance) {
+    public void LookupTable_Passing(Drive drive) {
     
-        io.setPivotPosition(PassAngleMap.get(distance));
-        io.setVelocityShooter(PassVelocityMap.get(distance));
+       // io.setPivotPosition(PassAngleMap.get(distance));
+      //  io.setVelocityShooter(PassVelocityMap.get(distance));
     }
 
     public boolean isAtShootingVelocity(double distance) {
@@ -260,7 +260,7 @@ public class Shooter extends SubsystemBase {
         }
 
         SmartDashboard.putNumber("is at shooting vel", Math.abs((inputs.shooterLeftVelocityRPM + inputs.shooterRightVelocityRPM) / 2 - velocity));
-        return Math.abs((inputs.shooterLeftVelocityRPM + inputs.shooterRightVelocityRPM) / 2 - velocity) < ShooterConstants.ShooterVelocityTolerance;
+        return Math.abs((inputs.shooterLeftVelocityRPM + inputs.shooterRightVelocityRPM) / 2 - velocity) < (Robot.shootingState.equals(ShootingState.SHOOTING) ?  ShooterConstants.ShooterVelocityTolerance : ShooterConstants.PassingVelocityTolerance);
     }
 
     public boolean isAtPivotPosition(double distance) {
@@ -273,15 +273,19 @@ public class Shooter extends SubsystemBase {
             position = PassAngleMap.get(distance);
         }
         SmartDashboard.putNumber("is at pivot position", Math.abs(inputs.shooterPivotEncoderRotations - position));
-        return Math.abs(inputs.shooterPivotEncoderRotations - position) < ShooterConstants.ShooterPivotTolerance;
+        return Math.abs(inputs.shooterPivotEncoderRotations - position) < (Robot.shootingState.equals(ShootingState.SHOOTING) ? ShooterConstants.ShooterPivotTolerance : ShooterConstants.PassingPivotTolerance);
     }
 
-    public void setManual() {
-        double distance = 2.05; //default to some value so that it doesn't break when you switch to manual mode    
+    public void shootManual() {
+        double distance = ShooterConstants.ShootingManualDistance; //default to some value so that it doesn't break when you switch to manual mode    
         double velocity =1832.83 + 271.41197 * distance;
         double position = -0.36754 * distance*distance - 1.16034 * distance + 22.92513;
-        setShooterVelocity(velocity);
+        setShooterVelocity(velocity/60);
         setPositionPivot(position);
+    }
+
+    public void passManual() {
+
     }
 
     public void setFeederVelocity(double velocity) {

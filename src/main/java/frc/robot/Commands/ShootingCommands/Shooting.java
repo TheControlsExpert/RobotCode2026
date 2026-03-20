@@ -197,13 +197,51 @@ public class Shooting extends Command {
                           ? drive.getRotation().plus(new Rotation2d(Math.PI))
                           : drive.getRotation()));
         
+    if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
+    shooter.shootManual();
+    }
 
-    shooter.setManual();
+    else {
+    shooter.passManual();
+    }
+    
+
+    if ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - maxFuelCountDelay - shooter.getMaxTOF() - 1/bps) > 0) || 
+    (!Robot.isActive && (shooter.getMinTOF() +  minFuelCountDelay - Robot.combinedTimeLeft) > 0) || 
+    (Robot.shootingState.equals(ShootingState.PASSING)) ||
+    (!Robot.winner_selection_done)) {
+    if (shooter.isAtShootingVelocity(ShooterConstants.ShootingManualDistance) && shooter.isAtPivotPosition(ShooterConstants.ShootingManualDistance)) {
+        readyToShoot = true;
+        SmartDashboard.putBoolean("Shooter is at Velocity", true);
+    }
+
     }
 
 
+else {
+    readyToShoot = false;
+}
+
+ if (readyToShoot) {
+        indexer.setIndexerDutyCycle(1);
+        shooter.setFeederVelocity(1);
+    }
+ else {
+        indexer.setIndexerDutyCycle(0);
+        shooter.setFeederVelocity(0);
+ }   
+
+
+ }
+
     else {
+        if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
         shooter.LookupTable_Shooting(drive);
+        }
+
+        else {
+        shooter.LookupTable_Passing(drive);    
+        }
 
         Translation2d linearVelocity;
 
@@ -290,7 +328,7 @@ if ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - ma
     (!Robot.winner_selection_done)) {
 
     //shooting parameters are close enough to START shooting
-    if (!readyToShoot && shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance) && drive.getGyroSpeed() < 2 && (Robot.localizationState.equals(LocalizationState.DISABLED) || Math.abs(deltaRotation) < ShooterConstants.YawAngleTolerance)) {
+    if (!readyToShoot && shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance) && drive.getGyroSpeed() < 2 && (Math.abs(deltaRotation) < ShooterConstants.YawAngleTolerance)) {
         readyToShoot = true;
         SmartDashboard.putBoolean("Shooter is at Velocity", true);
         
@@ -301,9 +339,13 @@ if ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - ma
     //     waiting = true;
     // }
 
-    if (!readyToShoot) {
-        SmartDashboard.putBoolean("Shooter is at Velocity", false);
-    }
+  
+        SmartDashboard.putBoolean("Shooter is at Velocity", readyToShoot);
+ //   }
+}
+
+else {
+    readyToShoot = false;
 }
 
 
@@ -312,6 +354,11 @@ if ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - ma
         shooter.setFeederVelocity(1);
 
 
+    }
+
+    else {
+            indexer.setIndexerDutyCycle(0);
+            shooter.setFeederVelocity(0);
     }
         // if (shuffleTimer.hasElapsed(1) && !isShuffling) {
         //     isShuffling = true;
@@ -390,7 +437,7 @@ public void end(boolean interrupted) {
 
     //CommandScheduler.getInstance().schedule(new Jam(indexer, shooter, 2.0)); //runs the indexer in the opposite direction to clear balls from the shooter
    
-  //  indexer.setIndexerDutyCycle(0);
+    indexer.setIndexerDutyCycle(0);
     shooter.setFeederVelocity(0);
     //CommandScheduler.getInstance().cancel(shuffle);
 }

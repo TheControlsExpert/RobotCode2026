@@ -262,13 +262,16 @@ public final class Constants {
     public static final int pivot_gear_ratio = 25;
     public static final double abs_offset = 0.132714;
     public static final double MAX_ENCODER_VAL = 0.894;
-    public static final double MIN_ENCODER_VAL = 0.129;
+    public static final double MIN_ENCODER_VAL = 0.15;
+    public static final double ShootingManualDistance = 2.05;
+    public static final double PassingVelocityTolerance = 0;
+    public static final double PassingPivotTolerance = 0;
 
   }
 
   public static class IntakeConstants {
-    public static final double pivot_kP_up = 2.3;
-    public static final double pivot_kP_down = 1;
+    public static final double pivot_kP_up = 2.5;
+    public static final double pivot_kP_down = 1.5;
     public static final double pivot_kG = -0.155;
     public static final double offset = 0.42;
     public static final double PivotGearRatio = 45;
@@ -278,11 +281,13 @@ public final class Constants {
     public static final double intakeSupplyCurrentLimit = 40;
     public static final double HOME_Position = 0.43;
     public static final double INTAKING_Position = 0.097;
-    public static final double SHUFFLE_UP_POSITION = 0.25;
+    public static final double SHUFFLE_UP_POSITION = 0.35;
    // public static final double BUMPING_Position = 25;
+    public static final double perma_offset = 0.2710422567760564;
     public static final double cf_spring = 0.15;
     public static final double MAX_ENCODER_VAL = 0.44;
     public static final double MIN_ENCODER_VAL = 0.097;
+    public static final double pivot_kI = 0;
   }
 
   public static class IndexerConstants {

@@ -39,6 +39,10 @@ public class IntakeSubsystem extends SubsystemBase {
         this.io = io;
     }
 
+    public void resetIntegral() {
+        io.pivot_up.reset();
+    }
+
     @Override
     public void periodic() {
         io.updateInputs(inputs);

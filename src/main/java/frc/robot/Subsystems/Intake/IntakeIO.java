@@ -12,22 +12,27 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.revrobotics.AbsoluteEncoder;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.RobotContainer;
 import frc.robot.Commands.IntakeCommands.IntakeCommand;
 import frc.robot.Constants.IntakeConstants;
 import com.ctre.phoenix6.hardware.TalonFXS;
 
 public class IntakeIO {
  
+    public PIDController pivot_up = new PIDController(0.2, 1, 0);
+
     TalonFX intakeMotor = new TalonFX(14);
     TalonFX pivotMotor = new TalonFX(15);
     DutyCycleEncoder pivotEncoder; 
@@ -38,6 +43,7 @@ public class IntakeIO {
     boolean Up = true;
     DigitalInput ReadyToClose1 = new DigitalInput(2);
     double pivotEncoderZero;
+
     //DigitalInput ReadyToClose2 = new DigitalInput(2);
 
     boolean resetCorrectly = false;
@@ -53,13 +59,16 @@ public class IntakeIO {
 
 
     public IntakeIO() {
-            if(pivotEncoder.get() >= 0.1){
-           pivotEncoderZero = pivotEncoder.get() - 0.1;
-           }
-           else {
-           pivotEncoderZero = 0.9 + pivotEncoder.get();
-           }
-           pivotEncoder = new DutyCycleEncoder(0, 1,pivotEncoderZero);
+        pivot_up.setIntegratorRange(-0.1, 0.1);
+        
+        if(IntakeConstants.perma_offset > 0.1){
+           pivotEncoderZero = IntakeConstants.perma_offset - 0.1;
+        }
+        else {
+           pivotEncoderZero = 0.9 + IntakeConstants.perma_offset;
+        }
+        
+        pivotEncoder = new DutyCycleEncoder(0, 1, pivotEncoderZero);
      
         TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
 
@@ -72,8 +81,8 @@ public class IntakeIO {
         intakeMotor.getConfigurator().apply(intakeConfig);
 
         TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
-        pivotConfig.MotorOutput.Inverted = com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
-        pivotConfig.MotorOutput.NeutralMode = com.ctre.phoenix6.signals.NeutralModeValue.Coast;
+        pivotConfig.MotorOutput.Inverted = IntakeConstants.pivot_inverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+        pivotConfig.MotorOutput.NeutralMode = com.ctre.phoenix6.signals.NeutralModeValue.Brake;
         pivotConfig.CurrentLimits.StatorCurrentLimit = 40;
         pivotConfig.CurrentLimits.SupplyCurrentLimit = 40;
 
@@ -108,6 +117,7 @@ public class IntakeIO {
     }
 
     public void updateInputs(IntakeIOInputs inputs) {
+        SmartDashboard.putNumber("intake pivot speed", pivotMotor.getVelocity().getValueAsDouble());
         SmartDashboard.putBoolean("intake IR", ReadyToClose1.get());
        SmartDashboard.putNumber("target", target);
        SmartDashboard.putBoolean("up", Up);
@@ -168,7 +178,7 @@ public class IntakeIO {
          
         }  
         
-      //  pivotMotor.set(clampedVal);
+       // pivotMotor.set(clampedVal);
          SmartDashboard.putNumber("feedforward", clampedVal);
         }
 
@@ -176,6 +186,7 @@ public class IntakeIO {
         SmartDashboard.putNumber("target", target);
         double clampedVal =  IntakeConstants.pivot_kP_up * (target - pivotEncoder.get());
         
+
        
         if ( IntakeConstants.pivot_kP_up * (target - pivotEncoder.get()) > 0.4) {
             clampedVal = 0.4;
@@ -186,8 +197,20 @@ public class IntakeIO {
             clampedVal = -0.4;
          
         }
-        SmartDashboard.putNumber("feedforward", clampedVal);
-      //   pivotMotor.set(clampedVal);
+       // SmartDashboard.putNumber("feedforward", clampedVal);
+
+        if (RobotContainer.isShooting) {
+        SmartDashboard.putNumber("feedforward", pivot_up.calculate(pivotEncoder.get(), target));
+
+        pivot_up.calculate(pivotEncoder.get(), target);
+       // pivotMotor.set(pivot_up.calculate(pivotEncoder.get(), target));
+        }
+
+        else {
+       // pivotMotor.set(clampedVal);
+         SmartDashboard.putNumber("feedforward", clampedVal);
+        }
+
 
         }
         }}
@@ -263,6 +286,10 @@ public class IntakeIO {
 
     public void setIntakeDutyCycle(double dutyCycle) {
         intakeMotor.setControl(new DutyCycleOut(dutyCycle));
+    }
+
+    public void setPivotDutyCycle(double dutyCycle) {
+        pivotMotor.setControl(new DutyCycleOut(dutyCycle));
     }
 
     public void setPosition(double position) {

@@ -169,9 +169,10 @@ public class VisionSubsystem extends SubsystemBase {
     
 
         public void addVisionMeasurement(VisionMeasurement measurement) {
-            SmartDashboard.putBoolean("adding vision", true);
+          //  SmartDashboard.putBoolean("ruin", ruin);
+
             if (ruin) {
-            drive.addVision(new VisionMeasurement(measurement.pose().plus(new Transform2d(0.5,0.1, new Rotation2d())), measurement.rotationDegreees, measurement.timestamp, measurement.std, measurement.numTags, measurement.avgDistance));
+            drive.addVision(new VisionMeasurement(measurement.pose().plus(new Transform2d(0.0,0.5, new Rotation2d())), measurement.rotationDegreees, measurement.timestamp, measurement.std, measurement.numTags, measurement.avgDistance));
             }
 
             else {

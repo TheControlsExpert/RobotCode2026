@@ -58,7 +58,8 @@ public class ActivePeriodTracker {
     //   }
     // }  
 
-    return winner;
+   // return winner;
+   return Alliance.Red;
   }
 
   /** Starts the timer at the begining of teleop. */

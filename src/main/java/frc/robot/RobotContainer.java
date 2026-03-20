@@ -15,6 +15,7 @@ package frc.robot;
 
 import frc.robot.AutoEnums;
 import frc.robot.AutoEnums.PositionEnums;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -125,6 +126,7 @@ public class RobotContainer {
  //private final PathConstraints constraints;
   private Command pathfindingCommand;
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+  public static boolean isShooting = false;
 
 
   //public static Spark leds = new Spark(0);
@@ -140,6 +142,7 @@ public class RobotContainer {
   AutomaticTrenching autoTrenching;
   AutomaticClimbing autoClimbing;
 
+
  
 
 // private boolean isFlipped =
@@ -150,7 +153,7 @@ public class RobotContainer {
   
     private GyroIOPigeon2 gyro;
    
-        private VisionSubsystem vision;
+    public VisionSubsystem vision;
 
        IntakeSubsystem intake = new IntakeSubsystem(new IntakeIO());
         Shooter shooter = new Shooter(new ShooterIO());
@@ -285,7 +288,7 @@ public class RobotContainer {
        Trigger shuffle_trigger = new Trigger(() -> (shooter.isShooting  && !intake.is_busy)).onTrue(
 
        
-       (new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.4);}, intake).
+       (new InstantCommand(() -> {intake.resetIntegral(); intake.Shuffle(); intake.setIntakeDutyCycle(0.4);}, intake).
        andThen(new WaitCommand(0.5)).
        andThen(new InstantCommand(() -> {intake.Extend();}, intake)).
        andThen(new WaitCommand(0.5))).repeatedly()
@@ -309,11 +312,12 @@ public class RobotContainer {
       
          // controller.leftTrigger().whileTrue(new Revv(shooter, drive, controller));
         controller.rightTrigger().
-        onTrue(new InstantCommand(() -> {shooter.isShooting = true; intake.setIntakeDutyCycle(0.3);}))
+        onTrue(new InstantCommand(() -> {shooter.isShooting = true; RobotContainer.isShooting = true; intake.setIntakeDutyCycle(0.3);}))
         .whileTrue(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, vision))
-        .onFalse(new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; intake.setIntakeDutyCycle(0.0);}, intake)).onFalse(new Jam(indexer, shooter, 1.5));
+        .onFalse(new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; RobotContainer.isShooting = false; intake.setIntakeDutyCycle(0.0);}, intake));
+        //.onFalse(new Jam(indexer, shooter, 1.5));
 
-        controller.leftTrigger().whileTrue(new Revv(shooter, drive, controller, vision));
+        controller.leftTrigger().or(controller2.leftTrigger()).whileTrue(new Revv(shooter, drive, controller, vision));
         //                                                              new WaitUntilCommand(() -> {return intake.isReadyToClose() && !intake.is_busy;}).andThen(new ShuffleCommand(intake).getShuffleCommand())))
         //                          .onFalse(new Jam(indexer, shooter, 1.0));                                 
         
@@ -350,9 +354,9 @@ public class RobotContainer {
 
       //intake overrides/fixes
      // controller.x().whileTrue(kACharacterization.feedforwardCommand(drive, co4Controller));
-      controller2.leftTrigger().or(controller.x()).whileTrue(new StartEndCommand(() -> {intake.Retract(); intake.is_busy = true;}, () -> {intake.Extend(); intake.is_busy = false;}, intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+      controller2.rightTrigger().or(controller.x()).whileTrue(new StartEndCommand(() -> {intake.Retract(); intake.is_busy = true;}, () -> {intake.Extend(); intake.is_busy = false;}, intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
-      controller3.x().whileTrue(new StartEndCommand(() -> {vision.ruin = true;}, () -> {vision.ruin = false;}));
+      controller3.x().whileTrue(new StartEndCommand(() -> {vision.ruin = true;}, () -> {vision.ruin = false;}).ignoringDisable(true));
 
       // controller2.rightTrigger().whileTrue(new Jam(indexer, shooter));
          // controller.rightTrigger().whileTrue(

@@ -647,7 +647,7 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
  Vector<N3> stds = VecBuilder.fill(measurement.std()[0], measurement.std()[1], 9999999);
  //SmartDashboard.putBoolean("adding vision", true);
  //visionLock.lock();
-
+    SmartDashboard.putBoolean("angle conditions", Math.abs(gyroInputs.rollDegrees) < 1 || Math.abs(gyroInputs.pitchDegrees) < 1);
  if (Math.abs(gyroInputs.rollDegrees) < 2 && Math.abs(gyroInputs.pitchDegrees) < 2 && getGyroSpeed() < 180 && getTranslationalSpeed() < 5) {
 
  SwervePoseEstimator.addVisionMeasurement(new Pose2d(measurement.pose().getTranslation(), getRotation()), measurement.timestamp(), stds);
