@@ -41,7 +41,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.ActivePeriodTracker.ShiftInfo;
-import frc.robot.AutoEnums.PositionEnums;
+import frc.robot.PositionEnums;
 import frc.robot.Subsystems.Drive.GyroIOPigeon2;
 import frc.robot.Subsystems.Drive.PhoenixOdometryThread;
 
@@ -68,16 +68,12 @@ public class Robot extends LoggedRobot {
   // public static SendableChooser<AutoEnums.MiddleEnums> middleChooser = new SendableChooser<>();
   public static SendableChooser<PositionEnums> positionChooser = new SendableChooser<>();
 
-  //all our auto paths and commands
-  PathPlannerPath firstMiddlePathOutpost = null; // the path that will bring our bot into the middle
-  PathPlannerPath firstMiddlePathDepot = null; // the path that will bring our bot into the middle
-  PathPlannerPath collectLoaderPathDepot = null; 
-  PathPlannerPath leaveLoaderPathOutpost = null;
-  PathPlannerPath leaveLoaderPathDepot = null;
+  //our two auto paths
+  PathPlannerPath firstMiddlePath;
+  Command firstMiddleAuto;
 
-  PathPlannerPath firstMiddlePath = null;
-  PathPlannerPath collectLoaderPath = null;
-  PathPlannerPath leaveLoaderPath = null;
+  PathPlannerPath secondMiddlePath;
+  Command secondMiddleAuto;
 
 
 
@@ -106,13 +102,7 @@ public class Robot extends LoggedRobot {
       // LoaderChooser.addOption("One Loader", AutoEnums.LoaderEnums.ONE_LOADER);
       // LoaderChooser.addOption("Two Loaders", AutoEnums.LoaderEnums.TWO_LOADERS);
 
-      // //sets the states for initial climb autos as part of the chooser options
-      // climbChooser.setDefaultOption("No Climb", AutoEnums.ClimbEnums.FALSE);
-      // climbChooser.addOption("Yes climb", AutoEnums.ClimbEnums.TRUE);
 
-      // //sets the state for going into the middle of the field or not
-      // middleChooser.setDefaultOption("No middle", AutoEnums.MiddleEnums.FALSE);
-      // middleChooser.addOption("Yes middle", AutoEnums.MiddleEnums.TRUE);
    
       //where da bot at?
       positionChooser.setDefaultOption("Outpost", PositionEnums.OUTPOST);
@@ -120,17 +110,7 @@ public class Robot extends LoggedRobot {
       positionChooser.addOption("Hub", PositionEnums.HUB);
 
       SmartDashboard.putData("Initial Position", positionChooser);
-
-      // //shows the driver all the choosers on smart dashboard
-      // SmartDashboard.putData("How many loaders?", LoaderChooser);
-      // SmartDashboard.putData("Go to Climb?", climbChooser);
-      // //alow the driver to decide whether to go into the middle of the field or not
-      // SmartDashboard.putData("Go to Middle?", middleChooser);
-      // //allows the driver to select position on the field
-      
-
-
-
+    
              
 
     }
@@ -142,6 +122,7 @@ public class Robot extends LoggedRobot {
     public void disabledInit() {}
 
     public void robotPeriodic() {
+
       SmartDashboard.putBoolean("is shooting", RobotContainer.isShooting);
       SmartDashboard.putBoolean("ruin", m_robotContainer.vision.ruin);
         CommandScheduler.getInstance().run();
@@ -167,45 +148,45 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
 
-    try { //creates the paths that will be used in the autonomius, must be done here so as to save time when starting auto
-
-      firstMiddlePathOutpost = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost");
-      firstMiddlePathDepot = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").mirrorPath();
-      collectLoaderPathDepot = PathPlannerPath.fromPathFile("Collect Depot");
-      leaveLoaderPathOutpost = PathPlannerPath.fromPathFile("Outpost To Climb");
-      leaveLoaderPathDepot = PathPlannerPath.fromPathFile("Return Depot");
+    try { //creates the autonnoumous paths
 
       if (positionChooser.getSelected().equals(PositionEnums.OUTPOST)) {
-        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) {
-          firstMiddlePath = firstMiddlePathOutpost.flipPath();
-          leaveLoaderPath = leaveLoaderPathOutpost.flipPath(); 
+
+        if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
+          firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("First Bump Outpost");
+          secondMiddlePath = PathPlannerPath.fromChoreoTrajectory("Second Bump Outpost");
+
         } else {
-          firstMiddlePath = firstMiddlePathOutpost;
-          leaveLoaderPath = leaveLoaderPathOutpost;
+          firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("First Bump Outpost").flipPath();
+          secondMiddlePath = PathPlannerPath.fromChoreoTrajectory("Second Bump Outpost").flipPath();
         }
       }
 
       else {
-        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) {
-          firstMiddlePath = firstMiddlePathDepot.flipPath();
-          leaveLoaderPath = leaveLoaderPathDepot.flipPath();
-          collectLoaderPath = collectLoaderPathDepot.flipPath();
+
+        if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
+          firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("First Bump Outpost").mirrorPath();
+          secondMiddlePath = PathPlannerPath.fromChoreoTrajectory("Second Bump Outpost").mirrorPath();
+
         } else {
-          firstMiddlePath = firstMiddlePathDepot;
-          leaveLoaderPath = leaveLoaderPathDepot;
-          collectLoaderPath = collectLoaderPathDepot;
+          firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("First Bump Outpost").mirrorPath().flipPath();
+          secondMiddlePath = PathPlannerPath.fromChoreoTrajectory("Second Bump Outpost").flipPath().mirrorPath();
+
         }
       }
 
     } catch (Exception e) { 
       SmartDashboard.putBoolean("Errer", true);
     }
+
+    firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
+    secondMiddleAuto = AutoBuilder.followPath(secondMiddlePath);
       
 
 
   
     //passes in all the currently selected states to construct an auto program
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand(positionChooser.getSelected(), firstMiddlePath, collectLoaderPath, leaveLoaderPath);
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand(firstMiddlePath, firstMiddleAuto, secondMiddleAuto);
 
 
 
@@ -215,13 +196,11 @@ public class Robot extends LoggedRobot {
 
     ActivePeriodTracker.initialize();
 
-    
-
-
-
-
-
+  
   }
+
+
+
 
   @Override
   public void autonomousPeriodic() {
