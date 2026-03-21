@@ -287,7 +287,7 @@ public class RobotContainer {
 
       //  timeout_shuffle = new Timer();
        //Trigger timeoutshuffle_trigger = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {timeout_shuffle.restart();}));
-       Trigger shuffle_trigger = new Trigger(() -> (shooter.isShooting  && !intake.is_busy)).onTrue(
+       Trigger shuffle_trigger = new Trigger(() -> (RobotContainer.isShooting  && !intake.is_busy)).onTrue(
         new WaitCommand(1).andThen(
 
        
@@ -315,7 +315,7 @@ public class RobotContainer {
       
        //  controller.leftTrigger().whileTrue(new Revv(shooter, drive, controller));
         controller.rightTrigger().
-        onTrue(new InstantCommand(() -> {shooter.isShooting = true; RobotContainer.isShooting = true; intake.setIntakeDutyCycle(0.3);}))
+        onTrue(new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}))
         .whileTrue(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, vision))
         .onFalse(new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; RobotContainer.isShooting = false; intake.setIntakeDutyCycle(0.0);}, intake));
        

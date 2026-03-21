@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.Commands.IntakeCommands.Jam;
 import frc.robot.Commands.IntakeCommands.ShuffleCommand;
 import frc.robot.Constants.IntakeConstants;
@@ -212,6 +213,8 @@ public class Shooting extends Command {
     (!Robot.winner_selection_done)) {
     if (shooter.isAtShootingVelocity(ShooterConstants.ShootingManualDistance) && shooter.isAtPivotPosition(ShooterConstants.ShootingManualDistance)) {
         readyToShoot = true;
+        RobotContainer.isShooting = true;
+        shooter.isShooting = true;
         SmartDashboard.putBoolean("Shooter is at Velocity", true);
     }
 
@@ -330,6 +333,8 @@ if ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - ma
     //shooting parameters are close enough to START shooting
     if (!readyToShoot && ((shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance)) || Robot.shootingState.equals(ShootingState.PASSING)) && drive.getGyroSpeed() < 2 && (Math.abs(deltaRotation) < ShooterConstants.YawAngleTolerance)) {
         readyToShoot = true;
+        shooter.isShooting = true;
+        RobotContainer.isShooting = true;
         SmartDashboard.putBoolean("Shooter is at Velocity", true);
         
     }
