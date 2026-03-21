@@ -490,7 +490,7 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
         }
 
         else {
-            Translation2d bottomBlue = new Translation2d(1.78, 0.685);
+            Translation2d bottomBlue = new Translation2d(1.926, 1.512);
 
            if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
                 Translation2d topBlue = FlipVertically_bottom_to_top(bottomBlue);
@@ -505,7 +505,7 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
             }
 
             else {
-                Translation2d bottomRed = FlipHorizontally_BtoR(new Translation2d(1.78, 0.685));
+                Translation2d bottomRed = FlipHorizontally_BtoR(new Translation2d(1.926, 1.512));
                 Translation2d topRed = FlipVertically_bottom_to_top(bottomRed);
 
                 double distanceBottom = bottomRed.getDistance(getEstimatedPosition().getTranslation());

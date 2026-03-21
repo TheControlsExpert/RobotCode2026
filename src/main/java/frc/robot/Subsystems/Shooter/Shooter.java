@@ -243,14 +243,38 @@ public class Shooter extends SubsystemBase {
      }
 
     public void LookupTable_Passing(Drive drive) {
+        double distance = drive.getEstimatedPosition().getTranslation().getDistance(drive.calculateShootingPosition());
     
-       // io.setPivotPosition(PassAngleMap.get(distance));
-      //  io.setVelocityShooter(PassVelocityMap.get(distance));
+        double hoodPosition = 0.5;
+        double shooterVel = solve( -4.22697 * Math.pow(10, -7),  0.0052122, -distance - 5.20419);
+       
+
+
+
+        io.setPivotPosition(0.5);
+        io.setVelocityShooter(shooterVel/60);
+        SmartDashboard.putNumber("interpolated speed", shooterVel);
     }
+
+   
+
+    public static double solve(double a, double b, double c) {
+        double discriminant = b * b - 4 * a * c;
+
+        if (discriminant > 0) {
+            return (-b + Math.sqrt(discriminant)) / (2 * a);
+        }
+
+        else {
+            return 0.0;
+        }
+    }
+
 
     public boolean isAtShootingVelocity(double distance) {
         double velocity;
         boolean isShooting = Robot.shootingState.equals(ShootingState.SHOOTING);
+
         
         if (isShooting) {
              velocity =1832.83 + 271.41197 * distance;

@@ -73,8 +73,10 @@ import frc.robot.Commands.IntakeCommands.ShuffleCommand;
 import frc.robot.Commands.ShootingCommands.ResetHood;
 import frc.robot.Commands.ShootingCommands.Revv;
 import frc.robot.Commands.ShootingCommands.RevvAuto;
+import frc.robot.Commands.ShootingCommands.RevvTest;
 import frc.robot.Commands.ShootingCommands.Shooting;
 import frc.robot.Commands.ShootingCommands.ShootingAuto;
+import frc.robot.Commands.ShootingCommands.ShootingTest;
 import frc.robot.Subsystems.Climb.Climb;
 import frc.robot.Subsystems.Climb.ClimbIO;
 import frc.robot.Subsystems.Drive.Drive;
@@ -311,14 +313,46 @@ public class RobotContainer {
           
         
       
-         // controller.leftTrigger().whileTrue(new Revv(shooter, drive, controller));
+       //  controller.leftTrigger().whileTrue(new Revv(shooter, drive, controller));
         controller.rightTrigger().
         onTrue(new InstantCommand(() -> {shooter.isShooting = true; RobotContainer.isShooting = true; intake.setIntakeDutyCycle(0.3);}))
         .whileTrue(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, vision))
         .onFalse(new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; RobotContainer.isShooting = false; intake.setIntakeDutyCycle(0.0);}, intake));
-        //.onFalse(new Jam(indexer, shooter, 1.5));
+       
 
         controller.leftTrigger().or(controller2.leftTrigger()).whileTrue(new Revv(shooter, drive, controller, vision));
+
+
+       // controller.leftTrigger().whileTrue(new RevvTest(shooter, controller));
+       // controller.rightTrigger().whileTrue(new ShootingTest(indexer, shooter));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         //                                                              new WaitUntilCommand(() -> {return intake.isReadyToClose() && !intake.is_busy;}).andThen(new ShuffleCommand(intake).getShuffleCommand())))
         //                          .onFalse(new Jam(indexer, shooter, 1.0));                                 
         
@@ -386,14 +420,14 @@ public class RobotContainer {
       
 
        //state changes
-      //  controller2.leftBumper().onTrue(new InstantCommand(() -> {
-      //   if (Robot.shootingState.equals(ShootingState.PASSING)) {
-      //     Robot.shootingState = ShootingState.SHOOTING;
-      //   }
-      //   else {
-      //     Robot.shootingState = ShootingState.PASSING;
-      //   }
-      //  }));
+       controller2.leftBumper().onTrue(new InstantCommand(() -> {
+        if (Robot.shootingState.equals(ShootingState.PASSING)) {
+          Robot.shootingState = ShootingState.SHOOTING;
+        }
+        else {
+          Robot.shootingState = ShootingState.PASSING;
+        }
+       }));
 
        controller2.rightBumper().onTrue(new InstantCommand(() -> {
         if (Robot.localizationState.equals(LocalizationState.OPERATIONAL)) {

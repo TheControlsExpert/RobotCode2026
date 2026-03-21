@@ -203,7 +203,6 @@ public class Robot extends LoggedRobot {
       
 
 
-
   
     //passes in all the currently selected states to construct an auto program
     m_autonomousCommand = m_robotContainer.getAutonomousCommand(positionChooser.getSelected(), firstMiddlePath, collectLoaderPath, leaveLoaderPath);

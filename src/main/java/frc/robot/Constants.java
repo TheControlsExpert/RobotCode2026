@@ -70,14 +70,14 @@ public final class Constants {
     public static final double angleKS = 0.45;
 
     /* Drive Motor PID Values */
-    public static final double driveKP = 0.01; // TODO: This must be tuned to specific robot
+    public static final double driveKP = 2; // TODO: This must be tuned to specific robot
     public static final double driveKI = 0.0;
     public static final double driveKD = 0.0;
 
     /* Drive Motor Characterization Values From SYSID */
     public static final double driveKS = 0.1996; // TODO: This must be tuned to specific robot
     public static final double driveKV = 0.6396;
-    public static final double driveKA = 0.3;
+    public static final double driveKA = 0.0;
     //public static final double driveKA = 0.3;
 
     public static final Slot0Configs intrinsicsD =

@@ -49,8 +49,8 @@ public class Shooting extends Command {
     double timeout = 9999;
 
 
-    double maxFuelCountDelay = 2.0;
-    double minFuelCountDelay = 1.0;
+    double maxFuelCountDelay = 1.5;
+    double minFuelCountDelay = 0;
     double shiftEndFuelCountExtension = 3.0;
     double bps = 7;
     VisionSubsystem vision;
@@ -328,7 +328,7 @@ if ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - ma
     (!Robot.winner_selection_done)) {
 
     //shooting parameters are close enough to START shooting
-    if (!readyToShoot && shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance) && drive.getGyroSpeed() < 2 && (Math.abs(deltaRotation) < ShooterConstants.YawAngleTolerance)) {
+    if (!readyToShoot && ((shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance)) || Robot.shootingState.equals(ShootingState.PASSING)) && drive.getGyroSpeed() < 2 && (Math.abs(deltaRotation) < ShooterConstants.YawAngleTolerance)) {
         readyToShoot = true;
         SmartDashboard.putBoolean("Shooter is at Velocity", true);
         
