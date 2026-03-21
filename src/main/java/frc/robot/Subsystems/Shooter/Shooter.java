@@ -7,6 +7,8 @@ import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -22,6 +24,9 @@ public class Shooter extends SubsystemBase {
     public boolean isShooting = false;
     public boolean needsShuffling = true;
     
+           StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault()
+  .getStructTopic("lookahead pose", Pose2d.struct).publish(); 
+
     private ShooterIO io;
     private ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
@@ -269,6 +274,56 @@ public class Shooter extends SubsystemBase {
             return 0.0;
         }
     }
+
+    public Rotation2d LookupTable_SOTM(Drive drive) {
+        ChassisSpeeds robotRelativeVelocity = drive.getRobotRelativeSpeeds();
+        Pose2d beforeEstimatedPose = drive.getEstimatedPosition();
+        Pose2d estimatedPose = beforeEstimatedPose.exp(
+        
+            new Twist2d(
+                robotRelativeVelocity.vxMetersPerSecond * phaseDelay,
+                robotRelativeVelocity.vyMetersPerSecond * phaseDelay,
+                robotRelativeVelocity.omegaRadiansPerSecond * phaseDelay));
+
+        Translation2d target = drive.calculateShootingPosition(0); 
+        ChassisSpeeds chassis_fieldRelativeVelocity = drive.getFieldRelativeSpeeds();
+      //  ChassisSpeeds shooter_fieldRelativeVelocity = transformVelocity(chassis_fieldRelativeVelocity, ShooterConstants.robotToShooter.getTranslation(), estimatedPose.getRotation());
+
+        Translation2d shooterPosition = estimatedPose.transformBy(ShooterConstants.robotToShooter).getTranslation();
+        
+        double launcherToTargetDistance = target.getDistance(shooterPosition);
+
+        double lookaheadLauncherToTargetDistance = launcherToTargetDistance;
+        Translation2d lookaheadPose = shooterPosition;
+
+        
+
+        for (int i = 0; i < 20; i++) {
+        double TOF = 0.035 * Math.pow(lookaheadLauncherToTargetDistance + ShooterConstants.x, 2) - 0.075 * (lookaheadLauncherToTargetDistance + ShooterConstants.x) + 1.1;
+        
+        double offsetX = chassis_fieldRelativeVelocity.vxMetersPerSecond * TOF;
+        double offsetY = chassis_fieldRelativeVelocity.vyMetersPerSecond * TOF;
+
+        SmartDashboard.putNumber("offset x", offsetX);
+        SmartDashboard.putNumber("offsetY", offsetY);
+        SmartDashboard.putNumber("TOF", TOF);
+      
+       lookaheadPose =
+              target.minus(new Translation2d(offsetX, offsetY));     
+      lookaheadLauncherToTargetDistance = lookaheadPose.getDistance(drive.getEstimatedPosition().getTranslation());
+        }
+
+        double pivotAngle = -0.36754 * lookaheadLauncherToTargetDistance*lookaheadLauncherToTargetDistance - 1.16034 * lookaheadLauncherToTargetDistance + 22.92513;
+        double shooterV = 1832.83 + 271.41197 * lookaheadLauncherToTargetDistance;
+        publisher.set(new Pose2d(lookaheadPose, new Rotation2d()));
+
+
+        setShooterVelocity(shooterV/60);
+        setPositionPivot(pivotAngle);
+
+        return (lookaheadPose.minus(drive.getEstimatedPosition().getTranslation()).getAngle());
+
+     }
 
 
     public boolean isAtShootingVelocity(double distance) {

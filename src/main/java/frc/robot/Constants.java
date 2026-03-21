@@ -251,9 +251,9 @@ public final class Constants {
 
 
     //Shoot-on-the-fly constants
-    public static final double z = 405.559;
+    public static final double z = 0 ;//405.559;
     public static final double y = 0;
-    public static final double x = 246.244;
+    public static final double x = 0.244244;
 
     public static final Transform2d robotToShooter = new Transform2d(new Translation2d(x, y), new Rotation2d());
     public static final double HUB_SHOOTING_VELOCITY = 0;
@@ -284,7 +284,7 @@ public final class Constants {
     public static final double INTAKING_Position = 0.097;
     public static final double SHUFFLE_UP_POSITION = 0.28;
    // public static final double BUMPING_Position = 25;
-    public static final double perma_offset = 0.2710422567760564;
+    public static final double perma_offset = 0.4311482857787071;
     public static final double cf_spring = 0.15;
     public static final double MAX_ENCODER_VAL = 0.44;
     public static final double MIN_ENCODER_VAL = 0.097;

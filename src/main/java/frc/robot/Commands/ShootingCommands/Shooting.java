@@ -239,7 +239,8 @@ else {
 
     else {
         if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
-        shooter.LookupTable_Shooting(drive);
+        shooter.LookupTable_SOTM(drive);
+     //  shooter.LookupTable_Shooting(drive);
         }
 
         else {
@@ -331,7 +332,7 @@ if ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - ma
     (!Robot.winner_selection_done)) {
 
     //shooting parameters are close enough to START shooting
-    if (!readyToShoot && ((shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance)) || Robot.shootingState.equals(ShootingState.PASSING)) && drive.getGyroSpeed() < 2 && (Math.abs(deltaRotation) < ShooterConstants.YawAngleTolerance)) {
+    if (!readyToShoot && (((shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance)) || Robot.shootingState.equals(ShootingState.PASSING)))  && (Math.abs(deltaRotation) < ShooterConstants.YawAngleTolerance && Robot.shootingState.equals(ShootingState.SHOOTING) || Math.abs(deltaRotation) < 8 && Robot.shootingState.equals(ShootingState.PASSING))) {
         readyToShoot = true;
         shooter.isShooting = true;
         RobotContainer.isShooting = true;

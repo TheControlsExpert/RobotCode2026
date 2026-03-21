@@ -44,6 +44,8 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericPublisher;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.Alert;
@@ -79,7 +81,6 @@ public class Drive extends SubsystemBase {
  static final double ODOMETRY_FREQUENCY = 150;
  //Vector<N3> visionSTDs = VecBuilder.fill(0.1, 0.1, 999999999); 
  // Vector<N2> pose = VecBuilder.fill(0, 0);
- 
 
  Timer gyroResetTimer = new Timer();
  public Rotation2d simRotation = new Rotation2d();
@@ -491,10 +492,10 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
 
         else {
             Translation2d bottomBlue = new Translation2d(1.15, 1.5);
-            double period = 20/10;
+            double period = 12/10;
             double angle = time/period * 2 * Math.PI;
 
-            Translation2d circleRandomness = new Translation2d(Math.cos(angle) * 1, Math.sin(angle) * 1);
+            Translation2d circleRandomness = new Translation2d(Math.cos(angle) * 1, Math.sin(angle) * 0.7);
 
            if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
                 Translation2d topBlue = FlipVertically_bottom_to_top(bottomBlue);
