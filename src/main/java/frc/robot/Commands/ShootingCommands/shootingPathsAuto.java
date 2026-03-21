@@ -3,6 +3,7 @@ package frc.robot.Commands.ShootingCommands;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.Drive.Drive;
 import frc.robot.Subsystems.Indexer.Indexer;
@@ -19,6 +20,8 @@ public class shootingPathsAuto extends Command{
 
     PathPlannerPath nextPath;
 
+    ChassisSpeeds MOVE;
+
     public shootingPathsAuto(Shooter shooter, Drive drive, Indexer indexer, PathPlannerPath nextPath) {
         this.drive = drive;
         this.shooter = shooter;
@@ -31,9 +34,15 @@ public class shootingPathsAuto extends Command{
         finalPos = nextPath.getStartingHolonomicPose().get().getTranslation();
         
         Translation2d distanceVector = finalPos.minus(initialPos);
-        double rawSpeed = finalPos.getDistance(initialPos) / 4;
+        double rawSpeed = finalPos.getDistance(initialPos) / 1;
 
         Translation2d linearVelocity = distanceVector.times(rawSpeed/distanceVector.getNorm());
+
+        MOVE = new ChassisSpeeds(
+                        linearVelocity.getX(),
+                        linearVelocity.getY(),
+                        0);
+
 
 
     }
