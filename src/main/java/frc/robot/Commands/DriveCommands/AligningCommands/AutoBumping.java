@@ -36,16 +36,14 @@ public class AutoBumping extends Command {
     double deltaRotationABS = 99999;
 
     double maxAllowedSpeed = 3;
-    private final IntakeSubsystem intake;
 
-    public AutoBumping(Drive drive, IntakeSubsystem intake, DoubleSupplier xSupplier, DoubleSupplier ySupplier, double kP_rotation, CommandXboxController controller) {
+    public AutoBumping(Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, double kP_rotation, CommandXboxController controller) {
         this.drive = drive;
-        this.intake = intake;
         this.xSupplier = xSupplier;
         this.ySupplier = ySupplier;
         this.controller = controller;
         this.kP_rotation = kP_rotation;
-        addRequirements(drive, intake);
+        addRequirements(drive);
     }
 
 
@@ -152,11 +150,6 @@ public class AutoBumping extends Command {
   }
 
 
-
-  @Override
-  public void end(boolean interrupted) {
-      intake.Extend();
-  }
 
 
 

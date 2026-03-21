@@ -88,7 +88,7 @@ public class Drive extends SubsystemBase {
  public Pose2d lastodometrypose = new Pose2d();
  ReentrantLock visionLock = new ReentrantLock();
 public final double translationkP = 2.5;
-public final double rotationkP = 0.12;
+public final double rotationkP = 0.10;
 public PathConstraints constraints_auto = new PathConstraints(6, 4, 13, 26);
 public PathConstraints constraints_pathfinding = new PathConstraints(5, 3, 500, 500);
 
@@ -236,7 +236,7 @@ private final Field2d m_field = new Field2d();
     SmartDashboard.putNumber("gyro", SwervePoseEstimator.getEstimatedPosition().getRotation().getDegrees());
     m_field.setRobotPose(SwervePoseEstimator.getEstimatedPosition()); 
     SmartDashboard.putNumber("velocity of chassis", Math.hypot(getChassisSpeeds().vxMetersPerSecond, getChassisSpeeds().vyMetersPerSecond));
-    SmartDashboard.putNumber("distance to center", SwervePoseEstimator.getEstimatedPosition().getTranslation().getDistance(calculateShootingPosition()));
+    SmartDashboard.putNumber("distance to center", SwervePoseEstimator.getEstimatedPosition().getTranslation().getDistance(calculateShootingPosition(0)));
 
 if (DriverStation.isDisabled()) {
  if (!gyroInputs.connected && !wasGyroDisconnected) {
@@ -478,7 +478,7 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
  return getRobotRelativeSpeeds().omegaRadiansPerSecond;
  }
 
- public Translation2d calculateShootingPosition() {
+ public Translation2d calculateShootingPosition(double time) {
         if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
             if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Blue)) {
                 return new Translation2d(4.626, 4.034);
@@ -490,7 +490,11 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
         }
 
         else {
-            Translation2d bottomBlue = new Translation2d(1.926, 1.512);
+            Translation2d bottomBlue = new Translation2d(1.15, 1.5);
+            double period = 20/10;
+            double angle = time/period * 2 * Math.PI;
+
+            Translation2d circleRandomness = new Translation2d(Math.cos(angle) * 1, Math.sin(angle) * 1);
 
            if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
                 Translation2d topBlue = FlipVertically_bottom_to_top(bottomBlue);
@@ -498,27 +502,27 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
                 double distanceBottom = bottomBlue.getDistance(getEstimatedPosition().getTranslation());
                 double distanceTop = topBlue.getDistance(getEstimatedPosition().getTranslation());
                 if (distanceBottom < distanceTop) {
-                    return bottomBlue;
+                    return bottomBlue.plus(circleRandomness);
                 } else {
-                    return topBlue;
+                    return topBlue.plus(circleRandomness);
                 }
             }
 
             else {
-                Translation2d bottomRed = FlipHorizontally_BtoR(new Translation2d(1.926, 1.512));
+                Translation2d bottomRed = FlipHorizontally_BtoR(new Translation2d(1.15, 1.5));
                 Translation2d topRed = FlipVertically_bottom_to_top(bottomRed);
 
                 double distanceBottom = bottomRed.getDistance(getEstimatedPosition().getTranslation());
                 double distanceTop = topRed.getDistance(getEstimatedPosition().getTranslation());
                 if (distanceBottom < distanceTop) {
-                    return bottomRed;
+                    return bottomRed.plus(circleRandomness);
                 } else {
-                    return topRed;
-                }
+                    return topRed.plus(circleRandomness);
             }
            
         }
     }
+}
 
 
  

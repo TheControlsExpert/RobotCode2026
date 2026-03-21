@@ -48,7 +48,7 @@ public class Revv extends Command {
         shooter.LookupTable_Shooting(drive);
         }
         else {
-        shooter.LookupTable_Passing(drive);
+        shooter.LookupTable_Passing(drive, 0);
         }
         }
 

@@ -243,7 +243,7 @@ else {
         }
 
         else {
-        shooter.LookupTable_Passing(drive);    
+        shooter.LookupTable_Passing(drive, timer.get());    
         }
 
         Translation2d linearVelocity;
@@ -267,7 +267,7 @@ else {
     }
 
               
-        Translation2d shootingPosition = drive.calculateShootingPosition();
+        Translation2d shootingPosition = drive.calculateShootingPosition(timer.get());
 
         double distance = drive.getEstimatedPosition().getTranslation().getDistance(shootingPosition);
         //double[] shootingParameters = shooter.LookupTable_Shooting(drive);

@@ -171,7 +171,7 @@ public class Shooter extends SubsystemBase {
     //             robotRelativeVelocity.omegaRadiansPerSecond * phaseDelay));
 
     // Calculate target
-    Translation2d target = drive.calculateShootingPosition();
+    Translation2d target = drive.calculateShootingPosition(0);
         
     //Pose2d launcherPosition = estimatedPose.transformBy(ShooterConstants.robotToShooter);
     //double launcherToTargetDistance = target.getDistance(launcherPosition.getTranslation());
@@ -242,8 +242,8 @@ public class Shooter extends SubsystemBase {
         }
      }
 
-    public void LookupTable_Passing(Drive drive) {
-        double distance = drive.getEstimatedPosition().getTranslation().getDistance(drive.calculateShootingPosition());
+    public void LookupTable_Passing(Drive drive, double seconds) {
+        double distance = drive.getEstimatedPosition().getTranslation().getDistance(drive.calculateShootingPosition(seconds));
     
         double hoodPosition = 0.5;
         double shooterVel = solve( -4.22697 * Math.pow(10, -7),  0.0052122, -distance - 5.20419);

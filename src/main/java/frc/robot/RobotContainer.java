@@ -72,10 +72,8 @@ import frc.robot.Commands.IntakeCommands.Jam;
 import frc.robot.Commands.IntakeCommands.ShuffleCommand;
 import frc.robot.Commands.ShootingCommands.ResetHood;
 import frc.robot.Commands.ShootingCommands.Revv;
-import frc.robot.Commands.ShootingCommands.RevvAuto;
 import frc.robot.Commands.ShootingCommands.RevvTest;
 import frc.robot.Commands.ShootingCommands.Shooting;
-import frc.robot.Commands.ShootingCommands.ShootingAuto;
 import frc.robot.Commands.ShootingCommands.ShootingTest;
 import frc.robot.Subsystems.Climb.Climb;
 import frc.robot.Subsystems.Climb.ClimbIO;
@@ -281,8 +279,9 @@ public class RobotContainer {
 
 
          controller.leftBumper().whileTrue(new InstantCommand(() -> {intake.is_busy = true; }).andThen(new IntakeCommand(intake))).onFalse(new InstantCommand(() -> {intake.is_busy = false;}));
-         controller.rightBumper().onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), DriverStation.getAlliance().get().equals(Alliance.Blue) ? Rotation2d.kZero : Rotation2d.fromDegrees(180))), drive)
+         controller.button(7).onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), DriverStation.getAlliance().get().equals(Alliance.Blue) ? Rotation2d.kZero : Rotation2d.fromDegrees(180))), drive)
                  .ignoringDisable(true));
+
 
 
       //  timeout_shuffle = new Timer();
@@ -321,6 +320,7 @@ public class RobotContainer {
        
 
         controller.leftTrigger().or(controller2.leftTrigger()).whileTrue(new Revv(shooter, drive, controller, vision));
+        controller.y().whileTrue(new AutoBumping(drive, () -> (controller.getLeftX()), () -> (controller.getLeftY()), drive.rotationkP, controller));
 
 
        // controller.leftTrigger().whileTrue(new RevvTest(shooter, controller));
