@@ -286,15 +286,16 @@ public class RobotContainer {
       //  timeout_shuffle = new Timer();
        //Trigger timeoutshuffle_trigger = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {timeout_shuffle.restart();}));
        Trigger shuffle_trigger = new Trigger(() -> (shooter.isShooting  && !intake.is_busy)).onTrue(
+        new WaitCommand(1).andThen(
 
        
-       (new InstantCommand(() -> {intake.resetIntegral(); intake.Shuffle(); intake.setIntakeDutyCycle(0.4);}, intake).
+       (new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.4);}, intake).
        andThen(new WaitCommand(0.5)).
        andThen(new InstantCommand(() -> {intake.Extend();}, intake)).
-       andThen(new WaitCommand(0.5))).repeatedly()
+       andThen(new WaitCommand(0.3))).repeatedly()
       // andThen(new InstantCommand(() -> {intake.Shuffle();}, intake))
 
-       );
+       ));
 
       //Trigger IRsensorTimerResetter = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {intake.readyToClose1_timer.restart();}));
 

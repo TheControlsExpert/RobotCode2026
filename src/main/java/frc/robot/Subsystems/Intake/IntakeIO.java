@@ -19,6 +19,7 @@ import com.revrobotics.AbsoluteEncoder;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -31,15 +32,19 @@ import com.ctre.phoenix6.hardware.TalonFXS;
 
 public class IntakeIO {
  
-    public PIDController pivot_up = new PIDController(0.2, 1, 0);
+    public PIDController pivot_up = new PIDController(0.0, 2, 0);
 
     TalonFX intakeMotor = new TalonFX(14);
     TalonFX pivotMotor = new TalonFX(15);
     DutyCycleEncoder pivotEncoder; 
     PositionVoltage pivotPositionVoltage = new PositionVoltage(0);
     StatusSignal<Angle> pivotAngle = pivotMotor.getPosition();
+    StatusSignal<AngularVelocity> pivotVelocity = pivotMotor.getVelocity();
+    StatusSignal<AngularAcceleration> pivotAcceleration = pivotMotor.getAcceleration();
     StatusSignal<AngularVelocity> intakeVel = intakeMotor.getVelocity();
     double target = IntakeConstants.HOME_Position;
+    boolean hasCappedIntegralTerm = false;
+    double integralTerm = 0;
     boolean Up = true;
     DigitalInput ReadyToClose1 = new DigitalInput(2);
     double pivotEncoderZero;
@@ -59,7 +64,7 @@ public class IntakeIO {
 
 
     public IntakeIO() {
-        pivot_up.setIntegratorRange(-0.1, 0.1);
+        pivot_up.setIntegratorRange(-0.35, 0.35);
         
         if(IntakeConstants.perma_offset > 0.1){
            pivotEncoderZero = IntakeConstants.perma_offset - 0.1;
@@ -83,7 +88,7 @@ public class IntakeIO {
         TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
         pivotConfig.MotorOutput.Inverted = IntakeConstants.pivot_inverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
         pivotConfig.MotorOutput.NeutralMode = com.ctre.phoenix6.signals.NeutralModeValue.Brake;
-        pivotConfig.CurrentLimits.StatorCurrentLimit = 40;
+        pivotConfig.CurrentLimits.StatorCurrentLimit = 60;
         pivotConfig.CurrentLimits.SupplyCurrentLimit = 40;
 
         pivotConfig.Slot0.kP = 0;
@@ -125,7 +130,7 @@ public class IntakeIO {
        SmartDashboard.putNumber("intake encoder", pivotEncoder.get());
        SmartDashboard.putNumber("intake angle", pivotAngle.getValue().in(Rotations));
         inputs.isConnectedIntake = BaseStatusSignal.refreshAll(intakeVel).equals(com.ctre.phoenix6.StatusCode.OK);
-        inputs.isConnectedPivot = BaseStatusSignal.refreshAll(pivotAngle).equals(com.ctre.phoenix6.StatusCode.OK);
+        inputs.isConnectedPivot = BaseStatusSignal.refreshAll(pivotAngle, pivotVelocity, pivotAcceleration).equals(com.ctre.phoenix6.StatusCode.OK);
         inputs.isConnectedPivotEncoder = pivotEncoder.isConnected();
 
         inputs.pivotEncoderRotations = pivotEncoder.get();
@@ -178,7 +183,7 @@ public class IntakeIO {
          
         }  
         
-       // pivotMotor.set(clampedVal);
+        pivotMotor.set(clampedVal);
          SmartDashboard.putNumber("feedforward", clampedVal);
         }
 
@@ -200,14 +205,24 @@ public class IntakeIO {
        // SmartDashboard.putNumber("feedforward", clampedVal);
 
         if (RobotContainer.isShooting) {
-        SmartDashboard.putNumber("feedforward", pivot_up.calculate(pivotEncoder.get(), target));
+        
+        SmartDashboard.putNumber("feedforward", pivot_up.calculate(pivotEncoder.get(), target) + clampedVal);
+        
+        if (!hasCappedIntegralTerm) {
+            if (Math.abs(pivotVelocity.getValueAsDouble()) > 10 && Math.abs(pivotAcceleration.getValueAsDouble()) > 10/0.15) {
+                hasCappedIntegralTerm = true;
+            }
 
-        pivot_up.calculate(pivotEncoder.get(), target);
-       // pivotMotor.set(pivot_up.calculate(pivotEncoder.get(), target));
+            else {
+                integralTerm = pivot_up.calculate(pivotEncoder.get(), target);
+            }
+        }
+
+        pivotMotor.set(integralTerm + clampedVal);
         }
 
         else {
-       // pivotMotor.set(clampedVal);
+        pivotMotor.set(clampedVal);
          SmartDashboard.putNumber("feedforward", clampedVal);
         }
 

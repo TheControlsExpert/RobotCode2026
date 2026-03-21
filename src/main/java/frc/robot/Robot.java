@@ -142,6 +142,7 @@ public class Robot extends LoggedRobot {
     public void disabledInit() {}
 
     public void robotPeriodic() {
+      SmartDashboard.putBoolean("is shooting", RobotContainer.isShooting);
       SmartDashboard.putBoolean("ruin", m_robotContainer.vision.ruin);
         CommandScheduler.getInstance().run();
        // SmartDashboard.putNumber("timer for shooting", m_robotContainer.timeout_shuffle.get());

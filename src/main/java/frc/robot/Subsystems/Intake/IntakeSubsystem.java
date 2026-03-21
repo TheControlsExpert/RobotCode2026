@@ -143,6 +143,8 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void Shuffle() {
+        resetIntegral();
+        io.hasCappedIntegralTerm = false;
         io.setPosition(IntakeConstants.SHUFFLE_UP_POSITION);
        // io.Up = true; 
     }
