@@ -153,25 +153,24 @@ public class Robot extends LoggedRobot {
       if (positionChooser.getSelected().equals(PositionEnums.OUTPOST)) {
 
         if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
-          firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("First Bump Outpost");
-          secondMiddlePath = PathPlannerPath.fromChoreoTrajectory("Second Bump Outpost");
+          firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost");
+          secondMiddlePath = PathPlannerPath.fromChoreoTrajectory("SecondBumpOutpost");
 
         } else {
-          firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("First Bump Outpost").flipPath();
-          secondMiddlePath = PathPlannerPath.fromChoreoTrajectory("Second Bump Outpost").flipPath();
+          firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").flipPath();
+          secondMiddlePath = PathPlannerPath.fromChoreoTrajectory("SecondBumpOutpost").flipPath();
         }
       }
 
       else {
 
         if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
-          firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("First Bump Outpost").mirrorPath();
-          secondMiddlePath = PathPlannerPath.fromChoreoTrajectory("Second Bump Outpost").mirrorPath();
+          firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").mirrorPath();
+          secondMiddlePath = PathPlannerPath.fromChoreoTrajectory("SecondBumpOutpost").mirrorPath();
 
         } else {
           firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("First Bump Outpost").mirrorPath().flipPath();
-          secondMiddlePath = PathPlannerPath.fromChoreoTrajectory("Second Bump Outpost").flipPath().mirrorPath();
-
+          secondMiddlePath = PathPlannerPath.fromChoreoTrajectory("SecondBumpOutpost").flipPath().mirrorPath();
         }
       }
 
@@ -179,14 +178,13 @@ public class Robot extends LoggedRobot {
       SmartDashboard.putBoolean("Errer", true);
     }
 
-    firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
-    secondMiddleAuto = AutoBuilder.followPath(secondMiddlePath);
+    
       
 
 
   
     //passes in all the currently selected states to construct an auto program
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand(firstMiddlePath, firstMiddleAuto, secondMiddleAuto);
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand(firstMiddlePath, secondMiddlePath);
 
 
 

@@ -33,7 +33,7 @@ public class ShooterIO {
     TalonFXS shooterPivot = new TalonFXS(20);
     TalonFX feeder = new TalonFX(17);
 
-    DutyCycleEncoder absoluteEncoder = new DutyCycleEncoder(1, 1, ShooterConstants.abs_offset - 0.1);
+    // DutyCycleEncoder absoluteEncoder = new DutyCycleEncoder(1, 1, ShooterConstants.abs_offset - 0.1);
 
     VelocityVoltage shooterLeftVoltage = new VelocityVoltage(0);
     VelocityVoltage shooterRightVoltage = new VelocityVoltage(0);
@@ -117,8 +117,8 @@ public class ShooterIO {
         shooterPivotPosition = shooterPivot.getPosition();
         feederVelocity = feeder.getVelocity();
 
-        resetCorrectly = absoluteEncoder.isConnected();
-        shooterPivot.setPosition(ShooterConstants.pivot_gear_ratio*(absoluteEncoder.get() - ShooterConstants.abs_offset));
+        // resetCorrectly = absoluteEncoder.isConnected();
+        // shooterPivot.setPosition(ShooterConstants.pivot_gear_ratio*(absoluteEncoder.get() - ShooterConstants.abs_offset));
         
 
     }
@@ -144,31 +144,31 @@ public class ShooterIO {
     public void updateInputs(ShooterIOInputs inputs) {
      
      SmartDashboard.putNumber("shooter i encoder", inputs.shooterPivotEncoderRotations);
-     SmartDashboard.putNumber(" abs encoder for shooter", absoluteEncoder.get());
+    // SmartDashboard.putNumber(" abs encoder for shooter", absoluteEncoder.get());
      SmartDashboard.putBoolean("canMove", canMove);
      SmartDashboard.putNumber("speed shooter", inputs.shooterLeftVelocityRPM);
      //SmartDashboard.putNumber("closed loop error", shooterPivot.getClosedLoopError().getValueAsDouble());
      double target_abs = target / ShooterConstants.pivot_gear_ratio + ShooterConstants.abs_offset;
 
-      if (absoluteEncoder.isConnected()) {
-      if ((absoluteEncoder.get() > ShooterConstants.MAX_ENCODER_VAL && target_abs > absoluteEncoder.get()) ||  
-          (absoluteEncoder.get() < ShooterConstants.MIN_ENCODER_VAL && target_abs < absoluteEncoder.get())) {
-            canMove = false;
-          }     
+    //   if (absoluteEncoder.isConnected()) {
+    //   if ((absoluteEncoder.get() > ShooterConstants.MAX_ENCODER_VAL && target_abs > absoluteEncoder.get()) ||  
+    //       (absoluteEncoder.get() < ShooterConstants.MIN_ENCODER_VAL && target_abs < absoluteEncoder.get())) {
+    //         canMove = false;
+    //       }     
 
-      else {
-        canMove = true;
-      } 
-    }
+    //   else {
+    //     canMove = true;
+    //   } 
+    // }
 
       
-      if (!resetCorrectly || !canMove || !absoluteEncoder.isConnected()) {
-        setOutputPivot(0);
-      }
+    //   if (!resetCorrectly || !canMove || !absoluteEncoder.isConnected()) {
+    //     setOutputPivot(0);
+    //   }
 
-      else {
-        shooterPivot.setControl(shooterPivotVoltage.withPosition(target));
-      }
+    //   else {
+    //     shooterPivot.setControl(shooterPivotVoltage.withPosition(target));
+    //   }
 
       //assume encoder and motor r both positive
       //assume that abs encoder is connected
@@ -191,14 +191,14 @@ public class ShooterIO {
         inputs.isConnectedRightShooter = BaseStatusSignal.refreshAll(shooterRightVelocity).equals(StatusCode.OK);
         inputs.isConnectedPivot = BaseStatusSignal.refreshAll(shooterPivotPosition).equals(StatusCode.OK);
         inputs.isConnectedFeeder = BaseStatusSignal.refreshAll(feederVelocity).equals(StatusCode.OK);
-        inputs.isConnectedPivotEncoder = absoluteEncoder.isConnected();
+        //inputs.isConnectedPivotEncoder = absoluteEncoder.isConnected();
         
         inputs.shooterLeftVelocityRPM = shooterLeftVelocity.getValue().in(RPM);
         inputs.shooterRightVelocityRPM = shooterRightVelocity.getValue().in(RPM);
         inputs.shooterPivotEncoderRotations = shooterPivotPosition.getValue().in(Rotations);    
         inputs.feederVelocityRPM = feederVelocity.getValue().in(RPM);
 
-        inputs.rotationABS = absoluteEncoder.get();
+       // inputs.rotationABS = absoluteEncoder.get();
   }
 
   public void setOutputPivot(double dutycycle) {
@@ -206,11 +206,11 @@ public class ShooterIO {
   }
 
   public void resetShooterPivot() {
-    if (absoluteEncoder.isConnected()) {
-      shooterPivot.setPosition(ShooterConstants.pivot_gear_ratio*(absoluteEncoder.get()));
+    //if (absoluteEncoder.isConnected()) {
+      //shooterPivot.setPosition(ShooterConstants.pivot_gear_ratio*(absoluteEncoder.get()));
       resetCorrectly = true;
     }
-  }
+  
 
   public void setPivotPosition(double position) {
    SmartDashboard.putNumber("shooter pivot target", position);

@@ -471,13 +471,21 @@ public class RobotContainer {
 
 
  
-  public Command getAutonomousCommand(PathPlannerPath firstMiddlePath, Command firstMiddleAuto, Command secondMiddleAuto) {
+  public Command getAutonomousCommand(PathPlannerPath firstMiddlePath, PathPlannerPath secondMiddlePath) { //YOU CANNOT PASS IN THE AUTOS! IT ATTEMPTS TO REUSE THE SAME VARIABLE WHICH YOU CANNOT DO
+
+    Command firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
+    Command secondMiddleAuto = AutoBuilder.followPath(secondMiddlePath);
     
-    return new InstantCommand(() -> drive.resetPosition(firstMiddlePath.getStartingHolonomicPose().get())). 
-    andThen(new ParallelRaceGroup(firstMiddleAuto, new WaitCommand(1).andThen(new IntakeCommand(intake)), new WaitCommand(3.5).andThen(new Revv(shooter, drive, controller, vision)))). 
-    andThen(new Shooting(shooter, drive, indexer, intake, controller, null, null, null, 0, 3, vision)). 
-    andThen(new ParallelRaceGroup(secondMiddleAuto, new WaitCommand(1).andThen(new IntakeCommand(intake)), new WaitCommand(3.5).andThen(new Revv(shooter, drive, controller, vision)))). 
-    andThen(new Shooting(shooter, drive, indexer, intake, controller, null, null, null, 0, 3, vision));
+    if (firstMiddleAuto != null && secondMiddleAuto != null) {
+      return new InstantCommand(() -> drive.resetPosition(firstMiddlePath.getStartingHolonomicPose().get())). 
+      andThen(new ParallelRaceGroup(firstMiddleAuto, new WaitCommand(1).andThen(new IntakeCommand(intake)), new WaitCommand(3.5).andThen(new Revv(shooter, drive, controller, vision)))). 
+      andThen(new Shooting(shooter, drive, indexer, intake, controller, null, null, null, 0, 3, vision)). 
+      andThen(new ParallelRaceGroup(secondMiddleAuto, new WaitCommand(1).andThen(new IntakeCommand(intake)), new WaitCommand(3.5).andThen(new Revv(shooter, drive, controller, vision)))). 
+      andThen(new Shooting(shooter, drive, indexer, intake, controller, null, null, null, 0, 3, vision));
+    }
+
+    else { return Commands.none(); }
+    
 
   }
 
