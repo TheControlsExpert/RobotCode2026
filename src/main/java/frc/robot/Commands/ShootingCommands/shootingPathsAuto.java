@@ -28,7 +28,13 @@ public class shootingPathsAuto extends Command{
     }
     public void initialize() {
         initialPos = drive.getEstimatedPosition().getTranslation();
+        finalPos = nextPath.getStartingHolonomicPose().get().getTranslation();
         
+        Translation2d distanceVector = finalPos.minus(initialPos);
+        double rawSpeed = finalPos.getDistance(initialPos) / 4;
+
+        Translation2d linearVelocity = distanceVector.times(rawSpeed/distanceVector.getNorm());
+
 
     }
 
