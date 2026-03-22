@@ -495,7 +495,7 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
             double period = 12/10;
             double angle = time/period * 2 * Math.PI;
 
-            Translation2d circleRandomness = new Translation2d(Math.cos(angle) * 1, Math.sin(angle) * 0.7);
+            Translation2d circleRandomness = new Translation2d(Math.cos(angle) * 0.25, Math.sin(angle) * 0.7);
 
            if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
                 Translation2d topBlue = FlipVertically_bottom_to_top(bottomBlue);

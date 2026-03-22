@@ -271,7 +271,7 @@ public final class Constants {
 
   public static class IntakeConstants {
     public static final double pivot_kP_up = 2.5;
-    public static final double pivot_kP_down = 1.5;
+    public static final double pivot_kP_down = 1.15;
     public static final double pivot_kG = -0.155;
     public static final double offset = 0.42;
     public static final double PivotGearRatio = 45;

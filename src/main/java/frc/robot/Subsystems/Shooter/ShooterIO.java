@@ -220,6 +220,15 @@ public class ShooterIO {
   
    // 
    }
+
+   public void setPivotPosition(double position, double feedforward) {
+   SmartDashboard.putNumber("shooter pivot target", position);
+  // if (resetCorrectly && canMove && absoluteEncoder.isConnected()) {
+  
+    target = position;
+  
+   // 
+   }
   
 
   public void setFeederVelocity(double velocity) {
@@ -234,6 +243,15 @@ public class ShooterIO {
 
     shooterLeft.setControl(shooterLeftVoltage.withVelocity(velocity));
     shooterRight.setControl(shooterRightVoltage.withVelocity(velocity));
+  }
+
+  public void setVelocityShooter(double velocity, double feedforward) {
+  //  SmartDashboard.putNumber("shooter velocity", velocity);
+  //  shooterLeft.set(velocity);
+   // shooterRight.set(velocity);
+
+    shooterLeft.setControl(shooterLeftVoltage.withVelocity(velocity).withFeedForward(feedforward));
+    shooterRight.setControl(shooterRightVoltage.withVelocity(velocity).withFeedForward(feedforward));
   }
 
   public void setOutputShooter(double dutycycle) {

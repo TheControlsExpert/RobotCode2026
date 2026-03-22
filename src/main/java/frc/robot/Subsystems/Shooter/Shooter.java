@@ -23,6 +23,12 @@ import frc.robot.Subsystems.Drive.Drive;
 public class Shooter extends SubsystemBase {
     public boolean isShooting = false;
     public boolean needsShuffling = true;
+
+    double kD_pivot = 0;
+    double kD_shooter = 0;
+
+    public double lastPivotAngle = 0;
+    public double lastShooterV = 0;
     
            StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault()
   .getStructTopic("lookahead pose", Pose2d.struct).publish(); 
@@ -39,6 +45,7 @@ public class Shooter extends SubsystemBase {
     InterpolatingDoubleTreeMap PassAngleMap = new InterpolatingDoubleTreeMap();
     InterpolatingDoubleTreeMap PassVelocityMap = new InterpolatingDoubleTreeMap();
 
+    double lastVel = 0;
     double phaseDelay = 0.03; 
 
         //disconnection tracking
@@ -47,6 +54,8 @@ public class Shooter extends SubsystemBase {
     private boolean wasDisconnected_Pivot = false;
     private boolean wasDisconnected_Feeder = false;
     private boolean wasDisconnected_PivotEncoder = false;
+
+    
 
 
     public Shooter(ShooterIO io) {
@@ -148,6 +157,12 @@ public class Shooter extends SubsystemBase {
 
      public void setShooterVelocity(double velocity) {
         io.setVelocityShooter(velocity);
+     }
+
+     public void setShooterVelocity(double velocity, double timeDelta) {
+        double feedforward = (velocity - lastVel) / timeDelta * kD_shooter;
+        lastVel = velocity;
+        io.setVelocityShooter(velocity, feedforward);
      }
 
      public void setOutputShooter(double dutycycle) {
@@ -275,7 +290,7 @@ public class Shooter extends SubsystemBase {
         }
     }
 
-    public Rotation2d LookupTable_SOTM(Drive drive) {
+    public Rotation2d LookupTable_SOTM(Drive drive, double deltaTime) {
         ChassisSpeeds robotRelativeVelocity = drive.getRobotRelativeSpeeds();
         Pose2d beforeEstimatedPose = drive.getEstimatedPosition();
         Pose2d estimatedPose = beforeEstimatedPose.exp(
@@ -296,6 +311,8 @@ public class Shooter extends SubsystemBase {
         double lookaheadLauncherToTargetDistance = launcherToTargetDistance;
         Translation2d lookaheadPose = shooterPosition;
 
+
+
         
 
         for (int i = 0; i < 20; i++) {
@@ -313,12 +330,17 @@ public class Shooter extends SubsystemBase {
       lookaheadLauncherToTargetDistance = lookaheadPose.getDistance(drive.getEstimatedPosition().getTranslation());
         }
 
+
+
         double pivotAngle = -0.36754 * lookaheadLauncherToTargetDistance*lookaheadLauncherToTargetDistance - 1.16034 * lookaheadLauncherToTargetDistance + 22.92513;
         double shooterV = 1832.83 + 271.41197 * lookaheadLauncherToTargetDistance;
         publisher.set(new Pose2d(lookaheadPose, new Rotation2d()));
 
+        double feedforwardPivot = kD_pivot * (pivotAngle - lastPivotAngle)/deltaTime;
+        double feedforwardShooter = kD_shooter * (shooterV - lastShooterV)/deltaTime;
 
-        setShooterVelocity(shooterV/60);
+
+        setShooterVelocity(shooterV/60, feedforwardShooter);
         setPositionPivot(pivotAngle);
 
         return (lookaheadPose.minus(drive.getEstimatedPosition().getTranslation()).getAngle());
