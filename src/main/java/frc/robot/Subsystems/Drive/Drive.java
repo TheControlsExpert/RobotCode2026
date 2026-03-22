@@ -91,8 +91,8 @@ public class Drive extends SubsystemBase {
  ReentrantLock visionLock = new ReentrantLock();
 public final double translationkP = 2.5;
 public final double rotationkP = 0.10;
-public PathConstraints constraints_auto = new PathConstraints(6, 4, 13, 26);
-public PathConstraints constraints_pathfinding = new PathConstraints(5, 3, 500, 500);
+public PathConstraints constraints_auto = new PathConstraints(3, 3, 13, 26);
+public PathConstraints constraints_pathfinding = new PathConstraints(3, 3, 500, 500);
 
 private SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
 private SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
@@ -420,6 +420,23 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
  public void runVelocity(ChassisSpeeds speeds) {
  // Calculate module setpoints
  ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
+
+//  if (RobotContainer.isShooting) {
+
+//  double x = discreteSpeeds.vxMetersPerSecond;
+//  double y = discreteSpeeds.vyMetersPerSecond;
+
+// //  if (x > 1.15) {
+
+// //     discreteSpeeds = discreteSpeeds.times(1.15/x);
+// //  }
+
+// //  if (y > 1.55) {
+// //     discreteSpeeds = discreteSpeeds.times(1.55/x);
+// //  }
+// }
+ 
+
  // ChassisSpeeds heightLimit = getNewTargetVelocity(discreteSpeeds);
  SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
 
@@ -749,7 +766,7 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
  }
 
  else if (RobotContainer.isShooting) {
-return 1.25;
+return 1.65;
  }
  else {
  return 5;

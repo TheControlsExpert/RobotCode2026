@@ -290,6 +290,7 @@ else {
             derivativeAddon = (angleToTarget_radians - prev_angleToTarget_radians) / deltaTime;
 
             prev_angleToTarget_radians = angleToTarget_radians;
+           
             prev_timestamp = Timer.getFPGATimestamp();
         }
 
@@ -301,9 +302,11 @@ else {
         double deltaRotation = angleToTarget_radians - drive.getEstimatedPosition().getRotation().getRadians();
 
         
+        
         deltaRotation = MathUtil.angleModulus(deltaRotation);
         //Change back to degrees
         deltaRotation = Math.toDegrees(deltaRotation);
+         SmartDashboard.putNumber("delta angle yaw", deltaRotation);
 
      //   if (Robot.localizationState.equals(LocalizationState.OPERATIONAL)) {
            // shooter.setShooterVelocity(shootingParameters[0]);
@@ -357,7 +360,7 @@ if ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - ma
     (!Robot.winner_selection_done)) {
 
     //shooting parameters are close enough to START shooting
-    if (!readyToShoot && (((shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance)) || Robot.shootingState.equals(ShootingState.PASSING)))  && (Math.abs(deltaRotation) < 5 && Robot.shootingState.equals(ShootingState.SHOOTING) || Math.abs(deltaRotation) < 8 && Robot.shootingState.equals(ShootingState.PASSING))) {
+    if (!readyToShoot && (((shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance)) || Robot.shootingState.equals(ShootingState.PASSING)))  && (Math.abs(deltaRotation) < 10 && Robot.shootingState.equals(ShootingState.SHOOTING) || Math.abs(deltaRotation) < 8 && Robot.shootingState.equals(ShootingState.PASSING))) {
         readyToShoot = true;
         shooter.isShooting = true;
         RobotContainer.isShooting = true;

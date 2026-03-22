@@ -362,7 +362,7 @@ public class Shooter extends SubsystemBase {
         }
 
         SmartDashboard.putNumber("is at shooting vel", Math.abs((inputs.shooterLeftVelocityRPM + inputs.shooterRightVelocityRPM) / 2 - velocity));
-        return Math.abs((inputs.shooterLeftVelocityRPM + inputs.shooterRightVelocityRPM) / 2 - velocity) < (Robot.shootingState.equals(ShootingState.SHOOTING) ?  100 : 150);
+        return Math.abs((inputs.shooterLeftVelocityRPM + inputs.shooterRightVelocityRPM) / 2 - velocity) < (Robot.shootingState.equals(ShootingState.SHOOTING) ?  200 : 150);
     }
 
     public boolean isAtPivotPosition(double distance) {
@@ -375,7 +375,7 @@ public class Shooter extends SubsystemBase {
             position = PassAngleMap.get(distance);
         }
         SmartDashboard.putNumber("is at pivot position", Math.abs(inputs.shooterPivotEncoderRotations - position));
-        return Math.abs(inputs.shooterPivotEncoderRotations - position) < (Robot.shootingState.equals(ShootingState.SHOOTING) ? 0.35 : ShooterConstants.PassingPivotTolerance);
+        return Math.abs(inputs.shooterPivotEncoderRotations - position) < (Robot.shootingState.equals(ShootingState.SHOOTING) ? 0.75 : ShooterConstants.PassingPivotTolerance);
     }
 
     public void shootManual() {

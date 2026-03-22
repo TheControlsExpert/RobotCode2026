@@ -211,7 +211,7 @@ public class RobotContainer {
 
                  // drivesim = new DriveSim(new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim());
              //   vision = new VisionSubsystem(new VisionIOLimelight(), drive);
-              //  autoTrenching = new AutomaticTrenching(drive, drive.constraints_auto, () -> -controller.getLeftY(), () -> -controller.getLeftX(), 0.08, controller);     
+                autoTrenching = new AutomaticTrenching(drive, drive.constraints_auto, () -> -controller.getLeftY(), () -> -controller.getLeftX(), 0.15, controller);     
              //   autoClimbing = new AutomaticClimbing(drive, new AutoAlign(2.5, drive.rotationkP, 0.01, 1), vision, climb);
       
                 
@@ -313,8 +313,8 @@ public class RobotContainer {
         
       
        //  controller.leftTrigger().whileTrue(new Revv(shooter, drive, controller));
-        controller.rightTrigger().
-        onTrue(new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}))
+        controller.rightTrigger()
+       
         .whileTrue(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, vision))
         .onFalse(new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; RobotContainer.isShooting = false; intake.setIntakeDutyCycle(0.0);}, intake));
        
@@ -378,12 +378,12 @@ public class RobotContainer {
      //   controller.a().whileTrue(new AutoBumping(drive, intake, () -> -controller.getLeftY(), () -> -controller.getLeftX(), 0.08, controller));
          
        
-      //  controller.x().whileTrue(autoTrenching.andThen(
+        controller.b().whileTrue(autoTrenching.andThen(
         
-      // Commands.defer(() -> autoTrenching.getPathingCommand().until(
+      Commands.defer(() -> autoTrenching.getPathingCommand().until(
         
-      //  () -> (autoTrenching.passedTrench() && 
-      //  (Math.abs(controller.getLeftY()) > 0.1 || Math.abs(controller.getLeftX()) > 0.1 || Math.abs(controller.getRightX()) > 0.1))), Set.of(drive))));
+       () -> (autoTrenching.passedTrench() && 
+       (Math.abs(controller.getLeftY()) > 0.1 || Math.abs(controller.getLeftX()) > 0.1 || Math.abs(controller.getRightX()) > 0.1))), Set.of(drive))));
 
       //COPILOT
 
