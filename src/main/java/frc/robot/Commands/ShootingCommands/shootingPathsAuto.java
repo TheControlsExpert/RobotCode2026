@@ -9,6 +9,7 @@ import frc.robot.Subsystems.Shooter.Shooter;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -31,6 +32,7 @@ public class shootingPathsAuto extends Command{
         Translation2d velocityVector;
         Translation2d currentPos = drive.getEstimatedPosition().getTranslation();
         Translation2d wantedPos = path.getStartingHolonomicPose().get().getTranslation();
+        Rotation2d spin = drive.getEstimatedPosition().getRotation();
         Translation2d distance = wantedPos.minus(currentPos);
         double speed = currentPos.getDistance(wantedPos) / 3;
         if(speed>Constants.ShooterConstants.maxMovingSpeed) {
@@ -46,7 +48,7 @@ public class shootingPathsAuto extends Command{
         if(DriverStation.getAlliance().get().equals(Alliance.Red)){
         velocityVector = velocityVector.unaryMinus();
         }
-        ChassisSpeeds speeds = new ChassisSpeeds(velocityVector.getX()*swerve.getMaxLinearSpeedMetersPerSec(),velocityVector.getY()(swerve.getMaxLinearSpeedMetersPerSec()));
+        ChassisSpeeds speeds = new ChassisSpeeds(velocityVector.getX()*swerve.getMaxLinearSpeedMetersPerSec(),velocityVector.getY()*swerve.getMaxLinearSpeedMetersPerSec(),spin.getRadians());
     }
 
 }
