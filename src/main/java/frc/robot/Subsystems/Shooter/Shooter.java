@@ -7,6 +7,8 @@ import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -21,7 +23,16 @@ import frc.robot.Subsystems.Drive.Drive;
 public class Shooter extends SubsystemBase {
     public boolean isShooting = false;
     public boolean needsShuffling = true;
+
+    double kD_pivot = 0;
+    double kD_shooter = 0;
+
+    public double lastPivotAngle = 0;
+    public double lastShooterV = 0;
     
+           StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault()
+  .getStructTopic("lookahead pose", Pose2d.struct).publish(); 
+
     private ShooterIO io;
     private ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
@@ -34,6 +45,7 @@ public class Shooter extends SubsystemBase {
     InterpolatingDoubleTreeMap PassAngleMap = new InterpolatingDoubleTreeMap();
     InterpolatingDoubleTreeMap PassVelocityMap = new InterpolatingDoubleTreeMap();
 
+    double lastVel = 0;
     double phaseDelay = 0.03; 
 
         //disconnection tracking
@@ -42,6 +54,8 @@ public class Shooter extends SubsystemBase {
     private boolean wasDisconnected_Pivot = false;
     private boolean wasDisconnected_Feeder = false;
     private boolean wasDisconnected_PivotEncoder = false;
+
+    
 
 
     public Shooter(ShooterIO io) {
@@ -143,6 +157,12 @@ public class Shooter extends SubsystemBase {
 
      public void setShooterVelocity(double velocity) {
         io.setVelocityShooter(velocity);
+     }
+
+     public void setShooterVelocity(double velocity, double timeDelta) {
+        double feedforward = (velocity - lastVel) / timeDelta * kD_shooter;
+        lastVel = velocity;
+        io.setVelocityShooter(velocity, feedforward);
      }
 
      public void setOutputShooter(double dutycycle) {
@@ -270,6 +290,64 @@ public class Shooter extends SubsystemBase {
         }
     }
 
+    public Rotation2d LookupTable_SOTM(Drive drive, double deltaTime) {
+        SmartDashboard.putNumber("deltaTime", deltaTime);
+        ChassisSpeeds robotRelativeVelocity = drive.getRobotRelativeSpeeds();
+        Pose2d beforeEstimatedPose = drive.getEstimatedPosition();
+        Pose2d estimatedPose = beforeEstimatedPose.exp(
+        
+            new Twist2d(
+                robotRelativeVelocity.vxMetersPerSecond * phaseDelay,
+                robotRelativeVelocity.vyMetersPerSecond * phaseDelay,
+                robotRelativeVelocity.omegaRadiansPerSecond * phaseDelay));
+
+        Translation2d target = drive.calculateShootingPosition(0); 
+        ChassisSpeeds chassis_fieldRelativeVelocity = drive.getFieldRelativeSpeeds();
+      //  ChassisSpeeds shooter_fieldRelativeVelocity = transformVelocity(chassis_fieldRelativeVelocity, ShooterConstants.robotToShooter.getTranslation(), estimatedPose.getRotation());
+
+        Translation2d shooterPosition = estimatedPose.transformBy(ShooterConstants.robotToShooter).getTranslation();
+        
+        double launcherToTargetDistance = target.getDistance(shooterPosition);
+
+        double lookaheadLauncherToTargetDistance = launcherToTargetDistance;
+        Translation2d lookaheadPose = shooterPosition;
+
+
+
+        
+
+        for (int i = 0; i < 20; i++) {
+        double TOF = 0.035 * Math.pow(lookaheadLauncherToTargetDistance + ShooterConstants.x, 2) - 0.075 * (lookaheadLauncherToTargetDistance + ShooterConstants.x) + 1.1;
+        
+        double offsetX = chassis_fieldRelativeVelocity.vxMetersPerSecond * TOF;
+        double offsetY = chassis_fieldRelativeVelocity.vyMetersPerSecond * TOF;
+
+        SmartDashboard.putNumber("offset x", offsetX);
+        SmartDashboard.putNumber("offsetY", offsetY);
+        SmartDashboard.putNumber("TOF", TOF);
+      
+       lookaheadPose =
+              target.minus(new Translation2d(offsetX, offsetY));     
+      lookaheadLauncherToTargetDistance = lookaheadPose.getDistance(drive.getEstimatedPosition().getTranslation());
+        }
+
+
+
+        double pivotAngle = -0.36754 * lookaheadLauncherToTargetDistance*lookaheadLauncherToTargetDistance - 1.16034 * lookaheadLauncherToTargetDistance + 22.92513;
+        double shooterV = 1832.83 + 271.41197 * lookaheadLauncherToTargetDistance;
+        publisher.set(new Pose2d(drive.getEstimatedPosition().getTranslation(), lookaheadPose.minus(drive.getEstimatedPosition().getTranslation()).getAngle()));
+
+        double feedforwardPivot = kD_pivot * (pivotAngle - lastPivotAngle)/deltaTime;
+        double feedforwardShooter = kD_shooter * (shooterV - lastShooterV)/deltaTime;
+
+
+        setShooterVelocity(shooterV/60, feedforwardShooter);
+        setPositionPivot(pivotAngle);
+
+        return (lookaheadPose.minus(drive.getEstimatedPosition().getTranslation()).getAngle());
+
+     }
+
 
     public boolean isAtShootingVelocity(double distance) {
         double velocity;
@@ -284,7 +362,7 @@ public class Shooter extends SubsystemBase {
         }
 
         SmartDashboard.putNumber("is at shooting vel", Math.abs((inputs.shooterLeftVelocityRPM + inputs.shooterRightVelocityRPM) / 2 - velocity));
-        return Math.abs((inputs.shooterLeftVelocityRPM + inputs.shooterRightVelocityRPM) / 2 - velocity) < (Robot.shootingState.equals(ShootingState.SHOOTING) ?  ShooterConstants.ShooterVelocityTolerance : ShooterConstants.PassingVelocityTolerance);
+        return Math.abs((inputs.shooterLeftVelocityRPM + inputs.shooterRightVelocityRPM) / 2 - velocity) < (Robot.shootingState.equals(ShootingState.SHOOTING) ?  100 : 150);
     }
 
     public boolean isAtPivotPosition(double distance) {
@@ -297,7 +375,7 @@ public class Shooter extends SubsystemBase {
             position = PassAngleMap.get(distance);
         }
         SmartDashboard.putNumber("is at pivot position", Math.abs(inputs.shooterPivotEncoderRotations - position));
-        return Math.abs(inputs.shooterPivotEncoderRotations - position) < (Robot.shootingState.equals(ShootingState.SHOOTING) ? ShooterConstants.ShooterPivotTolerance : ShooterConstants.PassingPivotTolerance);
+        return Math.abs(inputs.shooterPivotEncoderRotations - position) < (Robot.shootingState.equals(ShootingState.SHOOTING) ? 0.35 : ShooterConstants.PassingPivotTolerance);
     }
 
     public void shootManual() {

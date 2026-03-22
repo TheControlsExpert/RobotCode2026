@@ -145,10 +145,11 @@ public class ShooterIO {
      
      SmartDashboard.putNumber("shooter i encoder", inputs.shooterPivotEncoderRotations);
      SmartDashboard.putNumber(" abs encoder for shooter", absoluteEncoder.get());
-     SmartDashboard.putBoolean("canMove", canMove);
+     SmartDashboard.putBoolean("canMove shooter", canMove);
      SmartDashboard.putNumber("speed shooter", inputs.shooterLeftVelocityRPM);
      //SmartDashboard.putNumber("closed loop error", shooterPivot.getClosedLoopError().getValueAsDouble());
      double target_abs = target / ShooterConstants.pivot_gear_ratio + ShooterConstants.abs_offset;
+     SmartDashboard.putNumber("target ABS", target_abs);
 
       if (absoluteEncoder.isConnected()) {
       if ((absoluteEncoder.get() > ShooterConstants.MAX_ENCODER_VAL && target_abs > absoluteEncoder.get()) ||  
@@ -220,6 +221,15 @@ public class ShooterIO {
   
    // 
    }
+
+   public void setPivotPosition(double position, double feedforward) {
+   SmartDashboard.putNumber("shooter pivot target", position);
+  // if (resetCorrectly && canMove && absoluteEncoder.isConnected()) {
+  
+    target = position;
+  
+   // 
+   }
   
 
   public void setFeederVelocity(double velocity) {
@@ -234,6 +244,15 @@ public class ShooterIO {
 
     shooterLeft.setControl(shooterLeftVoltage.withVelocity(velocity));
     shooterRight.setControl(shooterRightVoltage.withVelocity(velocity));
+  }
+
+  public void setVelocityShooter(double velocity, double feedforward) {
+  //  SmartDashboard.putNumber("shooter velocity", velocity);
+  //  shooterLeft.set(velocity);
+   // shooterRight.set(velocity);
+
+    shooterLeft.setControl(shooterLeftVoltage.withVelocity(velocity).withFeedForward(feedforward));
+    shooterRight.setControl(shooterRightVoltage.withVelocity(velocity).withFeedForward(feedforward));
   }
 
   public void setOutputShooter(double dutycycle) {

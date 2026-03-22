@@ -222,7 +222,7 @@ public class IntakeIO {
         }
 
         else {
-        pivotMotor.set(clampedVal);
+      pivotMotor.set(clampedVal);
          SmartDashboard.putNumber("feedforward", clampedVal);
         }
 

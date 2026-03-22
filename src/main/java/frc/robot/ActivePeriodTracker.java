@@ -42,7 +42,7 @@ public class ActivePeriodTracker {
 
   
   public static Alliance getFirstActiveAlliance() {
-    boolean did_We_win = Robot.autoWinner.equals(Robot.AutoWinner.US);
+    boolean did_We_win = Robot.autoWinner.equals(Robot.AutoWinner.ENEMY);
 
     Alliance us = DriverStation.getAlliance().get();
     Alliance winner = did_We_win ? us : (us.equals(Alliance.Blue) ? Alliance.Red : Alliance.Blue);

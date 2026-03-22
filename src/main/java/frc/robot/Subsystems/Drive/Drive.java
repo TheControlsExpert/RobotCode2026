@@ -44,6 +44,8 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericPublisher;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.Alert;
@@ -60,6 +62,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.Robot.ShootingState;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.SwerveConstants;
@@ -79,7 +82,6 @@ public class Drive extends SubsystemBase {
  static final double ODOMETRY_FREQUENCY = 150;
  //Vector<N3> visionSTDs = VecBuilder.fill(0.1, 0.1, 999999999); 
  // Vector<N2> pose = VecBuilder.fill(0, 0);
- 
 
  Timer gyroResetTimer = new Timer();
  public Rotation2d simRotation = new Rotation2d();
@@ -420,7 +422,8 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
  ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
  // ChassisSpeeds heightLimit = getNewTargetVelocity(discreteSpeeds);
  SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
- SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, getMaxLinearSpeedMetersPerSec() );
+
+ SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, getMaxLinearSpeedMetersPerSec());
 
 
  //SmartDashboard.putNumber("accel", Math.abs(VecBuilder.fill(getRobotRelativeSpeeds().vxMetersPerSecond, getRobotRelativeSpeeds().vyMetersPerSecond).minus(VecBuilder.fill(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond)).norm()));
@@ -491,10 +494,10 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
 
         else {
             Translation2d bottomBlue = new Translation2d(1.15, 1.5);
-            double period = 20/10;
+            double period = 12/10;
             double angle = time/period * 2 * Math.PI;
 
-            Translation2d circleRandomness = new Translation2d(Math.cos(angle) * 1, Math.sin(angle) * 1);
+            Translation2d circleRandomness = new Translation2d(Math.cos(angle) * 0.25, Math.sin(angle) * 0.7);
 
            if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
                 Translation2d topBlue = FlipVertically_bottom_to_top(bottomBlue);
@@ -744,8 +747,12 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
  if (DriverStation.isAutonomous()) {
  return 6;
  }
+
+ else if (RobotContainer.isShooting) {
+return 1.25;
+ }
  else {
- return maxSpeed;
+ return 5;
  }
  }
 

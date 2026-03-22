@@ -279,7 +279,7 @@ public class RobotContainer {
 
 
          controller.leftBumper().whileTrue(new InstantCommand(() -> {intake.is_busy = true; }).andThen(new IntakeCommand(intake))).onFalse(new InstantCommand(() -> {intake.is_busy = false;}));
-         controller.button(7).onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), DriverStation.getAlliance().get().equals(Alliance.Blue) ? Rotation2d.kZero : Rotation2d.fromDegrees(180))), drive)
+         controller.button(8).onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), DriverStation.getAlliance().get().equals(Alliance.Blue) ? Rotation2d.kZero : Rotation2d.fromDegrees(180))), drive)
                  .ignoringDisable(true));
 
 
@@ -320,7 +320,7 @@ public class RobotContainer {
        
 
         controller.leftTrigger().or(controller2.leftTrigger()).whileTrue(new Revv(shooter, drive, controller, vision));
-        controller.y().whileTrue(new AutoBumping(drive, () -> (controller.getLeftX()), () -> (controller.getLeftY()), drive.rotationkP, controller));
+        controller.y().whileTrue(new AutoBumping(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
 
 
        // controller.leftTrigger().whileTrue(new RevvTest(shooter, controller));
@@ -390,6 +390,7 @@ public class RobotContainer {
       //intake overrides/fixes
      // controller.x().whileTrue(kACharacterization.feedforwardCommand(drive, co4Controller));
       controller2.rightTrigger().or(controller.x()).whileTrue(new StartEndCommand(() -> {intake.Retract(); intake.is_busy = true;}, () -> {intake.Extend(); intake.is_busy = false;}, intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+      //controller2.b().onTrue(new InstantCommand(() -> {intake.Retract(); intake.is_busy = true;}, intake));
 
       controller3.x().whileTrue(new StartEndCommand(() -> {vision.ruin = true;}, () -> {vision.ruin = false;}).ignoringDisable(true));
 

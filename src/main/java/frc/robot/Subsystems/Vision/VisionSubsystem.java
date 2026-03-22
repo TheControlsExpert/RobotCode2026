@@ -180,17 +180,18 @@ public class VisionSubsystem extends SubsystemBase {
             }
             
 
+            
     }
 
     public void ShootingMode(boolean isShooting) {
         if (isShooting) {
             disable_other_cameras = true;
             if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
-                LimelightHelpers.SetFiducialIDFiltersOverride("limelight-four", new int[]{21,24, 25, 26, 27, 18});
+                LimelightHelpers.SetFiducialIDFiltersOverride("limelight-four", new int[]{21,24, 25, 26, 27, 18, 19, 20});
             }
             
             else {
-                LimelightHelpers.SetFiducialIDFiltersOverride("limelight-four", new int[]{9, 10, 11, 2, 8, 5});
+                LimelightHelpers.SetFiducialIDFiltersOverride("limelight-four", new int[]{9, 10, 11, 2, 8, 5, 3, 4});
             }
         }
 
