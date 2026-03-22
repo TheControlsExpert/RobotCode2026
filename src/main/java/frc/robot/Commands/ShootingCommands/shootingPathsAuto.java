@@ -10,12 +10,16 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class shootingPathsAuto extends Command{
     Shooter shooter;
     Drive drive;
     Indexer indexer;
     PathPlannerPath path;
+    Drive swerve;
     public shootingPathsAuto(Shooter shooter, Drive drive, Indexer indexer,PathPlannerPath path) {
         this.drive =drive;
         this.shooter = shooter;
@@ -24,14 +28,25 @@ public class shootingPathsAuto extends Command{
         addRequirements(shooter, drive, indexer);
     }
     public void initialize() {
+        Translation2d velocityVector;
         Translation2d currentPos = drive.getEstimatedPosition().getTranslation();
         Translation2d wantedPos = path.getStartingHolonomicPose().get().getTranslation();
-        double distance = currentPos.getDistance(wantedPos);
-        double speed = drive.getEstimatedPosition().getTranslation().getDistance(wantedPos) / 3;
+        Translation2d distance = wantedPos.minus(currentPos);
+        double speed = currentPos.getDistance(wantedPos) / 3;
         if(speed>Constants.ShooterConstants.maxMovingSpeed) {
             speed = Constants.ShooterConstants.maxMovingSpeed;
         }
-        speed = 
+        if(distance.getNorm() > 0.01) {
+            velocityVector = distance.times(speed/distance.getNorm());
+        }
+        else {
+            velocityVector = new Translation2d();
+        }
+
+        if(DriverStation.getAlliance().get().equals(Alliance.Red)){
+        velocityVector = velocityVector.unaryMinus();
+        }
+        ChassisSpeeds speeds = new ChassisSpeeds(velocityVector.getX()*swerve.getMaxLinearSpeedMetersPerSec(),velocityVector.getY()(swerve.getMaxLinearSpeedMetersPerSec()));
     }
 
 }
