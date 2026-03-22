@@ -4,8 +4,11 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.Drive.Drive;
@@ -48,6 +51,7 @@ public class shootingPathsAuto extends Command{
         double rawSpeed = finalPose.getTranslation().getDistance(initialPose.getTranslation()) / timeout; //scalar velocity
         Translation2d linearVelocity = distanceVector.times(rawSpeed/distanceVector.getNorm()); //now the velocity is vector
 
+        //all the angle stuff
         double targetRotation = finalPose.getTranslation().minus(initialPose.getTranslation()).getAngle().getRadians();
         double deltaRotation = targetRotation - drive.getEstimatedPosition().getRotation().getRadians();
         deltaRotation = MathUtil.angleModulus(deltaRotation);
@@ -55,13 +59,23 @@ public class shootingPathsAuto extends Command{
 
         MOVE = new ChassisSpeeds(
                 linearVelocity.getX(),
-                linearVelocity.getY(), 0);
+                linearVelocity.getY(), Ilan);
+        
+        boolean isFlipped =
+            DriverStation.getAlliance().isPresent()
+                && DriverStation.getAlliance().get() == Alliance.Red;
+        drive.runVelocity(
+            ChassisSpeeds.fromFieldRelativeSpeeds(
+                MOVE,
+                isFlipped
+                    ? drive.getEstimatedPosition().getRotation().plus(new Rotation2d(Math.PI))
+                    : drive.getEstimatedPosition().getRotation()));
     }
 
 
 
     public boolean isFinished () {
-        return timer.hasElapsed(timeout) && drive.getEstimatedPosition().getTranslation().getDistance(finalPos) < 0.01;
+        return timer.hasElapsed(timeout) && drive.getEstimatedPosition().getTranslation().getDistance(finalPose.getTranslation()) < 0.01;
     }
 
     public void end (boolean interrupted) {
