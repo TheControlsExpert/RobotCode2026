@@ -252,6 +252,7 @@ public class ModuleIOTalonFX implements ModuleIO {
   @Override
   public void setDriveVelocity(double velocityRadPerSec) {
     double velocityRotPerSec = Units.radiansToRotations(velocityRadPerSec);
+  
     driveTalon.setControl(velocityVoltageRequest.withVelocity(velocityRotPerSec).withEnableFOC(false));
   }
 

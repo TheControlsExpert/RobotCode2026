@@ -62,6 +62,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.Robot.ShootingState;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.SwerveConstants;
@@ -421,7 +422,8 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
  ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
  // ChassisSpeeds heightLimit = getNewTargetVelocity(discreteSpeeds);
  SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
- SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, getMaxLinearSpeedMetersPerSec() );
+
+ SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, getMaxLinearSpeedMetersPerSec());
 
 
  //SmartDashboard.putNumber("accel", Math.abs(VecBuilder.fill(getRobotRelativeSpeeds().vxMetersPerSecond, getRobotRelativeSpeeds().vyMetersPerSecond).minus(VecBuilder.fill(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond)).norm()));
@@ -745,8 +747,12 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
  if (DriverStation.isAutonomous()) {
  return 6;
  }
+
+ else if (RobotContainer.isShooting) {
+return 1.25;
+ }
  else {
- return maxSpeed;
+ return 5;
  }
  }
 

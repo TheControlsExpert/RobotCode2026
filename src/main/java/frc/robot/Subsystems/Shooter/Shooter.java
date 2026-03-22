@@ -291,6 +291,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public Rotation2d LookupTable_SOTM(Drive drive, double deltaTime) {
+        SmartDashboard.putNumber("deltaTime", deltaTime);
         ChassisSpeeds robotRelativeVelocity = drive.getRobotRelativeSpeeds();
         Pose2d beforeEstimatedPose = drive.getEstimatedPosition();
         Pose2d estimatedPose = beforeEstimatedPose.exp(
@@ -334,7 +335,7 @@ public class Shooter extends SubsystemBase {
 
         double pivotAngle = -0.36754 * lookaheadLauncherToTargetDistance*lookaheadLauncherToTargetDistance - 1.16034 * lookaheadLauncherToTargetDistance + 22.92513;
         double shooterV = 1832.83 + 271.41197 * lookaheadLauncherToTargetDistance;
-        publisher.set(new Pose2d(lookaheadPose, new Rotation2d()));
+        publisher.set(new Pose2d(drive.getEstimatedPosition().getTranslation(), lookaheadPose.minus(drive.getEstimatedPosition().getTranslation()).getAngle()));
 
         double feedforwardPivot = kD_pivot * (pivotAngle - lastPivotAngle)/deltaTime;
         double feedforwardShooter = kD_shooter * (shooterV - lastShooterV)/deltaTime;
@@ -361,7 +362,7 @@ public class Shooter extends SubsystemBase {
         }
 
         SmartDashboard.putNumber("is at shooting vel", Math.abs((inputs.shooterLeftVelocityRPM + inputs.shooterRightVelocityRPM) / 2 - velocity));
-        return Math.abs((inputs.shooterLeftVelocityRPM + inputs.shooterRightVelocityRPM) / 2 - velocity) < (Robot.shootingState.equals(ShootingState.SHOOTING) ?  ShooterConstants.ShooterVelocityTolerance : ShooterConstants.PassingVelocityTolerance);
+        return Math.abs((inputs.shooterLeftVelocityRPM + inputs.shooterRightVelocityRPM) / 2 - velocity) < (Robot.shootingState.equals(ShootingState.SHOOTING) ?  100 : 150);
     }
 
     public boolean isAtPivotPosition(double distance) {
@@ -374,7 +375,7 @@ public class Shooter extends SubsystemBase {
             position = PassAngleMap.get(distance);
         }
         SmartDashboard.putNumber("is at pivot position", Math.abs(inputs.shooterPivotEncoderRotations - position));
-        return Math.abs(inputs.shooterPivotEncoderRotations - position) < (Robot.shootingState.equals(ShootingState.SHOOTING) ? ShooterConstants.ShooterPivotTolerance : ShooterConstants.PassingPivotTolerance);
+        return Math.abs(inputs.shooterPivotEncoderRotations - position) < (Robot.shootingState.equals(ShootingState.SHOOTING) ? 0.35 : ShooterConstants.PassingPivotTolerance);
     }
 
     public void shootManual() {

@@ -261,7 +261,7 @@ public final class Constants {
     public static final double BASIC_PASSING_PIVOT = 0;
     public static final int pivot_gear_ratio = 25;
     public static final double abs_offset = 0.132714;
-    public static final double MAX_ENCODER_VAL = 0.894;
+    public static final double MAX_ENCODER_VAL = 0.82;
     public static final double MIN_ENCODER_VAL = 0.15;
     public static final double ShootingManualDistance = 2.05;
     public static final double PassingVelocityTolerance = 0;

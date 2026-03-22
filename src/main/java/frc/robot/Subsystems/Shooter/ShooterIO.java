@@ -145,10 +145,11 @@ public class ShooterIO {
      
      SmartDashboard.putNumber("shooter i encoder", inputs.shooterPivotEncoderRotations);
      SmartDashboard.putNumber(" abs encoder for shooter", absoluteEncoder.get());
-     SmartDashboard.putBoolean("canMove", canMove);
+     SmartDashboard.putBoolean("canMove shooter", canMove);
      SmartDashboard.putNumber("speed shooter", inputs.shooterLeftVelocityRPM);
      //SmartDashboard.putNumber("closed loop error", shooterPivot.getClosedLoopError().getValueAsDouble());
      double target_abs = target / ShooterConstants.pivot_gear_ratio + ShooterConstants.abs_offset;
+     SmartDashboard.putNumber("target ABS", target_abs);
 
       if (absoluteEncoder.isConnected()) {
       if ((absoluteEncoder.get() > ShooterConstants.MAX_ENCODER_VAL && target_abs > absoluteEncoder.get()) ||  
