@@ -75,6 +75,7 @@ import frc.robot.Commands.ShootingCommands.Revv;
 import frc.robot.Commands.ShootingCommands.RevvTest;
 import frc.robot.Commands.ShootingCommands.Shooting;
 import frc.robot.Commands.ShootingCommands.ShootingTest;
+import frc.robot.Commands.ShootingCommands.shootingPathsAuto;
 import frc.robot.Subsystems.Climb.Climb;
 import frc.robot.Subsystems.Climb.ClimbIO;
 import frc.robot.Subsystems.Drive.Drive;
@@ -265,7 +266,7 @@ public class RobotContainer {
         Command secondMiddleCommand = AutoBuilder.followPath(secondMiddlePath);
 
          autoCommand = new ParallelRaceGroup(firstMiddleCommand, new WaitCommand(1).andThen(new IntakeCommand(intake, 3)).andThen(new Revv(shooter, drive, controller, vision))).
-                      andThen(new shootingPathsAuto(shooter, drive, indexer, secondMiddlePath)).
+                      andThen(new shootingPathsAuto(shooter, drive, indexer, firstMiddlePath, vision)).
                       andThen(new InstantCommand(() -> {intake.Retract();}, intake)).
                       andThen(new ParallelRaceGroup(secondMiddleCommand, new WaitCommand(1.7).andThen(new IntakeCommand(intake, 2.3)).andThen(new Revv(shooter, drive, controller, vision)))).
                       andThen(new Shooting(shooter, indexer, drive));

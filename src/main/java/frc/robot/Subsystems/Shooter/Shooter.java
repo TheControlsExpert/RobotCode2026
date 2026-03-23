@@ -262,6 +262,59 @@ public class Shooter extends SubsystemBase {
         }
      }
 
+
+    public Rotation2d LookupTable_Passing_SOTM(Drive drive, double seconds) {
+        ChassisSpeeds robotRelativeVelocity = drive.getRobotRelativeSpeeds();
+        Pose2d beforeEstimatedPose = drive.getEstimatedPosition();
+        Pose2d estimatedPose = beforeEstimatedPose.exp(
+        
+            new Twist2d(
+                robotRelativeVelocity.vxMetersPerSecond * phaseDelay,
+                robotRelativeVelocity.vyMetersPerSecond * phaseDelay,
+                robotRelativeVelocity.omegaRadiansPerSecond * phaseDelay));
+
+        Translation2d target = drive.calculateShootingPosition(seconds); 
+        ChassisSpeeds chassis_fieldRelativeVelocity = drive.getFieldRelativeSpeeds();
+      //  ChassisSpeeds shooter_fieldRelativeVelocity = transformVelocity(chassis_fieldRelativeVelocity, ShooterConstants.robotToShooter.getTranslation(), estimatedPose.getRotation());
+
+        Translation2d shooterPosition = estimatedPose.transformBy(ShooterConstants.robotToShooter).getTranslation();
+        
+        double launcherToTargetDistance = target.getDistance(shooterPosition);
+
+        double lookaheadLauncherToTargetDistance = launcherToTargetDistance;
+        Translation2d lookaheadPose = shooterPosition;
+
+
+
+        for (int i = 0; i < 10; i++) {
+        double TOF = 0.035 * Math.pow(lookaheadLauncherToTargetDistance + ShooterConstants.x, 2) - 0.075 * (lookaheadLauncherToTargetDistance + ShooterConstants.x) + 1.1;
+        
+        double offsetX = chassis_fieldRelativeVelocity.vxMetersPerSecond * TOF;
+        double offsetY = chassis_fieldRelativeVelocity.vyMetersPerSecond * TOF;
+
+        SmartDashboard.putNumber("offset x", offsetX);
+        SmartDashboard.putNumber("offsetY", offsetY);
+        SmartDashboard.putNumber("TOF", TOF);
+      
+       lookaheadPose =
+              target.minus(new Translation2d(offsetX, offsetY));     
+      lookaheadLauncherToTargetDistance = lookaheadPose.getDistance(drive.getEstimatedPosition().getTranslation());
+        }
+
+        double hoodPosition = 0.5;
+        double shooterVel = solve( -4.22697 * Math.pow(10, -7),  0.0052122, -lookaheadLauncherToTargetDistance - 5.20419);
+
+
+        io.setPivotPosition(hoodPosition);
+        io.setVelocityShooter(shooterVel/60);
+
+        return (lookaheadPose.minus(drive.getEstimatedPosition().getTranslation()).getAngle()); 
+
+
+
+   
+    }
+
     public void LookupTable_Passing(Drive drive, double seconds) {
         double distance = drive.getEstimatedPosition().getTranslation().getDistance(drive.calculateShootingPosition(seconds));
     

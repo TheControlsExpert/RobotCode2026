@@ -250,7 +250,7 @@ else {
         }
 
         else {
-        shooter.LookupTable_Passing(drive, timer.get());    
+        shooter.LookupTable_Passing_SOTM(drive, timer.get());    
         }
 
         Translation2d linearVelocity;
@@ -295,8 +295,14 @@ else {
         }
 
         else {
-            angleToTarget_radians = shootingPosition.minus(drive.getEstimatedPosition().getTranslation()).getAngle().getRadians();
-            derivativeAddon = 0;
+            angleToTarget_radians = shooter.LookupTable_Passing_SOTM(drive, Timer.getFPGATimestamp() - prev_timestamp).getRadians();
+            deltaTime = Timer.getFPGATimestamp() - prev_timestamp;
+            derivativeAddon = (angleToTarget_radians - prev_angleToTarget_radians) / deltaTime;
+
+            prev_angleToTarget_radians = angleToTarget_radians;
+           
+            prev_timestamp = Timer.getFPGATimestamp();
+           
         }
         
         double deltaRotation = angleToTarget_radians - drive.getEstimatedPosition().getRotation().getRadians();
