@@ -261,6 +261,8 @@ public class RobotContainer {
        // autoChooser.addOption("Drive Forward", new StraightDriveCommand(3, drive));
       //  SmartDashboard.putData(autoChooser);
 
+      FollowPathCommand.warmupCommand();
+
       try {
          firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("EllipseWay1").flipPath();
          secondMiddlePath = PathPlannerPath.fromChoreoTrajectory("EllipseWay2").flipPath();
@@ -268,14 +270,12 @@ public class RobotContainer {
         Command firstMiddleCommand = AutoBuilder.followPath(firstMiddlePath);
         Command secondMiddleCommand = AutoBuilder.followPath(secondMiddlePath);
 
-         autoCommand = new ParallelRaceGroup(firstMiddleCommand, new WaitCommand(0.2).andThen(new IntakeCommand(intake, 3)).andThen(new Revv(shooter, drive, controller, vision))).
+         autoCommand = new ParallelRaceGroup(firstMiddleCommand, new WaitCommand(0.35).andThen(new IntakeCommand(intake, 3)).andThen(new Revv(shooter, drive, controller, vision))).
                       andThen(new shootingPathsAuto(shooter, drive, indexer, firstMiddlePath, vision)).
                       andThen(new InstantCommand(() -> {intake.Retract();}, intake)).
                       andThen(new ParallelRaceGroup(secondMiddleCommand, new WaitCommand(1.7).andThen(new IntakeCommand(intake, 2.3)).andThen(new Revv(shooter, drive, controller, vision)))).
                       andThen(new Shooting(shooter, indexer, drive));
-        
-
-        
+    
       }
 
       catch (Exception e) {
