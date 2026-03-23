@@ -141,6 +141,7 @@ public class RobotContainer {
   public Timer timeout_shuffle;
   AutomaticTrenching autoTrenching;
   AutomaticClimbing autoClimbing;
+  Command autoCommand = Commands.none();
 
 
  
@@ -260,14 +261,26 @@ public class RobotContainer {
         PathPlannerPath firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("EllipseWay1");
         PathPlannerPath secondMiddlePath = PathPlannerPath.fromChoreoTrajectory("EllipseWay2");
 
-        Command autoCommand = new ParallelRaceGroup(AutoBuilder.followPath(firstMiddlePath), new IntakeCommand(intake, 3).andThen(new Revv(shooter, drive, controller, vision))).
-                      andThen(new ShootingAuto()
+        Command firstMiddleCommand = AutoBuilder.followPath(firstMiddlePath);
+        Command secondMiddleCommand = AutoBuilder.followPath(secondMiddlePath);
+
+         autoCommand = new ParallelRaceGroup(firstMiddleCommand, new WaitCommand(1).andThen(new IntakeCommand(intake, 3)).andThen(new Revv(shooter, drive, controller, vision))).
+                      andThen(new shootingPathsAuto(shooter, drive, indexer, secondMiddlePath)).
+                      andThen(new InstantCommand(() -> {intake.Retract();}, intake)).
+                      andThen(new ParallelRaceGroup(secondMiddleCommand, new WaitCommand(1.7).andThen(new IntakeCommand(intake, 2.3)).andThen(new Revv(shooter, drive, controller, vision)))).
+                      andThen(new Shooting(shooter, indexer, drive));
         
 
         
       }
 
+      catch (Exception e) {
+        System.out.println("Failed to load auto paths, defaulting to nothing");
+        autoCommand = Commands.none();
+       // autoChooser.setDefaultOption("Nothing", Commands.none());
+
       }
+    }
     
     
      
@@ -483,10 +496,9 @@ public class RobotContainer {
 
 
 
- 
-  public Command getAutonomousCommand(PositionEnums chosenPosition, PathPlannerPath firstMiddlePath, PathPlannerPath secondMiddlePath) {
+  public Command getAutonomousCommand() {
 
-   // PathPlannerAuto command = null;
+   return autoCommand;
    
   }
      

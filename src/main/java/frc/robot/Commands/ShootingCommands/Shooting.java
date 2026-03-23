@@ -467,6 +467,8 @@ public void end(boolean interrupted) {
     vision.ShootingMode(false);
     shooter.setShooterVelocity(0);
     shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
+    shooter.isShooting = false;
+    RobotContainer.isShooting = false;
  //   }
 
     //CommandScheduler.getInstance().schedule(new Jam(indexer, shooter, 2.0)); //runs the indexer in the opposite direction to clear balls from the shooter

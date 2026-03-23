@@ -279,7 +279,7 @@ public final class Constants {
     public static final boolean intake_inverted = true;
 
     public static final double intakeSupplyCurrentLimit = 50;
-    public static final double intakeStatorCurrentLimit = 80;
+    public static final double intakeStatorCurrentLimit = 40;
     public static final double HOME_Position = 0.43;
     public static final double INTAKING_Position = 0.097;
     public static final double SHUFFLE_UP_POSITION = 0.28;

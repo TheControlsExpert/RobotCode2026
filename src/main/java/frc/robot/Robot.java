@@ -198,7 +198,8 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-   
+    m_robotContainer.drive.lowerCurrentLimits();
+;   
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
