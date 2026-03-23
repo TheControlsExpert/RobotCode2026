@@ -31,6 +31,7 @@ public class shootingPathsAuto extends Command{
     VisionSubsystem vision;
     Timer timer = new Timer();
     double TimeToFinish = 3.0;
+    Translation2d velocityVector;
 
     public shootingPathsAuto(Shooter shooter, Drive drive, Indexer indexer,PathPlannerPath path,VisionSubsystem vision) {
         this.swerve = drive;
@@ -44,17 +45,14 @@ public class shootingPathsAuto extends Command{
     public void initialize() {
         vision.ShootingMode(true);
         timer.restart();
-    }
 
-    public void execute() {
-        Translation2d velocityVector;
         Translation2d currentPos = swerve.getEstimatedPosition().getTranslation();
         Translation2d wantedPos = path.getStartingHolonomicPose().get().getTranslation();
        
         Translation2d distance = wantedPos.minus(currentPos);
         double speed = currentPos.getDistance(wantedPos) / TimeToFinish;
-        if(speed>0.3) {
-            speed = 0.3;
+        if(speed > 3) {
+            speed = 3;
         }
         if(distance.getNorm() > 0.035) {
             velocityVector = distance.times(speed/distance.getNorm());
@@ -63,9 +61,13 @@ public class shootingPathsAuto extends Command{
             velocityVector = new Translation2d();
         }
 
-        // if(DriverStation.getAlliance().get().equals(Alliance.Red)){
-        // velocityVector = velocityVector;
-        // }
+        if(DriverStation.getAlliance().get().equals(Alliance.Red)){
+        velocityVector = velocityVector.unaryMinus();
+        }
+    }
+
+    public void execute() {
+        
 
         Rotation2d currentAngle = swerve.getEstimatedPosition().getRotation(); //just getting the omega (rotation)
         Rotation2d wantedAngle = shooter.LookupTable_SOTM(swerve,0.0);    

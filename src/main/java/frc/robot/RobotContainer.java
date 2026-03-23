@@ -271,21 +271,16 @@ public class RobotContainer {
         Command secondMiddleCommand = AutoBuilder.followPath(secondMiddlePath);
 
          autoCommand = new ParallelRaceGroup(firstMiddleCommand, new WaitCommand(0.35).andThen(new IntakeCommand(intake, 3)).andThen(new Revv(shooter, drive, controller, vision))).
-                      andThen(new ParallelRaceGroup(shootingPathsAuto(shooter, drive, indexer, firstMiddlePath, vision), 
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-                      ).
+                      andThen(new ParallelRaceGroup(new shootingPathsAuto(shooter, drive, indexer, secondMiddlePath, vision), new WaitCommand(1).andThen(  
+                      (new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.4);}, intake).
+                      andThen(new WaitCommand(0.5)).
+                      andThen(new InstantCommand(() -> {intake.Extend();}, intake)).
+                      andThen(new WaitCommand(0.3))).repeatedly()
+
+                      ))).
                       andThen(new InstantCommand(() -> {intake.Retract();  }, intake)).
                       andThen(new ParallelRaceGroup(secondMiddleCommand, new WaitCommand(1.7).andThen(new IntakeCommand(intake, 2.3)).andThen(new Revv(shooter, drive, controller, vision)))).
-                      andThen(new Shooting(shooter, indexer, drive));
+                      andThen(new Shooting(shooter, drive, indexer, intake, controller, null, null, null, 0, 0, vision));
     
       }
 
