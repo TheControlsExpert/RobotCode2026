@@ -56,10 +56,6 @@ public class Shooting extends Command {
     double bps = 7;
     VisionSubsystem vision;
     boolean isShuffling = true;
-    double kD_rotation = 0;
-
-    double prev_angleToTarget_radians = 0;
-    double prev_timestamp = 0;
 
     
 
@@ -104,8 +100,6 @@ public class Shooting extends Command {
 
     @Override
     public void initialize() {
-        prev_angleToTarget_radians = drive.getEstimatedPosition().getTranslation().minus(drive.calculateShootingPosition(0)).getAngle().getRadians();
-        prev_timestamp = Timer.getFPGATimestamp();
         vision.ShootingMode(true);   
         readyToShoot = false;
         hasShuffled = false;
@@ -245,8 +239,7 @@ else {
 
     else {
         if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
-        shooter.LookupTable_SOTM(drive, Timer.getFPGATimestamp() - prev_timestamp);
-     //  shooter.LookupTable_Shooting(drive);
+        shooter.LookupTable_Shooting(drive);
         }
 
         else {
@@ -279,27 +272,8 @@ else {
         double distance = drive.getEstimatedPosition().getTranslation().getDistance(shootingPosition);
         //double[] shootingParameters = shooter.LookupTable_Shooting(drive);
         double omega;
-        
-        double angleToTarget_radians;
-        double derivativeAddon;
-        double deltaTime;
-
-        if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
-            angleToTarget_radians = shooter.LookupTable_SOTM(drive, Timer.getFPGATimestamp() - prev_timestamp).getRadians();
-            deltaTime = Timer.getFPGATimestamp() - prev_timestamp;
-            derivativeAddon = (angleToTarget_radians - prev_angleToTarget_radians) / deltaTime;
-
-            prev_angleToTarget_radians = angleToTarget_radians;
-            prev_timestamp = Timer.getFPGATimestamp();
-        }
-
-        else {
-            angleToTarget_radians = shootingPosition.minus(drive.getEstimatedPosition().getTranslation()).getAngle().getRadians();
-            derivativeAddon = 0;
-        }
-        
+        double angleToTarget_radians = shootingPosition.minus(drive.getEstimatedPosition().getTranslation()).getAngle().getRadians();
         double deltaRotation = angleToTarget_radians - drive.getEstimatedPosition().getRotation().getRadians();
-
         
         deltaRotation = MathUtil.angleModulus(deltaRotation);
         //Change back to degrees
@@ -310,7 +284,7 @@ else {
            // shooter.setPositionPivot(shootingParameters[1]);
 
         
-         omega = deltaRotation * kP_rotation + (derivativeAddon) * kD_rotation;
+         omega = deltaRotation * kP_rotation;
         
     //    }
 
@@ -357,7 +331,7 @@ if ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - ma
     (!Robot.winner_selection_done)) {
 
     //shooting parameters are close enough to START shooting
-    if (!readyToShoot && (((shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance)) || Robot.shootingState.equals(ShootingState.PASSING)))  && (Math.abs(deltaRotation) < 5 && Robot.shootingState.equals(ShootingState.SHOOTING) || Math.abs(deltaRotation) < 8 && Robot.shootingState.equals(ShootingState.PASSING))) {
+    if (!readyToShoot && ((shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance)) || Robot.shootingState.equals(ShootingState.PASSING)) && drive.getGyroSpeed() < 2 && (Math.abs(deltaRotation) < ShooterConstants.YawAngleTolerance)) {
         readyToShoot = true;
         shooter.isShooting = true;
         RobotContainer.isShooting = true;
