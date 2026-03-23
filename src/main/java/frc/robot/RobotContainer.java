@@ -320,7 +320,7 @@ public class RobotContainer {
 
       //  timeout_shuffle = new Timer();
        //Trigger timeoutshuffle_trigger = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {timeout_shuffle.restart();}));
-       Trigger shuffle_trigger = new Trigger(() -> (RobotContainer.isShooting  && !intake.is_busy)).onTrue(
+       Trigger shuffle_trigger = new Trigger(() -> (RobotContainer.isShooting  && !intake.is_busy && DriverStation.isTeleop())).onTrue(
         new WaitCommand(1).andThen(
 
        
