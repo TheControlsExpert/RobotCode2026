@@ -44,7 +44,7 @@ public class AutomaticTrenching extends Command {
     boolean starting_from_middle = false;
     private final DoubleSupplier xSupplier;
     private final DoubleSupplier ySupplier;
-    double kp;
+    double kp = 0.3;
     double deltaRotationABS = 99999;
 
     //these define the trench x distance, and the distance to the middle of the field in the x direction
@@ -53,13 +53,14 @@ public class AutomaticTrenching extends Command {
     double inverted_distance = 0.35;
     double rotationSetpoint = 0;
     private final CommandXboxController controller;
+    ChassisSpeeds speeds;
 
     public AutomaticTrenching(Drive swervy, PathConstraints constraints, DoubleSupplier xSupplier, DoubleSupplier ySupplier, double kP_rotation, CommandXboxController controller) {
         this.swerve = swervy;
         this.constraints = constraints;    
         this.xSupplier = xSupplier;
         this.ySupplier = ySupplier;
-        this.kp = kP_rotation;
+       // this.kp = kP_rotation;
         this.controller = controller;
         aligner = new AutoPID(2.5, 0.08);
         addRequirements(swervy);   
@@ -93,6 +94,7 @@ public class AutomaticTrenching extends Command {
         double deltaDegrees = Math.toDegrees(delta);
         double omega =  kp * deltaDegrees;
         deltaRotationABS = Math.abs(deltaDegrees);
+        SmartDashboard.putNumber("", rotationSetpoint);
 
         Translation2d linearVelocity;
 
@@ -114,12 +116,12 @@ public class AutomaticTrenching extends Command {
 
         
         // else {
-            linearVelocity = new Translation2d(linearVelocity.getX() * 0.3, linearVelocity.getY() * distanceToVel_map.get(Math.abs(swerve.getEstimatedPosition().getY() - 4.021328)));
+          //  linearVelocity = new Translation2d(linearVelocity.getX() * 0.3, linearVelocity.getY() * distanceToVel_map.get(Math.abs(swerve.getEstimatedPosition().getY() - 4.021328)));
            // linearVelocity = linearVelocity.times(distanceToVel_map.get(Math.abs(swerve.getEstimatedPosition().getY() - 4.021328)));
         //}
 
                // Convert to field relative speeds & send command
-              ChassisSpeeds speeds =
+               speeds =
                   new ChassisSpeeds(
                       linearVelocity.getX() * swerve.getMaxLinearSpeedMetersPerSec(),
                       linearVelocity.getY() * swerve.getMaxLinearSpeedMetersPerSec(),
@@ -155,6 +157,19 @@ public class AutomaticTrenching extends Command {
       return deltaRotationABS < 5;
   }
 
+  @Override
+  public void end(boolean interrupted) {
+    ChassisSpeeds speeds2 = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 0);
+          boolean isFlipped =
+                  DriverStation.getAlliance().isPresent()
+                      && DriverStation.getAlliance().get() == Alliance.Red;
+              swerve.runVelocity(
+                  ChassisSpeeds.fromFieldRelativeSpeeds(
+                      speeds2,
+                      isFlipped
+                          ? swerve.getEstimatedPosition().getRotation().plus(new Rotation2d(Math.PI))
+                          : swerve.getEstimatedPosition().getRotation()));
+  }
 
     
     //This method finds the closest goal-point out of the 4 on the field: red, blue, top bottom

@@ -214,7 +214,7 @@ private final Field2d m_field = new Field2d();
  // Method that will drive the robot gn ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
  new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
  new PIDConstants(translationkP, 0.0, 0.8), // Translation PID constants
- new PIDConstants(1.5, 0.0, 0.0) // Rotation PID constants
+ new PIDConstants(2.5, 0.0, 0.0) // Rotation PID constants
  ),
  
  config, // The robot configuration
@@ -672,7 +672,7 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
  //SmartDashboard.putBoolean("adding vision", true);
  //visionLock.lock();
     SmartDashboard.putBoolean("angle conditions", Math.abs(gyroInputs.rollDegrees) < 1 || Math.abs(gyroInputs.pitchDegrees) < 1);
- if (Math.abs(gyroInputs.rollDegrees) < 2 && Math.abs(gyroInputs.pitchDegrees) < 2 && getGyroSpeed() < 180 && getTranslationalSpeed() < 5) {
+ if (Math.abs(gyroInputs.rollDegrees) < 5 && Math.abs(gyroInputs.pitchDegrees) < 5 && getGyroSpeed() < 180 && getTranslationalSpeed() < 5) {
 
  SwervePoseEstimator.addVisionMeasurement(new Pose2d(measurement.pose().getTranslation(), getRotation()), measurement.timestamp(), stds);
 

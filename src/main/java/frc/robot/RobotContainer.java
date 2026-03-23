@@ -378,7 +378,7 @@ public class RobotContainer {
      //   controller.a().whileTrue(new AutoBumping(drive, intake, () -> -controller.getLeftY(), () -> -controller.getLeftX(), 0.08, controller));
          
        
-        controller.b().whileTrue(autoTrenching.andThen(
+        controller.rightBumper().whileTrue(autoTrenching.andThen(
         
       Commands.defer(() -> autoTrenching.getPathingCommand().until(
         
