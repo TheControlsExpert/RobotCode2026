@@ -144,6 +144,9 @@ public class RobotContainer {
   AutomaticClimbing autoClimbing;
   Command autoCommand = Commands.none();
 
+  PathPlannerPath firstMiddlePath;
+  PathPlannerPath secondMiddlePath;
+
 
  
 
@@ -259,13 +262,13 @@ public class RobotContainer {
       //  SmartDashboard.putData(autoChooser);
 
       try {
-        PathPlannerPath firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("EllipseWay1");
-        PathPlannerPath secondMiddlePath = PathPlannerPath.fromChoreoTrajectory("EllipseWay2");
+         firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("EllipseWay1").flipPath();
+         secondMiddlePath = PathPlannerPath.fromChoreoTrajectory("EllipseWay2").flipPath();
 
         Command firstMiddleCommand = AutoBuilder.followPath(firstMiddlePath);
         Command secondMiddleCommand = AutoBuilder.followPath(secondMiddlePath);
 
-         autoCommand = new ParallelRaceGroup(firstMiddleCommand, new WaitCommand(1).andThen(new IntakeCommand(intake, 3)).andThen(new Revv(shooter, drive, controller, vision))).
+         autoCommand = new ParallelRaceGroup(firstMiddleCommand, new WaitCommand(0.2).andThen(new IntakeCommand(intake, 3)).andThen(new Revv(shooter, drive, controller, vision))).
                       andThen(new shootingPathsAuto(shooter, drive, indexer, firstMiddlePath, vision)).
                       andThen(new InstantCommand(() -> {intake.Retract();}, intake)).
                       andThen(new ParallelRaceGroup(secondMiddleCommand, new WaitCommand(1.7).andThen(new IntakeCommand(intake, 2.3)).andThen(new Revv(shooter, drive, controller, vision)))).
@@ -498,6 +501,7 @@ public class RobotContainer {
 
 
   public Command getAutonomousCommand() {
+    drive.resetPosition(firstMiddlePath.getStartingHolonomicPose().get());
 
    return autoCommand;
    
