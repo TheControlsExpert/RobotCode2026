@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class shootingPathsAuto extends Command{
     Shooter shooter;
-    Drive drive;
     Indexer indexer;
     PathPlannerPath path;
     Drive swerve;
@@ -34,7 +33,7 @@ public class shootingPathsAuto extends Command{
     double TimeToFinish = 3.0;
 
     public shootingPathsAuto(Shooter shooter, Drive drive, Indexer indexer,PathPlannerPath path,VisionSubsystem vision) {
-        this.drive =drive;
+        this.swerve = drive;
         this.shooter = shooter;
         this.indexer = indexer;
         this.path = path;
@@ -49,7 +48,7 @@ public class shootingPathsAuto extends Command{
 
     public void execute() {
         Translation2d velocityVector;
-        Translation2d currentPos = drive.getEstimatedPosition().getTranslation();
+        Translation2d currentPos = swerve.getEstimatedPosition().getTranslation();
         Translation2d wantedPos = path.getStartingHolonomicPose().get().getTranslation();
        
         Translation2d distance = wantedPos.minus(currentPos);
@@ -64,17 +63,17 @@ public class shootingPathsAuto extends Command{
             velocityVector = new Translation2d();
         }
 
-        if(DriverStation.getAlliance().get().equals(Alliance.Red)){
-        velocityVector = velocityVector.unaryMinus();
-        }
+        // if(DriverStation.getAlliance().get().equals(Alliance.Red)){
+        // velocityVector = velocityVector;
+        // }
 
-        Rotation2d currentAngle = drive.getEstimatedPosition().getRotation(); //just getting the omega (rotation)
-        Rotation2d wantedAngle = shooter.LookupTable_SOTM(drive,0.0);    
+        Rotation2d currentAngle = swerve.getEstimatedPosition().getRotation(); //just getting the omega (rotation)
+        Rotation2d wantedAngle = shooter.LookupTable_SOTM(swerve,0.0);    
         Rotation2d currentToWanted = wantedAngle.minus(currentAngle);
         double RadianDistance = currentToWanted.getRadians();
         RadianDistance = MathUtil.angleModulus(RadianDistance);
         RadianDistance = Math.toDegrees(RadianDistance);
-        double omega = RadianDistance*drive.rotationkP;
+        double omega = RadianDistance*swerve.rotationkP;
 
 
         ChassisSpeeds speeds = new ChassisSpeeds
@@ -92,9 +91,9 @@ public class shootingPathsAuto extends Command{
                           : swerve.getRotation()));
         boolean readyToShoot = false;
 
-        Translation2d shootingPosition = drive.calculateShootingPosition(timer.get());
+        Translation2d shootingPosition = swerve.calculateShootingPosition(timer.get());
 
-        double distance_to_hub = drive.getEstimatedPosition().getTranslation().getDistance(shootingPosition);
+        double distance_to_hub = swerve.getEstimatedPosition().getTranslation().getDistance(shootingPosition);
 
         if (!readyToShoot && shooter.isAtShootingVelocity(distance_to_hub) && shooter.isAtPivotPosition(distance_to_hub)  && Math.abs(currentToWanted.getRadians()) < 10) {
             readyToShoot = true;
