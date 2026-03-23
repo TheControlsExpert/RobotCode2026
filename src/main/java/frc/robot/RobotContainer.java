@@ -75,6 +75,7 @@ import frc.robot.Commands.ShootingCommands.Revv;
 import frc.robot.Commands.ShootingCommands.RevvTest;
 import frc.robot.Commands.ShootingCommands.Shooting;
 import frc.robot.Commands.ShootingCommands.ShootingTest;
+import frc.robot.Commands.ShootingCommands.shootingPathsAuto;
 import frc.robot.Subsystems.Climb.Climb;
 import frc.robot.Subsystems.Climb.ClimbIO;
 import frc.robot.Subsystems.Drive.Drive;
@@ -141,6 +142,7 @@ public class RobotContainer {
   public Timer timeout_shuffle;
   AutomaticTrenching autoTrenching;
   AutomaticClimbing autoClimbing;
+  Command autoCommand = Commands.none();
 
 
  
@@ -256,7 +258,30 @@ public class RobotContainer {
        // autoChooser.addOption("Drive Forward", new StraightDriveCommand(3, drive));
       //  SmartDashboard.putData(autoChooser);
 
+      try {
+        PathPlannerPath firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("EllipseWay1");
+        PathPlannerPath secondMiddlePath = PathPlannerPath.fromChoreoTrajectory("EllipseWay2");
+
+        Command firstMiddleCommand = AutoBuilder.followPath(firstMiddlePath);
+        Command secondMiddleCommand = AutoBuilder.followPath(secondMiddlePath);
+
+         autoCommand = new ParallelRaceGroup(firstMiddleCommand, new WaitCommand(1).andThen(new IntakeCommand(intake, 3)).andThen(new Revv(shooter, drive, controller, vision))).
+                      andThen(new shootingPathsAuto(shooter, drive, indexer, firstMiddlePath, vision)).
+                      andThen(new InstantCommand(() -> {intake.Retract();}, intake)).
+                      andThen(new ParallelRaceGroup(secondMiddleCommand, new WaitCommand(1.7).andThen(new IntakeCommand(intake, 2.3)).andThen(new Revv(shooter, drive, controller, vision)))).
+                      andThen(new Shooting(shooter, indexer, drive));
+        
+
+        
       }
+
+      catch (Exception e) {
+        System.out.println("Failed to load auto paths, defaulting to nothing");
+        autoCommand = Commands.none();
+       // autoChooser.setDefaultOption("Nothing", Commands.none());
+
+      }
+    }
     
     
      
@@ -472,63 +497,10 @@ public class RobotContainer {
 
 
 
- 
-  public Command getAutonomousCommand(PositionEnums chosenPosition, PathPlannerPath firstMiddlePath, PathPlannerPath collectLoaderPath, PathPlannerPath leaveLoaderPath) {
+  public Command getAutonomousCommand() {
 
-    Command firstMiddleAuto = AutoBuilder.followPath(firstMiddlePath);
-    Command collectLoaderAuto;
-    if (chosenPosition.equals(PositionEnums.DEPOT)) {
-      collectLoaderAuto = AutoBuilder.followPath(collectLoaderPath);
-    } else {
-      collectLoaderAuto = Commands.none();
-    }
-    Command leaveLoaderAuto = AutoBuilder.followPath(leaveLoaderPath);
-
-
-
-
-    Pose2d loaderPose;
-    if (chosenPosition.equals(PositionEnums.OUTPOST)) {
-      loaderPose = new Pose2d(0.628, 0.652, new Rotation2d(Math.PI)); //blue outpost position
-    } 
-    else if (chosenPosition.equals(PositionEnums.DEPOT)) {
-      loaderPose = new Pose2d(1.439, 5.993, new Rotation2d(Math.PI)); 
-    }
-    else {
-      loaderPose = new Pose2d(0, 0, new Rotation2d(Math.PI));
-    }
-
-    if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) {
-      loaderPose = new Pose2d(FlipHorizontally_BtoR(loaderPose.getTranslation()), loaderPose.getRotation());
-      loaderPose = new Pose2d(FlipVertically_bottom_to_top(loaderPose.getTranslation()), loaderPose.getRotation());
-    }
-
-    final Pose2d finalLoaderPose = loaderPose;
-    Supplier<Pose2d> liveLoaderPose = () -> finalLoaderPose; //need it to be in this form for the ProfiledPIDCommand
-    AutoAlign trapezoidalPath = new AutoAlign(1, 0.08, .02, 5);
-    ProfiledPIDCommand trapezoidalCommand = new ProfiledPIDCommand(trapezoidalPath, drive, liveLoaderPose);
-
-    
-    
-
-    if (chosenPosition.equals(PositionEnums.OUTPOST)) {
-      drive.resetPosition(firstMiddlePath.getStartingHolonomicPose().get());
-      return new ParallelRaceGroup(firstMiddleAuto, new WaitCommand(1).andThen(new IntakeCommand(intake)), new WaitCommand(3).andThen(new Revv(shooter, drive, controller, vision))).
-      andThen(new ParallelCommandGroup(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, 3, vision)), new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)).
-      andThen(trapezoidalCommand).andThen(new WaitCommand(3)).
-      andThen(collectLoaderAuto).andThen(leaveLoaderAuto).
-      andThen(new ParallelCommandGroup(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, 3, vision)), new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)); 
-    }
-
-    if (chosenPosition.equals(PositionEnums.DEPOT)) {
-      drive.resetPosition(firstMiddlePath.getStartingHolonomicPose().get());
-      return new ParallelRaceGroup(firstMiddleAuto, new WaitCommand(1).andThen(new IntakeCommand(intake)), new WaitCommand(3).andThen(new Revv(shooter, drive, controller, vision))).
-      andThen(new ParallelCommandGroup(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, 3, vision)), new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)).
-      andThen(trapezoidalCommand).andThen(collectLoaderAuto).andThen(leaveLoaderAuto).
-      andThen(new ParallelCommandGroup(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, 3, vision)), new InstantCommand(() -> {intake.setIntakeDutyCycle(0.3);}, intake)); 
-    }
-
-    return Commands.none();
+   return autoCommand;
+   
   }
      
 

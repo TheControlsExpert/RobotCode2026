@@ -167,4 +167,8 @@ public class Module {
   public double getFFCharacterizationAcceleration() {
     return Units.radiansToRotations(inputs.driveAccelerationRadPerSec);
   }
+
+  public void lowerCurrentLimits() {
+    io.lowerCurrentLimits();
+  }
 }

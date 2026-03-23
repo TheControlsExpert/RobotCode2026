@@ -250,7 +250,7 @@ else {
         }
 
         else {
-        shooter.LookupTable_Passing(drive, timer.get());    
+        shooter.LookupTable_Passing_SOTM(drive, timer.get());    
         }
 
         Translation2d linearVelocity;
@@ -295,8 +295,14 @@ else {
         }
 
         else {
-            angleToTarget_radians = shootingPosition.minus(drive.getEstimatedPosition().getTranslation()).getAngle().getRadians();
-            derivativeAddon = 0;
+            angleToTarget_radians = shooter.LookupTable_Passing_SOTM(drive, Timer.getFPGATimestamp() - prev_timestamp).getRadians();
+            deltaTime = Timer.getFPGATimestamp() - prev_timestamp;
+            derivativeAddon = (angleToTarget_radians - prev_angleToTarget_radians) / deltaTime;
+
+            prev_angleToTarget_radians = angleToTarget_radians;
+           
+            prev_timestamp = Timer.getFPGATimestamp();
+           
         }
         
         double deltaRotation = angleToTarget_radians - drive.getEstimatedPosition().getRotation().getRadians();
@@ -467,6 +473,8 @@ public void end(boolean interrupted) {
     vision.ShootingMode(false);
     shooter.setShooterVelocity(0);
     shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
+    shooter.isShooting = false;
+    RobotContainer.isShooting = false;
  //   }
 
     //CommandScheduler.getInstance().schedule(new Jam(indexer, shooter, 2.0)); //runs the indexer in the opposite direction to clear balls from the shooter

@@ -498,6 +498,12 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
  return getRobotRelativeSpeeds().omegaRadiansPerSecond;
  }
 
+ public void lowerCurrentLimits() {
+    for (Module module : modules) {
+        module.lowerCurrentLimits();
+    }
+ }
+
  public Translation2d calculateShootingPosition(double time) {
         if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
             if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Blue)) {

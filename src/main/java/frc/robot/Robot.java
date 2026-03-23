@@ -21,6 +21,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.pathfinding.LocalADStar;
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -69,15 +70,6 @@ public class Robot extends LoggedRobot {
   public static SendableChooser<PositionEnums> positionChooser = new SendableChooser<>();
 
   //all our auto paths and commands
-  PathPlannerPath firstMiddlePathOutpost = null; // the path that will bring our bot into the middle
-  PathPlannerPath firstMiddlePathDepot = null; // the path that will bring our bot into the middle
-  PathPlannerPath collectLoaderPathDepot = null; 
-  PathPlannerPath leaveLoaderPathOutpost = null;
-  PathPlannerPath leaveLoaderPathDepot = null;
-
-  PathPlannerPath firstMiddlePath = null;
-  PathPlannerPath collectLoaderPath = null;
-  PathPlannerPath leaveLoaderPath = null;
 
 
 
@@ -90,6 +82,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void robotInit() {
+
       // if (isReal()) {
       // Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
       // Logger.addDataReceiver(new NT4Publisher());
@@ -115,11 +108,11 @@ public class Robot extends LoggedRobot {
       // middleChooser.addOption("Yes middle", AutoEnums.MiddleEnums.TRUE);
    
       //where da bot at?
-      positionChooser.setDefaultOption("Outpost", PositionEnums.OUTPOST);
-      positionChooser.addOption("Depot", PositionEnums.DEPOT);
-      positionChooser.addOption("Hub", PositionEnums.HUB);
+     // positionChooser.setDefaultOption("Outpost", PositionEnums.OUTPOST);
+     // positionChooser.addOption("Depot", PositionEnums.DEPOT);
+     // positionChooser.addOption("Hub", PositionEnums.HUB);
 
-      SmartDashboard.putData("Initial Position", positionChooser);
+      // SmartDashboard.putData("Initial Position", positionChooser);
 
       // //shows the driver all the choosers on smart dashboard
       // SmartDashboard.putData("How many loaders?", LoaderChooser);
@@ -127,13 +120,15 @@ public class Robot extends LoggedRobot {
       // //alow the driver to decide whether to go into the middle of the field or not
       // SmartDashboard.putData("Go to Middle?", middleChooser);
       // //allows the driver to select position on the field
+
+}
       
 
 
 
              
 
-    }
+    
   
 
 
@@ -147,19 +142,22 @@ public class Robot extends LoggedRobot {
         CommandScheduler.getInstance().run();
        // SmartDashboard.putNumber("timer for shooting", m_robotContainer.timeout_shuffle.get());
 
-        //  String fullList_disconnections = "";
-        // for (String motorName : DisconnectedMotorNames) {
-        //     fullList_disconnections += motorName + ", " + "\n";
-        // }
-        
-        // SmartDashboard.putString("Disconnected Motors", fullList_disconnections);
+    
     }
 
   
 
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+
+         String fullList_disconnections = "";
+        for (String motorName : DisconnectedMotorNames) {
+            fullList_disconnections += motorName + ", " + "\n";
+        }
+        
+        SmartDashboard.putString("Disconnected Motors", fullList_disconnections);
+  }
 
   @Override
   public void disabledExit() {}
@@ -167,45 +165,9 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
 
-    try { //creates the paths that will be used in the autonomius, must be done here so as to save time when starting auto
-
-      firstMiddlePathOutpost = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost");
-      firstMiddlePathDepot = PathPlannerPath.fromChoreoTrajectory("FirstBumpOutpost").mirrorPath();
-      collectLoaderPathDepot = PathPlannerPath.fromPathFile("Collect Depot");
-      leaveLoaderPathOutpost = PathPlannerPath.fromPathFile("Outpost To Climb");
-      leaveLoaderPathDepot = PathPlannerPath.fromPathFile("Return Depot");
-
-      if (positionChooser.getSelected().equals(PositionEnums.OUTPOST)) {
-        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) {
-          firstMiddlePath = firstMiddlePathOutpost.flipPath();
-          leaveLoaderPath = leaveLoaderPathOutpost.flipPath(); 
-        } else {
-          firstMiddlePath = firstMiddlePathOutpost;
-          leaveLoaderPath = leaveLoaderPathOutpost;
-        }
-      }
-
-      else {
-        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) {
-          firstMiddlePath = firstMiddlePathDepot.flipPath();
-          leaveLoaderPath = leaveLoaderPathDepot.flipPath();
-          collectLoaderPath = collectLoaderPathDepot.flipPath();
-        } else {
-          firstMiddlePath = firstMiddlePathDepot;
-          leaveLoaderPath = leaveLoaderPathDepot;
-          collectLoaderPath = collectLoaderPathDepot;
-        }
-      }
-
-    } catch (Exception e) { 
-      SmartDashboard.putBoolean("Errer", true);
-    }
-      
-
-
   
     //passes in all the currently selected states to construct an auto program
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand(positionChooser.getSelected(), firstMiddlePath, collectLoaderPath, leaveLoaderPath);
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
 
 
@@ -236,7 +198,8 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-   
+    m_robotContainer.drive.lowerCurrentLimits();
+;   
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
@@ -253,7 +216,7 @@ public class Robot extends LoggedRobot {
     ShiftInfo shiftInfo = ActivePeriodTracker.getOfficialShiftInfo();
     combinedTimeLeft = shiftInfo.remainingTimeCombined(); 
     isActive = shiftInfo.active();
-    SmartDashboard.putBoolean("has chosen", winner_selection_done);
+   // SmartDashboard.putBoolean("has chosen", winner_selection_done);
     SmartDashboard.putString("Current Shift", (shiftInfo.active() ? "ACTIVE: " : "INACTIVE:")  + "\n" + shiftInfo.currentShift().name() + "\n" + String.format("%.1f", shiftInfo.remainingTime()));
     SmartDashboard.putString("Shooting State", shootingState.toString());
     SmartDashboard.putString("Localization State", localizationState.toString());

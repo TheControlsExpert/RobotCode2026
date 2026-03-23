@@ -39,6 +39,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.SwerveConstants;
 import java.util.Queue;
@@ -78,6 +79,9 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final Queue<Double> turnPositionQueue;
   private final StatusSignal<AngularVelocity> turnVelocity;
 
+  TalonFXConfiguration driveConfig;
+  TalonFXConfiguration turnConfig;
+
   // Connection debouncers
   private final Debouncer driveConnectedDebounce = new Debouncer(0.5);
   private final Debouncer turnConnectedDebounce = new Debouncer(0.5);
@@ -94,7 +98,7 @@ public class ModuleIOTalonFX implements ModuleIO {
 
     // Configure drive motor
 
-    var driveConfig = new TalonFXConfiguration();
+     driveConfig = new TalonFXConfiguration();
     driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     driveConfig.Slot0 = SwerveConstants.intrinsicsD;
     driveConfig.Feedback.SensorToMechanismRatio = SwerveConstants.driveReduction;
@@ -111,10 +115,13 @@ public class ModuleIOTalonFX implements ModuleIO {
     
 
     // Configure turn motor
-    var turnConfig = new TalonFXConfiguration();
+    turnConfig = new TalonFXConfiguration();
 
     turnConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     turnConfig.Slot0 = SwerveConstants.instrinsicsS;
+
+    turnConfig.CurrentLimits.SupplyCurrentLimit = 40;
+    turnConfig.CurrentLimits.StatorCurrentLimit = 40;
     turnConfig.Feedback.FeedbackRemoteSensorID = constants.canCoderID();
     turnConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
     //turnConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
@@ -259,5 +266,15 @@ public class ModuleIOTalonFX implements ModuleIO {
   @Override
   public void setTurnPosition(Rotation2d rotation) {
     turnTalon.setControl(positionVoltageRequest.withPosition(rotation.getRotations()).withEnableFOC(false));
+  }
+
+  public void lowerCurrentLimits() {
+    driveConfig.CurrentLimits.SupplyCurrentLimit = 40;
+    driveConfig.CurrentLimits.StatorCurrentLimit = 40;
+    driveTalon.getConfigurator().apply(driveConfig);
+
+    turnConfig.CurrentLimits.SupplyCurrentLimit = 30;
+    turnConfig.CurrentLimits.StatorCurrentLimit = 30;
+    turnTalon.getConfigurator().apply(turnConfig, 0.25);
   }
 }
