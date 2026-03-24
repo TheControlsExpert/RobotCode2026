@@ -317,7 +317,6 @@ public class RobotContainer {
                  .ignoringDisable(true));
 
 
-
       //  timeout_shuffle = new Timer();
        //Trigger timeoutshuffle_trigger = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {timeout_shuffle.restart();}));
        Trigger shuffle_trigger = new Trigger(() -> (RobotContainer.isShooting  && !intake.is_busy && DriverStation.isTeleop())).onTrue(
@@ -345,13 +344,17 @@ public class RobotContainer {
       
           
         
-      
+      Shooting shooting = new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, vision);
        //  controller.leftTrigger().whileTrue(new Revv(shooter, drive, controller));
         controller.rightTrigger()
        
-        .whileTrue(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, vision))
+        .whileTrue(shooting)
         .onFalse(new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; RobotContainer.isShooting = false; intake.setIntakeDutyCycle(0.0);}, intake));
+        controller.rightTrigger().and(()->(shooting.readyToShoot)).whileTrue(new InstantCommand(()-> {controller.setRumble(RumbleType.kBothRumble, 1);}))
+        .onFalse(new InstantCommand(() -> {controller.setRumble(RumbleType.kBothRumble, 0);}));
        
+        
+
 
         controller.leftTrigger().or(controller2.leftTrigger()).whileTrue(new Revv(shooter, drive, controller, vision));
         controller.y().whileTrue(new AutoBumping(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
@@ -359,12 +362,6 @@ public class RobotContainer {
 
        // controller.leftTrigger().whileTrue(new RevvTest(shooter, controller));
        // controller.rightTrigger().whileTrue(new ShootingTest(indexer, shooter));
-
-
-
-
-
-
 
 
 
