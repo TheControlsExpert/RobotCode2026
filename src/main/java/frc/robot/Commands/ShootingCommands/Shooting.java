@@ -2,6 +2,8 @@ package frc.robot.Commands.ShootingCommands;
 
 import java.util.function.DoubleSupplier;
 
+import org.ejml.interfaces.decomposition.TridiagonalSimilarDecomposition;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -170,108 +172,102 @@ public class Shooting extends Command {
           linearVelocity =
                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble() / 12, ySupplier.getAsDouble() / 12);
         }
-
         else {
             linearVelocity =
                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
-
         }
 
-              // Calculate angular speed
-              double omega = MathUtil.applyDeadband(rotationSupplier.getAsDouble(), 0.2);
+
+        // Calculate angular speed
+        double omega = MathUtil.applyDeadband(rotationSupplier.getAsDouble(), 0.2);
 
          if (controller.rightStick().getAsBoolean()) {
              omega = omega / 12;
          }
 
-          // Square rotation value for more precise control
-          omega = Math.copySign(omega * omega, omega);
-           boolean isFlipped =
-                  DriverStation.getAlliance().isPresent()
-                      && DriverStation.getAlliance().get() == Alliance.Red;
+        // Square rotation value for more precise control
+        omega = Math.copySign(omega * omega, omega);
+        boolean isFlipped = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
 
-              // Convert to field relative speeds & send command
-              ChassisSpeeds speeds =
-                  new ChassisSpeeds(
-                      linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                      linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                      omega * drive.getMaxAngularSpeedRadPerSec());
-             
-              drive.runVelocity(
-                  ChassisSpeeds.fromFieldRelativeSpeeds(
-                      speeds,
-                      isFlipped
-                          ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                          : drive.getRotation()));
+
+        // Convert to field relative speeds & send command
+        ChassisSpeeds speeds =
+            new ChassisSpeeds(
+                linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                omega * drive.getMaxAngularSpeedRadPerSec());
         
-    if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
-    shooter.shootManual();
-    }
+        drive.runVelocity(
+            ChassisSpeeds.fromFieldRelativeSpeeds(
+                speeds,
+                isFlipped
+                    ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                    : drive.getRotation()));
+        
 
-    else {
-    shooter.passManual();
-    }
-    
-
-    if ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - maxFuelCountDelay - shooter.getMaxTOF() - 1/bps) > 0) || 
-    (!Robot.isActive && (shooter.getMinTOF() +  minFuelCountDelay - Robot.combinedTimeLeft) > 0) || 
-    (Robot.shootingState.equals(ShootingState.PASSING)) ||
-    (!Robot.winner_selection_done)) {
-    if (shooter.isAtShootingVelocity(ShooterConstants.ShootingManualDistance) && shooter.isAtPivotPosition(ShooterConstants.ShootingManualDistance)) {
-        readyToShoot = true;
-        RobotContainer.isShooting = true;
-        shooter.isShooting = true;
-        SmartDashboard.putBoolean("Shooter is at Velocity", true);
-    }
-
-    }
-
-
-else {
-    readyToShoot = false;
-}
-
- if (readyToShoot) {
-        indexer.setIndexerDutyCycle(1);
-        shooter.setFeederVelocity(1);
-    }
- else {
-        indexer.setIndexerDutyCycle(0);
-        shooter.setFeederVelocity(0);
- }   
-
-
- }
-
-    else {
         if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
-        shooter.LookupTable_SOTM(drive, Timer.getFPGATimestamp() - prev_timestamp);
-     //  shooter.LookupTable_Shooting(drive);
+        shooter.shootManual();
+        } else {
+        shooter.passManual();
         }
+        
 
+        if ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - maxFuelCountDelay - shooter.getMaxTOF() - 1/bps) > 0) || 
+        (!Robot.isActive && (shooter.getMinTOF() +  minFuelCountDelay - Robot.combinedTimeLeft) > 0) || 
+        (Robot.shootingState.equals(ShootingState.PASSING)) ||
+        (!Robot.winner_selection_done)) {
+            if (shooter.isAtShootingVelocity(ShooterConstants.ShootingManualDistance) && shooter.isAtPivotPosition(ShooterConstants.ShootingManualDistance)) {
+                readyToShoot = true;
+                RobotContainer.isShooting = true;
+                shooter.isShooting = true;
+                SmartDashboard.putBoolean("Shooter is at Velocity", true);
+            }
+        }
         else {
-        shooter.LookupTable_Passing_SOTM(drive, timer.get());    
+            readyToShoot = false;
         }
 
+
+        if (readyToShoot) {
+            indexer.setIndexerDutyCycle(1);
+            shooter.setFeederVelocity(1);
+        }
+        else {
+                indexer.setIndexerDutyCycle(0);
+                shooter.setFeederVelocity(0);
+        }   
+    }
+
+
+
+
+    else {
         Translation2d linearVelocity;
+
+        if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
+            shooter.LookupTable_SOTM(drive, Timer.getFPGATimestamp() - prev_timestamp);
+        }
+        else {
+            shooter.LookupTable_Passing_SOTM(drive, timer.get());    
+        }
+
+
 
         if (DriverStation.isTeleop()) {
 
-        if (controller.rightStick().getAsBoolean()) {
-          linearVelocity =
-                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble() / 12, ySupplier.getAsDouble() / 12);
-        }
-
-        else {
+            if (controller.rightStick().getAsBoolean()) {
             linearVelocity =
-                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+                    getLinearVelocityFromJoysticks(xSupplier.getAsDouble() / 12, ySupplier.getAsDouble() / 12);
+            }
 
+            else {
+                linearVelocity =
+                    getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+            }
         }
-    }
-
-    else {
-        linearVelocity = new Translation2d(0, 0);
-    }
+        else {
+            linearVelocity = new Translation2d(0, 0);
+        }
 
               
         Translation2d shootingPosition = drive.calculateShootingPosition(timer.get());
@@ -467,39 +463,68 @@ else {
 
 
   
-@Override
-public void end(boolean interrupted) {
-    // if (!DriverStation.isAutonomous()) {
-    vision.ShootingMode(false);
-    shooter.setShooterVelocity(0);
-    shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
-    shooter.isShooting = false;
-    RobotContainer.isShooting = false;
- //   }
+    @Override
+    public void end(boolean interrupted) {
+        // if (!DriverStation.isAutonomous()) {
+        vision.ShootingMode(false);
+        shooter.setShooterVelocity(0);
+        shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
+        shooter.isShooting = false;
+        RobotContainer.isShooting = false;
+    //   }
 
-    //CommandScheduler.getInstance().schedule(new Jam(indexer, shooter, 2.0)); //runs the indexer in the opposite direction to clear balls from the shooter
-   
-    indexer.setIndexerDutyCycle(0);
-    shooter.setFeederVelocity(0);
-    //CommandScheduler.getInstance().cancel(shuffle);
-}
-
-
-@Override
-public boolean isFinished() {
-    return timer.hasElapsed(timeout);
-}
-
-
-public boolean canPass() {
-    Translation2d passPosition = new Translation2d(); //place we're passing too
-    Translation2d currentPosition = drive.getEstimatedPosition().getTranslation();
-
-    Translation2d passLine = passPosition.minus(currentPosition);
-
-    Translation2d corner = new Translation2d(); //corner position of the field
+        //CommandScheduler.getInstance().schedule(new Jam(indexer, shooter, 2.0)); //runs the indexer in the opposite direction to clear balls from the shooter
     
-}
+        indexer.setIndexerDutyCycle(0);
+        shooter.setFeederVelocity(0);
+        //CommandScheduler.getInstance().cancel(shuffle);
+    }
+
+
+    @Override
+    public boolean isFinished() {
+        return timer.hasElapsed(timeout);
+    }
+
+
+    public boolean passingObstruction(Translation2d target) {
+        
+        Translation2d robotPosition = drive.getEstimatedPosition().getTranslation();
+        Translation2d passingTarget = target;
+        boolean canPass = false;
+
+        double squareSide = 4;
+
+        Translation2d squareBL = new Translation2d(3.986, 4.595);
+        Translation2d squareTL = new Translation2d(squareBL.getX(), squareBL.getY() + squareSide);
+        Translation2d squareTR = new Translation2d(squareTL.getX() - squareSide, squareTL.getY());
+        Translation2d squareBR = new Translation2d(squareTR.getX(), squareTR.getY() - squareSide);
+        
+        if (Math.signum(getIntersection(robotPosition, passingTarget, squareTR)) != Math.signum(getIntersection(robotPosition, passingTarget, squareBR))) {
+            return true;
+        }
+
+        if (Math.signum(getIntersection(robotPosition, passingTarget, squareTL)) != Math.signum(getIntersection(robotPosition, passingTarget, squareTR))) {
+            return true;
+        }
+
+        if (Math.signum(getIntersection(robotPosition, passingTarget, squareBL)) != Math.signum(getIntersection(robotPosition, passingTarget, squareTL))) {
+            return true;
+        }
+
+        if (Math.signum(getIntersection(robotPosition, passingTarget, squareTL)) != Math.signum(getIntersection(robotPosition, passingTarget, squareBL))) {
+            return true;
+        }
+
+        else { return false; }
+    }
+
+
+
+
+    public double getIntersection(Translation2d A, Translation2d B, Translation2d C) {
+        return (B.getX() - A.getX()) * (C.getY() - A.getY()) - (B.getY() - A.getY()) * (C.getX() - A.getX());
+    }
 }
 
 
