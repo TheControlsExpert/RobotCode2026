@@ -238,7 +238,10 @@ private final Field2d m_field = new Field2d();
  @Override
  public void periodic() {
 
-    SmartDashboard.putBoolean("Can we pass", canWePass(() -> {DriverStation.getAlliance().get().equals(Alliance.Red) ? return passingTargetBlue : return passingTargetRed}));
+    SmartDashboard.putBoolean("Can we pass", canWePass(DriverStation.getAlliance().isPresent() 
+                                                    && DriverStation.getAlliance().get().equals(Alliance.Red)
+                                                        ? passingTargetRed
+                                                        : passingTargetBlue));
     SmartDashboard.putNumber("gyro", SwervePoseEstimator.getEstimatedPosition().getRotation().getDegrees());
     m_field.setRobotPose(SwervePoseEstimator.getEstimatedPosition()); 
     SmartDashboard.putNumber("velocity of chassis", Math.hypot(getChassisSpeeds().vxMetersPerSecond, getChassisSpeeds().vyMetersPerSecond));
