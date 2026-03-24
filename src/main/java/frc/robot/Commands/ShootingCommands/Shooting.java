@@ -61,6 +61,8 @@ public class Shooting extends Command {
     double prev_angleToTarget_radians = 0;
     double prev_timestamp = 0;
 
+    boolean cant_shoot = true;
+
     
 
     public Shooting(Shooter shooter, Drive drive, Indexer indexer, IntakeSubsystem intake, CommandXboxController controller, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier rotationSupplier, double kP_rotation, VisionSubsystem vision) {
@@ -229,6 +231,7 @@ public class Shooting extends Command {
 
 else {
     readyToShoot = false;
+    
 }
 
  if (readyToShoot) {
@@ -250,7 +253,7 @@ else {
         }
 
         else {
-        shooter.LookupTable_Passing_SOTM(drive, timer.get());    
+        shooter.LookupTable_Passing(drive, timer.get());    
         }
 
         Translation2d linearVelocity;
@@ -295,14 +298,13 @@ else {
         }
 
         else {
-            angleToTarget_radians = shooter.LookupTable_Passing_SOTM(drive, Timer.getFPGATimestamp() - prev_timestamp).getRadians();
-            deltaTime = Timer.getFPGATimestamp() - prev_timestamp;
-            derivativeAddon = (angleToTarget_radians - prev_angleToTarget_radians) / deltaTime;
+            angleToTarget_radians = drive.calculateShootingPosition(timer.get()).minus(drive.getEstimatedPosition().getTranslation()).getAngle().getRadians();
+             deltaTime = Timer.getFPGATimestamp() - prev_timestamp;
+             derivativeAddon = (angleToTarget_radians - prev_angleToTarget_radians) / deltaTime;
 
-            prev_angleToTarget_radians = angleToTarget_radians;
+             prev_angleToTarget_radians = angleToTarget_radians;
            
-            prev_timestamp = Timer.getFPGATimestamp();
-           
+             prev_timestamp = Timer.getFPGATimestamp();
         }
         
         double deltaRotation = angleToTarget_radians - drive.getEstimatedPosition().getRotation().getRadians();
@@ -360,13 +362,12 @@ else {
                           ? drive.getEstimatedPosition().getRotation().plus(new Rotation2d(Math.PI))
                           : drive.getEstimatedPosition().getRotation()));
     
-if ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - maxFuelCountDelay - shooter.getMaxTOF() - 1/bps) > 0) || 
-    (!Robot.isActive && (shooter.getMinTOF() +  minFuelCountDelay - Robot.combinedTimeLeft) > 0) || 
-    (Robot.shootingState.equals(ShootingState.PASSING)) ||
-    (!Robot.winner_selection_done)) {
+if ((Robot.shootingState.equals(ShootingState.SHOOTING) &&  ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - maxFuelCountDelay - shooter.getMaxTOF() - 1/bps) > 0) || 
+    (!Robot.isActive && (shooter.getMinTOF() +  minFuelCountDelay - Robot.combinedTimeLeft) > 0) || !Robot.winner_selection_done)) || 
+    (Robot.shootingState.equals(ShootingState.PASSING) && !drive.intersectingHub(timer.get()))) {
 
     //shooting parameters are close enough to START shooting
-    if (!readyToShoot && (((shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance)) || Robot.shootingState.equals(ShootingState.PASSING)))  && (Math.abs(deltaRotation) < 10 && Robot.shootingState.equals(ShootingState.SHOOTING) || Math.abs(deltaRotation) < 8 && Robot.shootingState.equals(ShootingState.PASSING))) {
+    if (!readyToShoot && (((shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance)) || Robot.shootingState.equals(ShootingState.PASSING)))  && (Math.abs(deltaRotation) < 10 && Robot.shootingState.equals(ShootingState.SHOOTING) || Math.abs(deltaRotation) < 15 && Robot.shootingState.equals(ShootingState.PASSING))) {
         readyToShoot = true;
         shooter.isShooting = true;
         RobotContainer.isShooting = true;

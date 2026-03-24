@@ -50,11 +50,11 @@ import frc.robot.Subsystems.Drive.PhoenixOdometryThread;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
-  public static boolean winner_selection_done = false;
+  public static boolean winner_selection_done = true;
 
   //private final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
   private final RobotContainer m_robotContainer;
-  public static ShootingState shootingState = ShootingState.SHOOTING;
+  public static ShootingState shootingState = ShootingState.PASSING;
   public static double combinedTimeLeft = 0;
   public static boolean isActive = true;
   public static LocalizationState localizationState = LocalizationState.OPERATIONAL;
