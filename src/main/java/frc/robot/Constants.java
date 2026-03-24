@@ -301,10 +301,15 @@ public final class Constants {
     public static double hubSideShort = 1.1938;
     public static double hubSideLong = 1.4836;
 
-    public static final Translation2d hubBL = new Translation2d(3.986, 4.595);
-    public static final Translation2d hubTL = new Translation2d(hubBL.getX() + hubSideLong, hubBL.getY());
-    public static final Translation2d hubTR = new Translation2d(hubTL.getX(), hubTL.getY() - hubSideShort);
-    public static final Translation2d hubBR = new Translation2d(hubTR.getX() - hubSideLong, hubTR.getY());
+    public static final Translation2d blueHubBL = new Translation2d(3.986, 4.595);
+    public static final Translation2d blueHubTL = new Translation2d(blueHubBL.getX() + hubSideLong, blueHubBL.getY());
+    public static final Translation2d blueHubTR = new Translation2d(blueHubTL.getX(), blueHubTL.getY() - hubSideShort);
+    public static final Translation2d blueHubBR = new Translation2d(blueHubTR.getX() - hubSideLong, blueHubTR.getY());
+
+    public static final Translation2d redHubBR = new Translation2d(blueHubBL.getX() + 8.35152, blueHubBL.getY());
+    public static final Translation2d redHubTR = new Translation2d(redHubBR.getX() - hubSideLong, redHubBR.getY()); 
+    public static final Translation2d redHubTL = new Translation2d(redHubTR.getX(), redHubTR.getY() - hubSideShort); 
+    public static final Translation2d redHubBL = new Translation2d(redHubTL.getX() + hubSideLong, redHubTL.getY());  
     //make vertice constants to use in passingObstruction
   }
 

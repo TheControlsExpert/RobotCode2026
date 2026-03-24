@@ -97,7 +97,9 @@ public PathConstraints constraints_pathfinding = new PathConstraints(3, 3, 500, 
 private SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
 private SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
 Transform2d simulatedLL = new Transform2d(new Translation2d(SwerveConstants.wheelBase / 2, -SwerveConstants.trackWidth / 2), Rotation2d.fromDegrees(-160));
-Translation2d passingTarget = new Translation2d(1.488, 0.847);
+
+Translation2d passingTargetBlue = new Translation2d(1.488, 0.847);
+Translation2d passingTargetRed = new Translation2d(16.51 - 2 * passingTargetBlue.getX(), 8.043 - 2 * passingTargetBlue.getY());
 
 
 private Twist2d twist = new Twist2d();
@@ -236,7 +238,7 @@ private final Field2d m_field = new Field2d();
  @Override
  public void periodic() {
 
-    SmartDashboard.putBoolean("Can we pass", canWePass(passingTarget));
+    SmartDashboard.putBoolean("Can we pass", canWePass(() -> {DriverStation.getAlliance().get().equals(Alliance.Red) ? return passingTargetBlue : return passingTargetRed}));
     SmartDashboard.putNumber("gyro", SwervePoseEstimator.getEstimatedPosition().getRotation().getDegrees());
     m_field.setRobotPose(SwervePoseEstimator.getEstimatedPosition()); 
     SmartDashboard.putNumber("velocity of chassis", Math.hypot(getChassisSpeeds().vxMetersPerSecond, getChassisSpeeds().vyMetersPerSecond));
@@ -816,27 +818,55 @@ return 1.65;
         Translation2d robotPosition = getEstimatedPosition().getTranslation();
         Translation2d passingTarget = target;
 
-        if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTR)) 
-        != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubBR))) {
-            return false;
-        }
+        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Blue)) {
 
-        if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTL)) 
-        != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTR))) {
-            return false;
-        }
+            if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.blueHubTR)) 
+            != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.blueHubBR))) {
+                return false;
+            }
 
-        if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubBL)) 
-        != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTL))) {
-            return false;
-        }
+            if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.blueHubTL)) 
+            != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.blueHubTR))) {
+                return false;
+            }
 
-        if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTL)) 
-        != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubBL))) {
-            return false;
-        }
+            if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.blueHubBL)) 
+            != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.blueHubTL))) {
+                return false;
+            }
 
-        else { return true; }
+            if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.blueHubTL)) 
+            != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.blueHubBL))) {
+                return false;
+            }
+
+            else { return true; }
+        }
+        
+        else {
+
+            if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.redHubTR)) 
+            != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.redHubBR))) {
+                return false;
+            }
+
+            if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.redHubTL)) 
+            != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.redHubTR))) {
+                return false;
+            }
+
+            if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.redHubBL)) 
+            != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.redHubTL))) {
+                return false;
+            }
+
+            if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.redHubTL)) 
+            != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.redHubBL))) {
+                return false;
+            }
+
+            else { return true; }
+        }
     }
 
 
