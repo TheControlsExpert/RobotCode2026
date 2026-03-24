@@ -489,6 +489,17 @@ public void end(boolean interrupted) {
 public boolean isFinished() {
     return timer.hasElapsed(timeout);
 }
+
+
+public boolean canPass() {
+    Translation2d passPosition = new Translation2d(); //place we're passing too
+    Translation2d currentPosition = drive.getEstimatedPosition().getTranslation();
+
+    Translation2d passLine = passPosition.minus(currentPosition);
+
+    Translation2d corner = new Translation2d(); //corner position of the field
+    
+}
 }
 
 
