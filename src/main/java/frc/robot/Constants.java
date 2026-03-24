@@ -70,7 +70,7 @@ public final class Constants {
     public static final double angleKS = 0.45;
 
     /* Drive Motor PID Values */
-    public static final double driveKP = 2; // TODO: This must be tuned to specific robot
+    public static final double driveKP = 0.25; // TODO: This must be tuned to specific robot
     public static final double driveKI = 0.0;
     public static final double driveKD = 0.0;
 

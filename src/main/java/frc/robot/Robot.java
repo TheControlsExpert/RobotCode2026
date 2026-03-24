@@ -54,9 +54,9 @@ public class Robot extends LoggedRobot {
 
   //private final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
   private final RobotContainer m_robotContainer;
-  public static ShootingState shootingState = ShootingState.PASSING;
+  public static ShootingState shootingState = ShootingState.SHOOTING;
   public static double combinedTimeLeft = 0;
-  public static boolean isActive = true;
+  public static boolean isActive = false;
   public static LocalizationState localizationState = LocalizationState.OPERATIONAL;
 
   public static AutoWinner autoWinner = AutoWinner.US;
