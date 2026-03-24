@@ -296,5 +296,16 @@ public final class Constants {
 
   }
 
+  public static class fieldConstants {
+    public static double hubSideShort = 1.1938;
+    public static double hubSideLong = 1.1938;
+
+    public static final Translation2d hubBL = new Translation2d(3.986, 4.595);
+    public static final Translation2d hubTL = new Translation2d(hubBL.getX(), hubBL.getY() + hubSideLong);
+    public static final Translation2d hubTR = new Translation2d(hubTL.getX() - hubSideShort, hubTL.getY());
+    public static final Translation2d hubBR = new Translation2d(hubTR.getX(), hubTR.getY() - hubSideLong);
+    //make vertice constants to use in passingObstruction
+  }
+
 
 }

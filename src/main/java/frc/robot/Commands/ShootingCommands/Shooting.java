@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.Commands.IntakeCommands.Jam;
@@ -491,28 +492,27 @@ else {
         
         Translation2d robotPosition = drive.getEstimatedPosition().getTranslation();
         Translation2d passingTarget = target;
-        boolean canPass = false;
 
-        double squareSide = 4;
 
-        Translation2d squareBL = new Translation2d(3.986, 4.595);
-        Translation2d squareTL = new Translation2d(squareBL.getX(), squareBL.getY() + squareSide);
-        Translation2d squareTR = new Translation2d(squareTL.getX() - squareSide, squareTL.getY());
-        Translation2d squareBR = new Translation2d(squareTR.getX(), squareTR.getY() - squareSide);
         
-        if (Math.signum(getIntersection(robotPosition, passingTarget, squareTR)) != Math.signum(getIntersection(robotPosition, passingTarget, squareBR))) {
+        
+        if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTR)) 
+        != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubBR))) {
             return true;
         }
 
-        if (Math.signum(getIntersection(robotPosition, passingTarget, squareTL)) != Math.signum(getIntersection(robotPosition, passingTarget, squareTR))) {
+        if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTL)) 
+        != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTR))) {
             return true;
         }
 
-        if (Math.signum(getIntersection(robotPosition, passingTarget, squareBL)) != Math.signum(getIntersection(robotPosition, passingTarget, squareTL))) {
+        if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubBL)) 
+        != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTL))) {
             return true;
         }
 
-        if (Math.signum(getIntersection(robotPosition, passingTarget, squareTL)) != Math.signum(getIntersection(robotPosition, passingTarget, squareBL))) {
+        if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTL)) 
+        != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubBL))) {
             return true;
         }
 
