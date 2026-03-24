@@ -488,43 +488,7 @@ else {
     }
 
 
-    public boolean passingObstruction(Translation2d target) {
-        
-        Translation2d robotPosition = drive.getEstimatedPosition().getTranslation();
-        Translation2d passingTarget = target;
-
-
-        
-        
-        if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTR)) 
-        != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubBR))) {
-            return true;
-        }
-
-        if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTL)) 
-        != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTR))) {
-            return true;
-        }
-
-        if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubBL)) 
-        != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTL))) {
-            return true;
-        }
-
-        if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTL)) 
-        != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubBL))) {
-            return true;
-        }
-
-        else { return false; }
-    }
-
-
-
-
-    public double getIntersection(Translation2d A, Translation2d B, Translation2d C) {
-        return (B.getX() - A.getX()) * (C.getY() - A.getY()) - (B.getY() - A.getY()) * (C.getX() - A.getX());
-    }
+    
 }
 
 

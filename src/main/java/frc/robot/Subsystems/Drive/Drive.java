@@ -97,7 +97,7 @@ public PathConstraints constraints_pathfinding = new PathConstraints(3, 3, 500, 
 private SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
 private SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
 Transform2d simulatedLL = new Transform2d(new Translation2d(SwerveConstants.wheelBase / 2, -SwerveConstants.trackWidth / 2), Rotation2d.fromDegrees(-160));
-
+Translation2d passingTarget = new Translation2d(1.488, 0.847);
 
 
 private Twist2d twist = new Twist2d();
@@ -235,6 +235,9 @@ private final Field2d m_field = new Field2d();
  
  @Override
  public void periodic() {
+
+    SmartDashboard.putBoolean("Can we pass", canWePass(passingTarget));
+    SmartDashboard.putBoolean("Is passing obstructed", isPassingBlocked(passingTarget));
     SmartDashboard.putNumber("gyro", SwervePoseEstimator.getEstimatedPosition().getRotation().getDegrees());
     m_field.setRobotPose(SwervePoseEstimator.getEstimatedPosition()); 
     SmartDashboard.putNumber("velocity of chassis", Math.hypot(getChassisSpeeds().vxMetersPerSecond, getChassisSpeeds().vyMetersPerSecond));
@@ -806,4 +809,67 @@ return 1.65;
  public double getGyroSpeed() {
  return Math.abs(Units.radiansToDegrees(gyroInputs.yawVelocityRadPerSec));
  }
+
+
+
+    public boolean canWePass(Translation2d target) {
+        
+        Translation2d robotPosition = getEstimatedPosition().getTranslation();
+        Translation2d passingTarget = target;
+
+        if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTR)) 
+        != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubBR))) {
+            return false;
+        }
+
+        if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTL)) 
+        != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTR))) {
+            return false;
+        }
+
+        if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubBL)) 
+        != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTL))) {
+            return false;
+        }
+
+        if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTL)) 
+        != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubBL))) {
+            return false;
+        }
+
+        else { return true; }
+    }
+
+
+    public boolean isPassingBlocked(Translation2d target) {
+        
+        Translation2d robotPosition = getEstimatedPosition().getTranslation();
+        Translation2d passingTarget = target;
+
+        if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTR)) 
+        != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubBR))) {
+            return true;
+        }
+
+        if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTL)) 
+        != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTR))) {
+            return true;
+        }
+
+        if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubBL)) 
+        != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTL))) {
+            return true;
+        }
+
+        if (Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubTL)) 
+        != Math.signum(getIntersection(robotPosition, passingTarget, Constants.fieldConstants.hubBL))) {
+            return true;
+        }
+
+        else { return false; }
+    }
+
+    public double getIntersection(Translation2d A, Translation2d B, Translation2d C) {
+        return (B.getX() - A.getX()) * (C.getY() - A.getY()) - (B.getY() - A.getY()) * (C.getX() - A.getX());
+    }
 }

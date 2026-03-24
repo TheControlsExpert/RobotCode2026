@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.ActivePeriodTracker.ShiftInfo;
 import frc.robot.AutoEnums.PositionEnums;
+import frc.robot.Commands.ShootingCommands.Shooting;
 import frc.robot.Subsystems.Drive.GyroIOPigeon2;
 import frc.robot.Subsystems.Drive.PhoenixOdometryThread;
 
@@ -68,6 +69,8 @@ public class Robot extends LoggedRobot {
   // public static SendableChooser<AutoEnums.ClimbEnums> climbChooser = new SendableChooser<>();
   // public static SendableChooser<AutoEnums.MiddleEnums> middleChooser = new SendableChooser<>();
   public static SendableChooser<PositionEnums> positionChooser = new SendableChooser<>();
+
+  Translation2d passingTarget = new Translation2d(1.488, 0.847);
 
   //all our auto paths and commands
 

@@ -318,7 +318,7 @@ public class Shooter extends SubsystemBase {
     public void LookupTable_Passing(Drive drive, double seconds) {
         double distance = drive.getEstimatedPosition().getTranslation().getDistance(drive.calculateShootingPosition(seconds));
     
-        double hoodPosition = 0.5;
+        double hoodPosition = 0.5; //45 degrees kinda dumb but ig it doesn't matter
         double shooterVel = solve( -4.22697 * Math.pow(10, -7),  0.0052122, -distance - 5.20419);
        
 
