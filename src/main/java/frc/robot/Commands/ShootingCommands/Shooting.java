@@ -163,8 +163,8 @@ public class Shooting extends Command {
 
 
 
-        if (Robot.localizationState.equals(LocalizationState.DISABLED)) {
-          Translation2d linearVelocity;
+    if (Robot.localizationState.equals(LocalizationState.DISABLED)) {
+        Translation2d linearVelocity;
 
         if (controller.rightStick().getAsBoolean()) {
           linearVelocity =
