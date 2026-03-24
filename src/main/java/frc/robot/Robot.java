@@ -215,9 +215,16 @@ public class Robot extends LoggedRobot {
    
     ShiftInfo shiftInfo = ActivePeriodTracker.getOfficialShiftInfo();
     combinedTimeLeft = shiftInfo.remainingTimeCombined(); 
+        double actualTimeRemaining;
+    if(shiftInfo.active()){
+      actualTimeRemaining = shiftInfo.remainingTime() + m_robotContainer.shooter.getMaxTOF();
+    }
+    else{
+      actualTimeRemaining = shiftInfo.remainingTime() - m_robotContainer.shooter.getMinTOF();
+    }
     isActive = shiftInfo.active();
    // SmartDashboard.putBoolean("has chosen", winner_selection_done);
-    SmartDashboard.putString("Current Shift", (shiftInfo.active() ? "ACTIVE: " : "INACTIVE:")  + "\n" + shiftInfo.currentShift().name() + "\n" + String.format("%.1f", shiftInfo.remainingTime()));
+    SmartDashboard.putString("Current Shift", (shiftInfo.active() ? "ACTIVE: " : "INACTIVE:")  + "\n" + shiftInfo.currentShift().name() + "\n" + String.format("%.1f", actualTimeRemaining));
     SmartDashboard.putString("Shooting State", shootingState.toString());
     SmartDashboard.putString("Localization State", localizationState.toString());
     String autoWinnerText = "";

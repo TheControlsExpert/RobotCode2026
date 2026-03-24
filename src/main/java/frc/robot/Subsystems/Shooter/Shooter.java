@@ -440,7 +440,10 @@ public class Shooter extends SubsystemBase {
     }
 
     public void passManual() {
-
+        double distance = ShooterConstants.PassingManualDistance;
+        double Velocity = 1832.83 + 271.41197*distance;
+        setShooterVelocity(Velocity/60);
+        setPositionPivot(0.5);
     }
 
     public void setFeederVelocity(double velocity) {
