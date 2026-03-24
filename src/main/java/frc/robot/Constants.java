@@ -58,6 +58,9 @@ public final class Constants {
 
   public static class SwerveConstants {
 
+    public static final double[] hub_dimensions = new double[] {0.6604*2, 0.6604*2};
+    public static final double[] net_dimensions = new double[] {0.492252*2, 0.805307*2};
+
     // Gear Ratio
     public static final double driveReduction = 5.36;
     public static final double steerReduction = 18.75;
@@ -264,6 +267,7 @@ public final class Constants {
     public static final double MAX_ENCODER_VAL = 0.91;
     public static final double MIN_ENCODER_VAL = 0.15;
     public static final double ShootingManualDistance = 2.05;
+    public static final double PassingManualDistance = 5.0;
     public static final double PassingVelocityTolerance = 0;
     public static final double PassingPivotTolerance = 0;
 

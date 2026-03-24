@@ -123,7 +123,9 @@ SwerveModuleState[] mods = new SwerveModuleState[] {
 };
 
 
- 
+Translation2d hubCenter;
+double addon;
+Translation2d netCenter;
 
  
 
@@ -215,7 +217,7 @@ private final Field2d m_field = new Field2d();
  (speeds, feedforwards) -> runVelocity(speeds),
  // Method that will drive the robot gn ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
  new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
- new PIDConstants(translationkP, 0.0, 0.8), // Translation PID constants
+ new PIDConstants(translationkP, 0.0, 0.0), // Translation PID constants
  new PIDConstants(2.5, 0.0, 0.0) // Rotation PID constants
  ),
  
@@ -396,7 +398,7 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
  }
 
  public boolean intersectingHub(double time) {
-    Translation2d hubCenter;
+  
      if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Blue)) {
                 hubCenter = new Translation2d(4.626, 4.034);
             }
@@ -405,19 +407,18 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
               hubCenter = FlipHorizontally_BtoR(new Translation2d(4.626, 4.034));
     }
     
-    double addon =(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Blue)) ? 0.428752 : -0.428752;
-    Translation2d netCenter = hubCenter.plus(new Translation2d(addon, 0));
+     addon =(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Blue)) ? 0.428752 : -0.428752;
+     netCenter = hubCenter.plus(new Translation2d(addon, 0));
 
     //from center of hub with (0,0) coordinates, what is the x/2, y/2
-    double[] hub_dimensions = new double[] {0.6604*2, 0.6604*2};
-    double[] net_dimensions = new double[] {0.492252*2, 0.805307*2};
+   
 
     Pose2d currentPosition = getEstimatedPosition();
   //  Pose2d shooterPosition = currentPosition.transformBy(ShooterConstants.robotToShooter);
 
     Translation2d directionPassing = calculateShootingPosition(time).minus(currentPosition.getTranslation());
-    return !doesLineIntersectRectangle(currentPosition.getX(), currentPosition.getY(), directionPassing.getX(), directionPassing.getY(), hubCenter.getX(), hubCenter.getY(), hub_dimensions[0], hub_dimensions[1]) &&
-           !doesLineIntersectRectangle(currentPosition.getX(), currentPosition.getY(), directionPassing.getX(), directionPassing.getY(), netCenter.getX(), netCenter.getY(), net_dimensions[0], net_dimensions[1]);
+    return !doesLineIntersectRectangle(currentPosition.getX(), currentPosition.getY(), directionPassing.getX(), directionPassing.getY(), hubCenter.getX(), hubCenter.getY(), SwerveConstants.hub_dimensions[0], SwerveConstants.hub_dimensions[1]) &&
+           !doesLineIntersectRectangle(currentPosition.getX(), currentPosition.getY(), directionPassing.getX(), directionPassing.getY(), netCenter.getX(), netCenter.getY(), SwerveConstants.net_dimensions[0], SwerveConstants.net_dimensions[1]);
 
  }
 
@@ -427,13 +428,14 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
         double cx, double cy,   // center of rectangle
         double width, double height
 ) {
-    double halfW = width / 2.0;
-    double halfH = height / 2.0;
+    
+     double halfW = width / 2.0;
+     double halfH = height / 2.0;
 
-    double xmin = cx - halfW;
-    double xmax = cx + halfW;
-    double ymin = cy - halfH;
-    double ymax = cy + halfH;
+     double xmin = cx - halfW;
+     double xmax = cx + halfW;
+     double ymin = cy - halfH;
+     double ymax = cy + halfH;
 
     double tmin, tmax, tymin, tymax;
 
