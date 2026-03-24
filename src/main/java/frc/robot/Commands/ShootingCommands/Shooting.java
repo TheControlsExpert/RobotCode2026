@@ -40,7 +40,7 @@ public class Shooting extends Command {
     DoubleSupplier rotationSupplier;
     CommandXboxController controller;
     double kP_rotation;
-    boolean readyToShoot = false;
+     boolean readyToShoot = false;
     Command shuffle;
     IntakeSubsystem intake;
     boolean hasShuffled = false;
