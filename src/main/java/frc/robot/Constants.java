@@ -80,7 +80,7 @@ public final class Constants {
     /* Drive Motor Characterization Values From SYSID */
     public static final double driveKS = 0.1996; // TODO: This must be tuned to specific robot
     public static final double driveKV = 0.6396;
-    public static final double driveKA = 0.3;
+    public static final double driveKA = 0.1;
     //public static final double driveKA = 0.3;
 
     public static final Slot0Configs intrinsicsD =

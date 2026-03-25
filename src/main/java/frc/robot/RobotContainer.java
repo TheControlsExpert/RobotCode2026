@@ -350,7 +350,9 @@ public class RobotContainer {
        
         .whileTrue(shooting)
         .onFalse(new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; RobotContainer.isShooting = false; intake.setIntakeDutyCycle(0.0);}, intake));
-        controller.rightTrigger().and(()->(shooting.readyToShoot)).whileTrue(new InstantCommand(()-> {controller.setRumble(RumbleType.kBothRumble, 1);}))
+
+
+        controller.rightTrigger().and(()->(!shooting.readyToShoot)).whileTrue(new InstantCommand(()-> {controller.setRumble(RumbleType.kBothRumble, 0.35);}))
         .onFalse(new InstantCommand(() -> {controller.setRumble(RumbleType.kBothRumble, 0);}));
        
         

@@ -364,7 +364,7 @@ else {
     
 if ((Robot.shootingState.equals(ShootingState.SHOOTING) &&  ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - maxFuelCountDelay - shooter.getMaxTOF() - 1/bps) > 0) || 
     (!Robot.isActive && (shooter.getMinTOF() +  minFuelCountDelay - Robot.combinedTimeLeft) > 0) || !Robot.winner_selection_done)) || 
-    (Robot.shootingState.equals(ShootingState.PASSING) && !drive.intersectingHub(timer.get()))) {
+    (Robot.shootingState.equals(ShootingState.PASSING))) {
 
     //shooting parameters are close enough to START shooting
     if (!readyToShoot && (((shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance)) || Robot.shootingState.equals(ShootingState.PASSING)))  && (Math.abs(deltaRotation) < 10 && Robot.shootingState.equals(ShootingState.SHOOTING) || Math.abs(deltaRotation) < 15 && Robot.shootingState.equals(ShootingState.PASSING))) {

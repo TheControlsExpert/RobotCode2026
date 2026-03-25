@@ -226,7 +226,7 @@ public class Robot extends LoggedRobot {
     }
     isActive = shiftInfo.active();
    // SmartDashboard.putBoolean("has chosen", winner_selection_done);
-    SmartDashboard.putString("Current Shift", (shiftInfo.active() ? "ACTIVE: " : "INACTIVE:")  + "\n" + shiftInfo.currentShift().name() + "\n" + String.format("%.1f", actualTimeRemaining));
+    SmartDashboard.putString("Current Shift", (shiftInfo.active() ? "ACTIVE: " : "INACTIVE:")  + "\n" + shiftInfo.currentShift().name() + "\n" + String.format("%.1f", shiftInfo.remainingTime()));
     SmartDashboard.putString("Shooting State", shootingState.toString());
     SmartDashboard.putString("Localization State", localizationState.toString());
     String autoWinnerText = "";
