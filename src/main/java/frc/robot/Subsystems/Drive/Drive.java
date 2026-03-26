@@ -417,8 +417,8 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
   //  Pose2d shooterPosition = currentPosition.transformBy(ShooterConstants.robotToShooter);
 
     Translation2d directionPassing = calculateShootingPosition(time).minus(currentPosition.getTranslation());
-    return !doesLineIntersectRectangle(currentPosition.getX(), currentPosition.getY(), directionPassing.getX(), directionPassing.getY(), hubCenter.getX(), hubCenter.getY(), SwerveConstants.hub_dimensions[0], SwerveConstants.hub_dimensions[1]) &&
-           !doesLineIntersectRectangle(currentPosition.getX(), currentPosition.getY(), directionPassing.getX(), directionPassing.getY(), netCenter.getX(), netCenter.getY(), SwerveConstants.net_dimensions[0], SwerveConstants.net_dimensions[1]);
+    return doesLineIntersectRectangle(currentPosition.getX(), currentPosition.getY(), directionPassing.getX(), directionPassing.getY(), hubCenter.getX(), hubCenter.getY(), SwerveConstants.hub_dimensions[0], SwerveConstants.hub_dimensions[1]) ||
+           doesLineIntersectRectangle(currentPosition.getX(), currentPosition.getY(), directionPassing.getX(), directionPassing.getY(), netCenter.getX(), netCenter.getY(), SwerveConstants.net_dimensions[0], SwerveConstants.net_dimensions[1]);
 
  }
 

@@ -33,6 +33,8 @@ public class VisionSubsystem extends SubsystemBase {
     private VisionIO io;
     private VisionIOInputsAutoLogged inputs = new VisionIOInputsAutoLogged();
         private Drive drive;
+
+        boolean disable_all_cameras = false;
    
         
     double lastUsedTimestamp = -1000;
@@ -171,16 +173,27 @@ public class VisionSubsystem extends SubsystemBase {
         public void addVisionMeasurement(VisionMeasurement measurement) {
           //  SmartDashboard.putBoolean("ruin", ruin);
 
-            if (ruin) {
-            drive.addVision(new VisionMeasurement(measurement.pose().plus(new Transform2d(0.0,0.5, new Rotation2d())), measurement.rotationDegreees, measurement.timestamp, measurement.std, measurement.numTags, measurement.avgDistance));
-            }
+            // if (ruin) {
+            // drive.addVision(new VisionMeasurement(measurement.pose().plus(new Transform2d(0.0,0.5, new Rotation2d())), measurement.rotationDegreees, measurement.timestamp, measurement.std, measurement.numTags, measurement.avgDistance));
+            // }
 
-            else {
+            if (!disable_all_cameras) {
             drive.addVision(measurement);
+            
             }
             
 
+
             
+    }
+
+    public void enableVision() {
+        disable_all_cameras = false;
+
+    }
+
+    public void disableVision() {
+        disable_all_cameras = true;
     }
 
     public void ShootingMode(boolean isShooting) {
