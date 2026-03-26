@@ -199,6 +199,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopInit() {
     m_robotContainer.drive.lowerCurrentLimits();
+    m_robotContainer.vision.enableVision();
 
 
    
