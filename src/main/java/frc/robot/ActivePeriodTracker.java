@@ -42,24 +42,25 @@ public class ActivePeriodTracker {
 
   
   public static Alliance getFirstActiveAlliance() {
-    boolean did_We_win = Robot.autoWinner.equals(Robot.AutoWinner.ENEMY);
+    
+    boolean did_We_win = Robot.autoWinner.equals(Robot.AutoWinner.US);
 
     Alliance us = DriverStation.getAlliance().get();
-    Alliance winner = did_We_win ? us : (us.equals(Alliance.Blue) ? Alliance.Red : Alliance.Blue);
+    Alliance active = did_We_win ? (us.equals(Alliance.Blue) ? Alliance.Red : Alliance.Blue) : us;
 
-    // String message = DriverStation.getGameSpecificMessage();
-    // if (message.length() > 0) {
-    //   Robot.winner_selection_done = true;
-    //   char character = message.charAt(0);
-    //   if (character == 'R') {
-    //     winner = Alliance.Blue;
-    //   } else if (character == 'B') {
-    //     winner = Alliance.Red;
-    //   }
-    // }  
+    String message = DriverStation.getGameSpecificMessage();
+    if (message.length() > 0) {
+      Robot.winner_selection_done = true;
+      char character = message.charAt(0);
+      if (character == 'R') {
+        active = Alliance.Blue;
+      } else if (character == 'B') {
+        active = Alliance.Red;
+      }
+    }  
 
-   // return winner;
-   return Alliance.Blue;
+   return active;
+   //return Alliance.Blue;
   }
 
   /** Starts the timer at the begining of teleop. */

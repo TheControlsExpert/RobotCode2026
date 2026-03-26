@@ -30,7 +30,7 @@ public class shootingPathsAuto extends Command{
     Drive swerve;
     VisionSubsystem vision;
     Timer timer = new Timer();
-    double TimeToFinish = 3.0;
+    double TimeToFinish = 4.5;
     Translation2d velocityVector;
 
     public shootingPathsAuto(Shooter shooter, Drive drive, Indexer indexer,PathPlannerPath path,VisionSubsystem vision) {

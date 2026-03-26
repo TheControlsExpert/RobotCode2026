@@ -50,7 +50,7 @@ import frc.robot.Subsystems.Drive.PhoenixOdometryThread;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
-  public static boolean winner_selection_done = true;
+  public static boolean winner_selection_done = false;
 
   //private final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
   private final RobotContainer m_robotContainer;
@@ -226,7 +226,7 @@ public class Robot extends LoggedRobot {
       actualTimeRemaining = shiftInfo.remainingTime() - m_robotContainer.shooter.getMinTOF();
     }
     isActive = shiftInfo.active();
-   // SmartDashboard.putBoolean("has chosen", winner_selection_done);
+    SmartDashboard.putBoolean("has chosen", winner_selection_done);
     SmartDashboard.putString("Current Shift", (shiftInfo.active() ? "ACTIVE: " : "INACTIVE:")  + "\n" + shiftInfo.currentShift().name() + "\n" + String.format("%.1f", shiftInfo.remainingTime()));
     SmartDashboard.putString("Shooting State", shootingState.toString());
     SmartDashboard.putString("Localization State", localizationState.toString());
