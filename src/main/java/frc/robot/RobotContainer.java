@@ -354,13 +354,10 @@ public class RobotContainer {
         controller.rightTrigger()
        
         .whileTrue(shooting)
-        .onFalse(new InstantCommand(() -> { shooter.isShooting = false; RobotContainer.isShooting = false; 
-          
-          
-          if (!intake.is_busy) {
-           intake.Extend();
-          intake.setIntakeDutyCycle(0.0);}}, intake));
-        controller.rightTrigger().and(()->(shooting.readyToShoot)).whileTrue(new InstantCommand(()-> {controller.setRumble(RumbleType.kBothRumble, 1);}))
+        .onFalse(new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; RobotContainer.isShooting = false; intake.setIntakeDutyCycle(0.0);}, intake));
+
+
+        controller.rightTrigger().and(()->(!shooting.readyToShoot)).whileTrue(new InstantCommand(()-> {controller.setRumble(RumbleType.kBothRumble, 0.35);}))
         .onFalse(new InstantCommand(() -> {controller.setRumble(RumbleType.kBothRumble, 0);}));
        
         

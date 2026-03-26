@@ -123,9 +123,6 @@ SwerveModuleState[] mods = new SwerveModuleState[] {
 };
 
 
-Translation2d hubCenter;
-double addon;
-Translation2d netCenter;
 
  
 
@@ -272,6 +269,7 @@ if (DriverStation.isDisabled()) {
  
  odometryLock.lock(); // Prevents odometry updates while reading data
  gyroIO.updateInputs(gyroInputs);
+ SmartDashboard.putBoolean("can pass", !intersectingHub(0.0));
  
  //Logger.processInputs("Drive/Gyro", gyroInputs);
  for (var module : modules) {
@@ -398,17 +396,18 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
  }
 
  public boolean intersectingHub(double time) {
-  
-     if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Blue)) {
+    
+  Translation2d hubCenter;
+     if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
                 hubCenter = new Translation2d(4.626, 4.034);
-            }
+    }
 
     else {
               hubCenter = FlipHorizontally_BtoR(new Translation2d(4.626, 4.034));
     }
     
-     addon =(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Blue)) ? 0.428752 : -0.428752;
-     netCenter = hubCenter.plus(new Translation2d(addon, 0));
+     double addon =(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Blue)) ? 0.428752 : -0.428752;
+     Translation2d netCenter = hubCenter.plus(new Translation2d(addon, 0));
 
     //from center of hub with (0,0) coordinates, what is the x/2, y/2
    
