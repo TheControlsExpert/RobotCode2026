@@ -415,7 +415,7 @@ public class Shooter extends SubsystemBase {
         }
 
         SmartDashboard.putNumber("is at shooting vel", Math.abs((inputs.shooterLeftVelocityRPM + inputs.shooterRightVelocityRPM) / 2 - velocity));
-        return Math.abs((inputs.shooterLeftVelocityRPM + inputs.shooterRightVelocityRPM) / 2 - velocity) < (Robot.shootingState.equals(ShootingState.SHOOTING) ?  200 : 150);
+        return Math.abs((inputs.shooterLeftVelocityRPM + inputs.shooterRightVelocityRPM) / 2 - velocity) < (Robot.shootingState.equals(ShootingState.SHOOTING) ?  200 : 250);
     }
 
     public boolean isAtPivotPosition(double distance) {

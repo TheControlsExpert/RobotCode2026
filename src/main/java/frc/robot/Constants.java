@@ -146,7 +146,7 @@ public final class Constants {
       public static final boolean invertDrive = true;
       public static final boolean invertSteer = true;
       public static final boolean invertEncoder = false;
-      public static final double angleOffset = -0.2614746;
+      public static final double angleOffset = -0.27124;
       public static final SwerveModuleConstants constants =
           new SwerveModuleConstants(
               driveMotorID,
@@ -166,7 +166,7 @@ public final class Constants {
       public static final boolean invertDrive = false;
       public static final boolean invertSteer = true;
       public static final boolean invertEncoder = false;
-      public static final double angleOffset = 0.152832;
+      public static final double angleOffset = 0.15625;
       ;
       // -120.937
       public static final SwerveModuleConstants constants =

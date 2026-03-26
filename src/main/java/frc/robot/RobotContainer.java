@@ -270,7 +270,7 @@ public class RobotContainer {
         Command firstMiddleCommand = AutoBuilder.followPath(firstMiddlePath);
         Command secondMiddleCommand = AutoBuilder.followPath(secondMiddlePath);
 
-         autoCommand = new ParallelRaceGroup(firstMiddleCommand, new WaitCommand(0.35).andThen(new IntakeCommand(intake, 3)).andThen(new Revv(shooter, drive, controller, vision))).
+         autoCommand = new ParallelRaceGroup(firstMiddleCommand, new WaitCommand(0.5).andThen(new IntakeCommand(intake, 3)).andThen(new Revv(shooter, drive, controller, vision))).
                       andThen(new ParallelRaceGroup(new shootingPathsAuto(shooter, drive, indexer, secondMiddlePath, vision), new WaitCommand(1).andThen(  
                       (new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.4);}, intake).
                       andThen(new WaitCommand(0.5)).
@@ -279,7 +279,7 @@ public class RobotContainer {
 
                       ))).
                       andThen(new InstantCommand(() -> {intake.Retract();  }, intake)).
-                      andThen(new ParallelRaceGroup(secondMiddleCommand, new WaitCommand(1.7).andThen(new IntakeCommand(intake, 2.3)).andThen(new Revv(shooter, drive, controller, vision)))).
+                      andThen(new ParallelRaceGroup(secondMiddleCommand, new WaitCommand(1.0).andThen(new IntakeCommand(intake, 2.3)).andThen(new Revv(shooter, drive, controller, vision)))).
                       andThen(new Shooting(shooter, drive, indexer, intake, controller, null, null, null, 0, 0, vision));
     
       }
@@ -323,13 +323,15 @@ public class RobotContainer {
         new WaitCommand(1).andThen(
 
        
-       (new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.4);}, intake).
+       (new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.6);}, intake).
        andThen(new WaitCommand(0.5)).
        andThen(new InstantCommand(() -> {intake.Extend();}, intake)).
        andThen(new WaitCommand(0.3))).repeatedly()
       // andThen(new InstantCommand(() -> {intake.Shuffle();}, intake))
 
        ));
+
+       controller2.x().whileTrue(new InstantCommand(() -> {intake.setIntakeDutyCycle(-0.5); intake.is_busy = true;}, intake)).onFalse(new InstantCommand(() -> {intake.setIntakeDutyCycle(0); intake.is_busy = false;}, intake));
 
       //Trigger IRsensorTimerResetter = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {intake.readyToClose1_timer.restart();}));
 
@@ -349,7 +351,8 @@ public class RobotContainer {
         controller.rightTrigger()
        
         .whileTrue(shooting)
-        .onFalse(new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; RobotContainer.isShooting = false; intake.setIntakeDutyCycle(0.0);}, intake));
+        .onFalse(new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; RobotContainer.isShooting = false; 
+          intake.setIntakeDutyCycle(0.0);}, intake));
 
 
         controller.rightTrigger().and(()->(!shooting.readyToShoot)).whileTrue(new InstantCommand(()-> {controller.setRumble(RumbleType.kBothRumble, 0.35);}))
@@ -422,7 +425,7 @@ public class RobotContainer {
 
       //intake overrides/fixes
      // controller.x().whileTrue(kACharacterization.feedforwardCommand(drive, co4Controller));
-      controller2.rightTrigger().or(controller.x()).whileTrue(new StartEndCommand(() -> {intake.Retract(); intake.is_busy = true;}, () -> {intake.Extend(); intake.is_busy = false;}, intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+      controller2.rightTrigger().or(controller.x()).whileTrue(new StartEndCommand(() -> {intake.Retract(); intake.is_busy = true; intake.setIntakeDutyCycle(0.4);}, () -> {intake.Extend(); intake.is_busy = false;}, intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
       //controller2.b().onTrue(new InstantCommand(() -> {intake.Retract(); intake.is_busy = true;}, intake));
 
       controller3.x().whileTrue(new StartEndCommand(() -> {vision.ruin = true;}, () -> {vision.ruin = false;}).ignoringDisable(true));
