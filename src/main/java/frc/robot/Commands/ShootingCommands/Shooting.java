@@ -367,7 +367,7 @@ if ((Robot.shootingState.equals(ShootingState.SHOOTING) &&  ((Robot.isActive && 
     (Robot.shootingState.equals(ShootingState.PASSING))) {
 
     //shooting parameters are close enough to START shooting
-    if (!readyToShoot && (((shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance)) || Robot.shootingState.equals(ShootingState.PASSING)))  && (Math.abs(deltaRotation) < 10 && Robot.shootingState.equals(ShootingState.SHOOTING) || Math.abs(deltaRotation) < 15 && Robot.shootingState.equals(ShootingState.PASSING))) {
+    if (!readyToShoot && (((shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance)) || Robot.shootingState.equals(ShootingState.PASSING)))  && (Math.abs(deltaRotation) < 7.5 && Robot.shootingState.equals(ShootingState.SHOOTING) || Math.abs(deltaRotation) < 7.5 && Robot.shootingState.equals(ShootingState.PASSING))) {
         readyToShoot = true;
         shooter.isShooting = true;
         RobotContainer.isShooting = true;

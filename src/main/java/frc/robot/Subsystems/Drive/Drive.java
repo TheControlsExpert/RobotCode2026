@@ -91,7 +91,7 @@ public class Drive extends SubsystemBase {
  public Pose2d lastodometrypose = new Pose2d();
  ReentrantLock visionLock = new ReentrantLock();
 public final double translationkP = 2.5;
-public final double rotationkP = 0.10;
+public final double rotationkP = 0.15;
 public PathConstraints constraints_auto = new PathConstraints(3, 3, 13, 26);
 public PathConstraints constraints_pathfinding = new PathConstraints(3, 3, 500, 500);
 
@@ -589,7 +589,7 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
         }
 
         else {
-            Translation2d bottomBlue = new Translation2d(1.15, 1.5);
+            Translation2d bottomBlue = new Translation2d(2.3, 2);
             double period = 12/10;
             double angle = time/period * 2 * Math.PI;
 
@@ -608,7 +608,7 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
             }
 
             else {
-                  Translation2d bottomRed = FlipHorizontally_BtoR(new Translation2d(1.15, 1.5));
+                  Translation2d bottomRed = FlipHorizontally_BtoR(new Translation2d(2.32, 2));
                 Translation2d topRed = FlipVertically_bottom_to_top(bottomRed);
 
                // double distanceBottom = bottomRed.getDistance(getEstimatedPosition().getTranslation());
@@ -845,7 +845,7 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
  }
 
  else if (RobotContainer.isShooting) {
-return 1.65;
+return 1.15;
  }
  else {
  return 5;

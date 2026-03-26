@@ -97,7 +97,7 @@ public class shootingPathsAuto extends Command{
 
         double distance_to_hub = swerve.getEstimatedPosition().getTranslation().getDistance(shootingPosition);
 
-        if (!readyToShoot && shooter.isAtShootingVelocity(distance_to_hub) && shooter.isAtPivotPosition(distance_to_hub)  && Math.abs(currentToWanted.getRadians()) < 10) {
+        if (!readyToShoot &&  Math.abs(currentToWanted.getRadians()) < 10) {
             readyToShoot = true;
             shooter.isShooting = true;
             RobotContainer.isShooting = true;
