@@ -269,7 +269,7 @@ if (DriverStation.isDisabled()) {
  
  odometryLock.lock(); // Prevents odometry updates while reading data
  gyroIO.updateInputs(gyroInputs);
- SmartDashboard.putBoolean("can pass", !intersectingHub(0.0));
+ //SmartDashboard.putBoolean("can pass", !intersectingHub(0.0));
  
  //Logger.processInputs("Drive/Gyro", gyroInputs);
  for (var module : modules) {

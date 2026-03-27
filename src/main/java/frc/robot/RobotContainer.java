@@ -321,6 +321,9 @@ public class RobotContainer {
          controller.button(8).onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), DriverStation.getAlliance().get().equals(Alliance.Blue) ? Rotation2d.kZero : Rotation2d.fromDegrees(180))), drive)
                  .ignoringDisable(true));
 
+          controller.a().whileTrue(new AutomaticPushingP1(drive,  () -> -controller.getLeftY(), () -> -controller.getLeftX(), 0.08, controller));  
+          controller.x().whileTrue(new AutomaticPushingP2(drive,  () -> -controller.getLeftY(), () -> -controller.getLeftX() , 0.08, controller));
+
       //  timeout_shuffle = new Timer();
       //  //Trigger timeoutshuffle_trigger = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {timeout_shuffle.restart();}));
       //  Trigger shuffle_trigger = new Trigger(() -> (RobotContainer.isShooting  && !intake.is_busy && DriverStation.isTeleop())).whileTrue(

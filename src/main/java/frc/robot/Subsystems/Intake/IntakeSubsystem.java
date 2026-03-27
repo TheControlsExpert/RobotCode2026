@@ -83,40 +83,40 @@ public class IntakeSubsystem extends SubsystemBase {
 
       
 
-        if (DriverStation.isDisabled()) {
-            if (!inputs.isConnectedIntake && !wasDisconnected_Intake) {
-                Robot.reportDisconnection("Intake Motor");
-                wasDisconnected_Intake = true;
+        // if (DriverStation.isDisabled()) {
+        //     if (!inputs.isConnectedIntake && !wasDisconnected_Intake) {
+        //         Robot.reportDisconnection("Intake Motor");
+        //         wasDisconnected_Intake = true;
                 
 
-            }
+        //     }
             
-            if (wasDisconnected_Intake && inputs.isConnectedIntake) {
-                Robot.removeDisconnection("Intake Motor");
-                wasDisconnected_Intake = false;
-            }
+        //     if (wasDisconnected_Intake && inputs.isConnectedIntake) {
+        //         Robot.removeDisconnection("Intake Motor");
+        //         wasDisconnected_Intake = false;
+        //     }
 
-            if (!inputs.isConnectedPivot && !wasDisconnected_Pivot) {
-                    Robot.reportDisconnection("Intake Pivot");
-                    wasDisconnected_Pivot = true;
-            }
+        //     if (!inputs.isConnectedPivot && !wasDisconnected_Pivot) {
+        //             Robot.reportDisconnection("Intake Pivot");
+        //             wasDisconnected_Pivot = true;
+        //     }
 
-            if (wasDisconnected_Pivot && inputs.isConnectedPivot) {
-                    Robot.removeDisconnection("Intake Pivot");
-                    wasDisconnected_Pivot = false;
-            }
+        //     if (wasDisconnected_Pivot && inputs.isConnectedPivot) {
+        //             Robot.removeDisconnection("Intake Pivot");
+        //             wasDisconnected_Pivot = false;
+        //     }
 
-            if (!inputs.isConnectedPivotEncoder && !wasDisconnected_PivotEncoder) {
-                    Robot.reportDisconnection("Intake Pivot Encoder");
-                    wasDisconnected_Pivot = true;
-            }
+        //     if (!inputs.isConnectedPivotEncoder && !wasDisconnected_PivotEncoder) {
+        //             Robot.reportDisconnection("Intake Pivot Encoder");
+        //             wasDisconnected_Pivot = true;
+        //     }
 
-            if (wasDisconnected_PivotEncoder && inputs.isConnectedPivotEncoder) {
-                Robot.removeDisconnection("Intake Pivot Encoder");
-                wasDisconnected_PivotEncoder = false;
+        //     if (wasDisconnected_PivotEncoder && inputs.isConnectedPivotEncoder) {
+        //         Robot.removeDisconnection("Intake Pivot Encoder");
+        //         wasDisconnected_PivotEncoder = false;
 
-            }
-        }
+        //     }
+        // }
     }
     
 

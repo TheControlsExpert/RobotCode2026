@@ -36,7 +36,7 @@ public class DriveCommand extends Command {
     public void execute() {
         Translation2d linearVelocity;
 
-        if (controller.isConnected()) {
+       // if (controller.isConnected()) {
 
         if (controller.rightStick().getAsBoolean()) {
           linearVelocity =
@@ -78,10 +78,10 @@ public class DriveCommand extends Command {
 
         }
 
-        else {
-            swervyyy.runVelocity(new ChassisSpeeds());
-        }
-    }
+        // else {
+        //     swervyyy.runVelocity(new ChassisSpeeds());
+        // }
+   // }
 
 
     private static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
