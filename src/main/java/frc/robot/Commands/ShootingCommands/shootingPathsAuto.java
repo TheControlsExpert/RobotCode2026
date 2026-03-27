@@ -30,7 +30,7 @@ public class shootingPathsAuto extends Command{
     Drive swerve;
     VisionSubsystem vision;
     Timer timer = new Timer();
-    double TimeToFinish = 3.0;
+    double TimeToFinish = 4.5;
     Translation2d velocityVector;
 
     public shootingPathsAuto(Shooter shooter, Drive drive, Indexer indexer,PathPlannerPath path,VisionSubsystem vision) {
@@ -97,7 +97,7 @@ public class shootingPathsAuto extends Command{
 
         double distance_to_hub = swerve.getEstimatedPosition().getTranslation().getDistance(shootingPosition);
 
-        if (!readyToShoot && shooter.isAtShootingVelocity(distance_to_hub) && shooter.isAtPivotPosition(distance_to_hub)  && Math.abs(currentToWanted.getRadians()) < 10) {
+        if (!readyToShoot &&  Math.abs(currentToWanted.getRadians()) < 10) {
             readyToShoot = true;
             shooter.isShooting = true;
             RobotContainer.isShooting = true;

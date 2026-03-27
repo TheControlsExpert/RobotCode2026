@@ -65,6 +65,7 @@ import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.Robot.ShootingState;
 import frc.robot.Constants.Mode;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.LimelightHelpers;
 //import frc.robot.Subsystems.Superstructure.Superstructure;
@@ -90,7 +91,7 @@ public class Drive extends SubsystemBase {
  public Pose2d lastodometrypose = new Pose2d();
  ReentrantLock visionLock = new ReentrantLock();
 public final double translationkP = 2.5;
-public final double rotationkP = 0.10;
+public final double rotationkP = 0.15;
 public PathConstraints constraints_auto = new PathConstraints(3, 3, 13, 26);
 public PathConstraints constraints_pathfinding = new PathConstraints(3, 3, 500, 500);
 
@@ -99,7 +100,8 @@ private SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
 Transform2d simulatedLL = new Transform2d(new Translation2d(SwerveConstants.wheelBase / 2, -SwerveConstants.trackWidth / 2), Rotation2d.fromDegrees(-160));
 
 
-
+     StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault()
+  .getStructTopic("shooting pose", Pose2d.struct).publish(); 
 private Twist2d twist = new Twist2d();
 
 public double maxSpeed = 5;
@@ -121,7 +123,6 @@ SwerveModuleState[] mods = new SwerveModuleState[] {
 };
 
 
- 
 
  
 
@@ -213,7 +214,7 @@ private final Field2d m_field = new Field2d();
  (speeds, feedforwards) -> runVelocity(speeds),
  // Method that will drive the robot gn ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
  new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
- new PIDConstants(translationkP, 0.0, 0.8), // Translation PID constants
+ new PIDConstants(translationkP, 0.0, 0.0), // Translation PID constants
  new PIDConstants(2.5, 0.0, 0.0) // Rotation PID constants
  ),
  
@@ -235,9 +236,8 @@ private final Field2d m_field = new Field2d();
  
  @Override
  public void periodic() {
-    SmartDashboard.putNumber("gyro", SwervePoseEstimator.getEstimatedPosition().getRotation().getDegrees());
+   
     m_field.setRobotPose(SwervePoseEstimator.getEstimatedPosition()); 
-    SmartDashboard.putNumber("velocity of chassis", Math.hypot(getChassisSpeeds().vxMetersPerSecond, getChassisSpeeds().vyMetersPerSecond));
     SmartDashboard.putNumber("distance to center", SwervePoseEstimator.getEstimatedPosition().getTranslation().getDistance(calculateShootingPosition(0)));
 
 if (DriverStation.isDisabled()) {
@@ -269,6 +269,7 @@ if (DriverStation.isDisabled()) {
  
  odometryLock.lock(); // Prevents odometry updates while reading data
  gyroIO.updateInputs(gyroInputs);
+ SmartDashboard.putBoolean("can pass", !intersectingHub(0.0));
  
  //Logger.processInputs("Drive/Gyro", gyroInputs);
  for (var module : modules) {
@@ -393,6 +394,78 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
 
  odometryLock.unlock();
  }
+
+ public boolean intersectingHub(double time) {
+    
+  Translation2d hubCenter;
+     if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
+                hubCenter = new Translation2d(4.626, 4.034);
+    }
+
+    else {
+              hubCenter = FlipHorizontally_BtoR(new Translation2d(4.626, 4.034));
+    }
+    
+     double addon =(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Blue)) ? 0.428752 : -0.428752;
+     Translation2d netCenter = hubCenter.plus(new Translation2d(addon, 0));
+
+    //from center of hub with (0,0) coordinates, what is the x/2, y/2
+   
+
+    Pose2d currentPosition = getEstimatedPosition();
+  //  Pose2d shooterPosition = currentPosition.transformBy(ShooterConstants.robotToShooter);
+
+    Translation2d directionPassing = calculateShootingPosition(time).minus(currentPosition.getTranslation());
+    return doesLineIntersectRectangle(currentPosition.getX(), currentPosition.getY(), directionPassing.getX(), directionPassing.getY(), hubCenter.getX(), hubCenter.getY(), SwerveConstants.hub_dimensions[0], SwerveConstants.hub_dimensions[1]) ||
+           doesLineIntersectRectangle(currentPosition.getX(), currentPosition.getY(), directionPassing.getX(), directionPassing.getY(), netCenter.getX(), netCenter.getY(), SwerveConstants.net_dimensions[0], SwerveConstants.net_dimensions[1]);
+
+ }
+
+ public static boolean doesLineIntersectRectangle(
+        double x0, double y0,   // point on the line
+        double dx, double dy,   // direction of the line
+        double cx, double cy,   // center of rectangle
+        double width, double height
+) {
+    
+     double halfW = width / 2.0;
+     double halfH = height / 2.0;
+
+     double xmin = cx - halfW;
+     double xmax = cx + halfW;
+     double ymin = cy - halfH;
+     double ymax = cy + halfH;
+
+    double tmin, tmax, tymin, tymax;
+
+    // X slab
+    if (Math.abs(dx) < 1e-9) {
+        if (x0 < xmin || x0 > xmax) return false;
+        tmin = Double.NEGATIVE_INFINITY;
+        tmax = Double.POSITIVE_INFINITY;
+    } else {
+        double tx1 = (xmin - x0) / dx;
+        double tx2 = (xmax - x0) / dx;
+        tmin = Math.min(tx1, tx2);
+        tmax = Math.max(tx1, tx2);
+    }
+
+    // Y slab
+    if (Math.abs(dy) < 1e-9) {
+        if (y0 < ymin || y0 > ymax) return false;
+        tymin = Double.NEGATIVE_INFINITY;
+        tymax = Double.POSITIVE_INFINITY;
+    } else {
+        double ty1 = (ymin - y0) / dy;
+        double ty2 = (ymax - y0) / dy;
+        tymin = Math.min(ty1, ty2);
+        tymax = Math.max(ty1, ty2);
+    }
+
+    return Math.max(tmin, tymin) <= Math.min(tmax, tymax);
+}
+
+ 
  
  
  // poseLock.lock();
@@ -516,39 +589,39 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
         }
 
         else {
-            Translation2d bottomBlue = new Translation2d(1.15, 1.5);
+            Translation2d bottomBlue = new Translation2d(2.3, 2);
             double period = 12/10;
             double angle = time/period * 2 * Math.PI;
 
-            Translation2d circleRandomness = new Translation2d(Math.cos(angle) * 0.25, Math.sin(angle) * 0.7);
+            Translation2d circleRandomness = new Translation2d(Math.cos(angle) * 0.25, Math.sin(angle) * 0.5);
 
-           if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
-                Translation2d topBlue = FlipVertically_bottom_to_top(bottomBlue);
+           if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Blue)) {
+                //Translation2d topBlue = FlipVertically_bottom_to_top(bottomBlue);
 
                 double distanceBottom = bottomBlue.getDistance(getEstimatedPosition().getTranslation());
-                double distanceTop = topBlue.getDistance(getEstimatedPosition().getTranslation());
-                if (distanceBottom < distanceTop) {
+               // double distanceTop = topBlue.getDistance(getEstimatedPosition().getTranslation());
+               // if (distanceBottom < distanceTop) {
                     return bottomBlue.plus(circleRandomness);
-                } else {
-                    return topBlue.plus(circleRandomness);
-                }
+              //  } else {
+               //     return topBlue.plus(circleRandomness);
+               // }
             }
 
             else {
-                Translation2d bottomRed = FlipHorizontally_BtoR(new Translation2d(1.15, 1.5));
+                  Translation2d bottomRed = FlipHorizontally_BtoR(new Translation2d(2.32, 2));
                 Translation2d topRed = FlipVertically_bottom_to_top(bottomRed);
 
-                double distanceBottom = bottomRed.getDistance(getEstimatedPosition().getTranslation());
-                double distanceTop = topRed.getDistance(getEstimatedPosition().getTranslation());
-                if (distanceBottom < distanceTop) {
-                    return bottomRed.plus(circleRandomness);
-                } else {
+               // double distanceBottom = bottomRed.getDistance(getEstimatedPosition().getTranslation());
+               // double distanceTop = topRed.getDistance(getEstimatedPosition().getTranslation());
+               // if (distanceBottom < distanceTop) {
+               //     return bottomRed.plus(circleRandomness);
+               // } else {
                     return topRed.plus(circleRandomness);
             }
            
         }
     }
-}
+
 
 
  
@@ -772,7 +845,7 @@ LimelightHelpers.SetRobotOrientation("limelight-threegs", SwervePoseEstimator.ge
  }
 
  else if (RobotContainer.isShooting) {
-return 1.65;
+return 1.15;
  }
  else {
  return 5;

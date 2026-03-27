@@ -33,6 +33,8 @@ public class VisionSubsystem extends SubsystemBase {
     private VisionIO io;
     private VisionIOInputsAutoLogged inputs = new VisionIOInputsAutoLogged();
         private Drive drive;
+
+        boolean disable_all_cameras = false;
    
         
     double lastUsedTimestamp = -1000;
@@ -126,13 +128,13 @@ public class VisionSubsystem extends SubsystemBase {
             }
         }
 
-        if (inputs.isNew_LL3GF && inputs.isConnected_LL3GF && inputs.tagCount_LL3GF > 0 && !disable_other_cameras) {
-                double std_LL3GF = (inputs.avgDistance_LL3GF * 0.02 ) / inputs.tagCount_LL3GF;
-                double[] stds_LL3GF = {std_LL3GF, std_LL3GF};
-                if (std_LL3GF < 0.1) {
-                visionMeasurements.add(new VisionMeasurement(inputs.MT2pose_LL3GF, inputs.rotation_LL3GF, inputs.time_LL3GF, stds_LL3GF, inputs.tagCount_LL3GF, inputs.avgDistance_LL3GF));
-                }
-        }
+        // if (inputs.isNew_LL3GF && inputs.isConnected_LL3GF && inputs.tagCount_LL3GF > 0 && !disable_other_cameras) {
+        //         double std_LL3GF = (inputs.avgDistance_LL3GF * 0.02 ) / inputs.tagCount_LL3GF;
+        //         double[] stds_LL3GF = {std_LL3GF, std_LL3GF};
+        //         if (std_LL3GF < 0.1) {
+        //         visionMeasurements.add(new VisionMeasurement(inputs.MT2pose_LL3GF, inputs.rotation_LL3GF, inputs.time_LL3GF, stds_LL3GF, inputs.tagCount_LL3GF, inputs.avgDistance_LL3GF));
+        //         }
+        // }
 
         VisionMeasurement bestmeasurement = new VisionMeasurement(new Pose2d(), 0, 0, new double[]{0,0}, 0, 0);
 
@@ -171,16 +173,27 @@ public class VisionSubsystem extends SubsystemBase {
         public void addVisionMeasurement(VisionMeasurement measurement) {
           //  SmartDashboard.putBoolean("ruin", ruin);
 
-            if (ruin) {
-            drive.addVision(new VisionMeasurement(measurement.pose().plus(new Transform2d(0.0,0.5, new Rotation2d())), measurement.rotationDegreees, measurement.timestamp, measurement.std, measurement.numTags, measurement.avgDistance));
-            }
+            // if (ruin) {
+            // drive.addVision(new VisionMeasurement(measurement.pose().plus(new Transform2d(0.0,0.5, new Rotation2d())), measurement.rotationDegreees, measurement.timestamp, measurement.std, measurement.numTags, measurement.avgDistance));
+            // }
 
-            else {
+            if (!disable_all_cameras) {
             drive.addVision(measurement);
+            
             }
             
 
+
             
+    }
+
+    public void enableVision() {
+        disable_all_cameras = false;
+
+    }
+
+    public void disableVision() {
+        disable_all_cameras = true;
     }
 
     public void ShootingMode(boolean isShooting) {

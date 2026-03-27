@@ -122,13 +122,13 @@ public class IntakeIO {
     }
 
     public void updateInputs(IntakeIOInputs inputs) {
-        SmartDashboard.putNumber("intake pivot speed", pivotMotor.getVelocity().getValueAsDouble());
-        SmartDashboard.putBoolean("intake IR", ReadyToClose1.get());
-       SmartDashboard.putNumber("target", target);
-       SmartDashboard.putBoolean("up", Up);
-       SmartDashboard.putBoolean("intake encoder connected", pivotEncoder.isConnected());
-       SmartDashboard.putNumber("intake encoder", pivotEncoder.get());
-       SmartDashboard.putNumber("intake angle", pivotAngle.getValue().in(Rotations));
+    //     SmartDashboard.putNumber("intake pivot speed", pivotMotor.getVelocity().getValueAsDouble());
+    //     SmartDashboard.putBoolean("intake IR", ReadyToClose1.get());
+    //    SmartDashboard.putNumber("target", target);
+    //    SmartDashboard.putBoolean("up", Up);
+    //    SmartDashboard.putBoolean("intake encoder connected", pivotEncoder.isConnected());
+    //    SmartDashboard.putNumber("intake encoder", pivotEncoder.get());
+    //    SmartDashboard.putNumber("intake angle", pivotAngle.getValue().in(Rotations));
         inputs.isConnectedIntake = BaseStatusSignal.refreshAll(intakeVel).equals(com.ctre.phoenix6.StatusCode.OK);
         inputs.isConnectedPivot = BaseStatusSignal.refreshAll(pivotAngle, pivotVelocity, pivotAcceleration).equals(com.ctre.phoenix6.StatusCode.OK);
         inputs.isConnectedPivotEncoder = pivotEncoder.isConnected();
@@ -231,66 +231,66 @@ public class IntakeIO {
         }}
 
 
-    else if (!pivotEncoder.isConnected() && resetCorrectly) {
-        // double adjustedTarget = IntakeConstants.PivotGearRatio * (target);
+    // else if (!pivotEncoder.isConnected() && resetCorrectly) {
+    //     // double adjustedTarget = IntakeConstants.PivotGearRatio * (target);
 
-        // double adjustedLimit_MAX = IntakeConstants.PivotGearRatio * (IntakeConstants.MAX_ENCODER_VAL);
-        // double adjustedLimit_MIN = IntakeConstants.PivotGearRatio * (IntakeConstants.MIN_ENCODER_VAL);
+    //     // double adjustedLimit_MAX = IntakeConstants.PivotGearRatio * (IntakeConstants.MAX_ENCODER_VAL);
+    //     // double adjustedLimit_MIN = IntakeConstants.PivotGearRatio * (IntakeConstants.MIN_ENCODER_VAL);
 
-        // double adjustedkP_down = IntakeConstants.pivot_kP_down * IntakeConstants.PivotGearRatio;
-        // double adjustedkP_up = IntakeConstants.pivot_kP_up * IntakeConstants.PivotGearRatio; 
+    //     // double adjustedkP_down = IntakeConstants.pivot_kP_down * IntakeConstants.PivotGearRatio;
+    //     // double adjustedkP_up = IntakeConstants.pivot_kP_up * IntakeConstants.PivotGearRatio; 
 
 
 
-        // if (adjustedTarget > inputs.intakePos) {
-        //     Up = true;
-        // }
+    //     // if (adjustedTarget > inputs.intakePos) {
+    //     //     Up = true;
+    //     // }
 
-        // else {
-        //     Up = false;
-        // }  
+    //     // else {
+    //     //     Up = false;
+    //     // }  
         
-        // if (!Up) {    
-        // double clampedVal =  adjustedkP_down * (target - inputs.intakePos);
+    //     // if (!Up) {    
+    //     // double clampedVal =  adjustedkP_down * (target - inputs.intakePos);
 
-        // if ( adjustedkP_down * (target - inputs.intakePos) > 0.3) {
-        //     clampedVal = 0.3;
+    //     // if ( adjustedkP_down * (target - inputs.intakePos) > 0.3) {
+    //     //     clampedVal = 0.3;
 
-        // }
+    //     // }
 
-        // else if ( adjustedkP_down * (target - inputs.intakePos) < -0.3) {
-        //     clampedVal = -0.3;
+    //     // else if ( adjustedkP_down * (target - inputs.intakePos) < -0.3) {
+    //     //     clampedVal = -0.3;
          
-        // }
-        // pivotMotor.set(clampedVal);
-        //  SmartDashboard.putNumber("feedforward", clampedVal);
-        // }
+    //     // }
+    //     // pivotMotor.set(clampedVal);
+    //     //  SmartDashboard.putNumber("feedforward", clampedVal);
+    //     // }
 
-        // else {
-        // double clampedVal =  adjustedkP_up * (target - inputs.intakePos);
-        // if ( adjustedkP_up * (target - inputs.intakePos) > 0.4) {
-        //     clampedVal = 0.4;
+    //     // else {
+    //     // double clampedVal =  adjustedkP_up * (target - inputs.intakePos);
+    //     // if ( adjustedkP_up * (target - inputs.intakePos) > 0.4) {
+    //     //     clampedVal = 0.4;
 
-        // }
+    //     // }
 
-        // else if ( adjustedkP_up * (target - inputs.intakePos) < -0.4) {
-        //     clampedVal = -0.4;
+    //     // else if ( adjustedkP_up * (target - inputs.intakePos) < -0.4) {
+    //     //     clampedVal = -0.4;
          
-        // }
-        // pivotMotor.set(clampedVal);
-        //  SmartDashboard.putNumber("feedforward", clampedVal);
-        // }
+    //     // }
+    //     // pivotMotor.set(clampedVal);
+    //     //  SmartDashboard.putNumber("feedforward", clampedVal);
+    //     // }
 
-        // if (Up && inputs.intakePos > adjustedLimit_MAX) {
-        //     pivotMotor.set(0);
-        //     SmartDashboard.putNumber("feedforward", 0);
-        // }
+    //     // if (Up && inputs.intakePos > adjustedLimit_MAX) {
+    //     //     pivotMotor.set(0);
+    //     //     SmartDashboard.putNumber("feedforward", 0);
+    //     // }
 
-        // if (!Up && inputs.intakePos < adjustedLimit_MIN) {
-        //     pivotMotor.set(0);
-        //     SmartDashboard.putNumber("feedforward", 0);
-        // }  
-    }
+    //     // if (!Up && inputs.intakePos < adjustedLimit_MIN) {
+    //     //     pivotMotor.set(0);
+    //     //     SmartDashboard.putNumber("feedforward", 0);
+    //     // }  
+    // }
 
     else {
         pivotMotor.set(0);
@@ -323,11 +323,6 @@ public class IntakeIO {
     //     HOME,
     //     SHUFFLE_UP
     // }
-
-
-
-
-
 
 
     }

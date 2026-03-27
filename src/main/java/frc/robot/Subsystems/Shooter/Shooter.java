@@ -151,8 +151,15 @@ public class Shooter extends SubsystemBase {
         io.setOutputPivot(dutycycle);
      }
 
-     public void setPositionPivot(double position) { 
-        io.setPivotPosition(position);
+     public void setPositionPivot(double position, double deltaTime) { 
+        double feedforwardPivot = kD_pivot * (position - lastPivotAngle)/deltaTime;
+        lastPivotAngle = position;
+        io.setPivotPosition(position, feedforwardPivot);
+     }
+
+     public void setPositionPivot(double position) {
+        lastPivotAngle = position;
+        io.setPivotPosition(position, 0);
      }
 
      public void setShooterVelocity(double velocity) {
@@ -305,7 +312,7 @@ public class Shooter extends SubsystemBase {
         double shooterVel = solve( -4.22697 * Math.pow(10, -7),  0.0052122, -lookaheadLauncherToTargetDistance - 5.20419);
 
 
-        io.setPivotPosition(hoodPosition);
+        io.setPivotPosition(hoodPosition, 0);
         io.setVelocityShooter(shooterVel/60);
 
         return (lookaheadPose.minus(drive.getEstimatedPosition().getTranslation()).getAngle()); 
@@ -324,7 +331,7 @@ public class Shooter extends SubsystemBase {
 
 
 
-        io.setPivotPosition(0.5);
+        io.setPivotPosition(0.5, 0);
         io.setVelocityShooter(shooterVel/60);
         SmartDashboard.putNumber("interpolated speed", shooterVel);
     }
@@ -390,12 +397,8 @@ public class Shooter extends SubsystemBase {
         double shooterV = 1832.83 + 271.41197 * lookaheadLauncherToTargetDistance;
         publisher.set(new Pose2d(drive.getEstimatedPosition().getTranslation(), lookaheadPose.minus(drive.getEstimatedPosition().getTranslation()).getAngle()));
 
-        double feedforwardPivot = kD_pivot * (pivotAngle - lastPivotAngle)/deltaTime;
-        double feedforwardShooter = kD_shooter * (shooterV - lastShooterV)/deltaTime;
-
-
-        setShooterVelocity(shooterV/60, feedforwardShooter);
-        setPositionPivot(pivotAngle);
+        setShooterVelocity(shooterV/60, deltaTime);
+        setPositionPivot(pivotAngle, deltaTime);
 
         return (lookaheadPose.minus(drive.getEstimatedPosition().getTranslation()).getAngle());
 
@@ -415,7 +418,7 @@ public class Shooter extends SubsystemBase {
         }
 
         SmartDashboard.putNumber("is at shooting vel", Math.abs((inputs.shooterLeftVelocityRPM + inputs.shooterRightVelocityRPM) / 2 - velocity));
-        return Math.abs((inputs.shooterLeftVelocityRPM + inputs.shooterRightVelocityRPM) / 2 - velocity) < (Robot.shootingState.equals(ShootingState.SHOOTING) ?  200 : 150);
+        return Math.abs((inputs.shooterLeftVelocityRPM + inputs.shooterRightVelocityRPM) / 2 - velocity) < (Robot.shootingState.equals(ShootingState.SHOOTING) ?  200 : 250);
     }
 
     public boolean isAtPivotPosition(double distance) {

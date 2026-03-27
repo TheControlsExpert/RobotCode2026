@@ -58,6 +58,9 @@ public final class Constants {
 
   public static class SwerveConstants {
 
+    public static final double[] hub_dimensions = new double[] {0.6604*2, 0.6604*2};
+    public static final double[] net_dimensions = new double[] {0.492252*2, 0.805307*2};
+
     // Gear Ratio
     public static final double driveReduction = 5.36;
     public static final double steerReduction = 18.75;
@@ -70,14 +73,14 @@ public final class Constants {
     public static final double angleKS = 0.45;
 
     /* Drive Motor PID Values */
-    public static final double driveKP = 2; // TODO: This must be tuned to specific robot
+    public static final double driveKP = 0.25; // TODO: This must be tuned to specific robot
     public static final double driveKI = 0.0;
     public static final double driveKD = 0.0;
 
     /* Drive Motor Characterization Values From SYSID */
     public static final double driveKS = 0.1996; // TODO: This must be tuned to specific robot
     public static final double driveKV = 0.6396;
-    public static final double driveKA = 0.3;
+    public static final double driveKA = 0.1;
     //public static final double driveKA = 0.3;
 
     public static final Slot0Configs intrinsicsD =
@@ -143,7 +146,7 @@ public final class Constants {
       public static final boolean invertDrive = true;
       public static final boolean invertSteer = true;
       public static final boolean invertEncoder = false;
-      public static final double angleOffset = -0.2614746;
+      public static final double angleOffset = -0.27124;
       public static final SwerveModuleConstants constants =
           new SwerveModuleConstants(
               driveMotorID,
@@ -163,7 +166,7 @@ public final class Constants {
       public static final boolean invertDrive = false;
       public static final boolean invertSteer = true;
       public static final boolean invertEncoder = false;
-      public static final double angleOffset = 0.152832;
+      public static final double angleOffset = 0.15625;
       ;
       // -120.937
       public static final SwerveModuleConstants constants =

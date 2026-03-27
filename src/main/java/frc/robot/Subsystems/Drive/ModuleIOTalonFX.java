@@ -269,12 +269,12 @@ public class ModuleIOTalonFX implements ModuleIO {
   }
 
   public void lowerCurrentLimits() {
-    driveConfig.CurrentLimits.SupplyCurrentLimit = 40;
-    driveConfig.CurrentLimits.StatorCurrentLimit = 40;
-    driveTalon.getConfigurator().apply(driveConfig);
+    driveConfig.CurrentLimits.SupplyCurrentLimit = 60;
+    driveConfig.CurrentLimits.StatorCurrentLimit = 70;
+    driveTalon.getConfigurator().apply(driveConfig, 0.25);
 
-    turnConfig.CurrentLimits.SupplyCurrentLimit = 30;
-    turnConfig.CurrentLimits.StatorCurrentLimit = 30;
+    turnConfig.CurrentLimits.SupplyCurrentLimit = 40;
+    turnConfig.CurrentLimits.StatorCurrentLimit = 50;
     turnTalon.getConfigurator().apply(turnConfig, 0.25);
   }
 }

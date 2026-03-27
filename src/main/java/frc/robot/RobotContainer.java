@@ -65,6 +65,8 @@ import frc.robot.Commands.DriveCommands.kACharacterization;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutoAlign;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutoBumping;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticClimbing;
+import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticPushingP1;
+import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticPushingP2;
 import frc.robot.Commands.DriveCommands.AligningCommands.AutomaticTrenching;
 import frc.robot.Commands.DriveCommands.AligningCommands.ProfiledPIDCommand;
 import frc.robot.Commands.IntakeCommands.IntakeCommand;
@@ -270,7 +272,10 @@ public class RobotContainer {
         Command firstMiddleCommand = AutoBuilder.followPath(firstMiddlePath);
         Command secondMiddleCommand = AutoBuilder.followPath(secondMiddlePath);
 
-         autoCommand = new ParallelRaceGroup(firstMiddleCommand, new WaitCommand(0.35).andThen(new IntakeCommand(intake, 3)).andThen(new Revv(shooter, drive, controller, vision))).
+         autoCommand = new ParallelCommandGroup(new ParallelRaceGroup(firstMiddleCommand, new IntakeCommand(intake, 3).andThen(new Revv(shooter, drive, controller, vision))), new WaitCommand(1).andThen(new InstantCommand(() -> {vision.enableVision();}))).
+
+
+
                       andThen(new ParallelRaceGroup(new shootingPathsAuto(shooter, drive, indexer, secondMiddlePath, vision), new WaitCommand(1).andThen(  
                       (new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.4);}, intake).
                       andThen(new WaitCommand(0.5)).
@@ -279,7 +284,7 @@ public class RobotContainer {
 
                       ))).
                       andThen(new InstantCommand(() -> {intake.Retract();  }, intake)).
-                      andThen(new ParallelRaceGroup(secondMiddleCommand, new WaitCommand(1.7).andThen(new IntakeCommand(intake, 2.3)).andThen(new Revv(shooter, drive, controller, vision)))).
+                      andThen(new ParallelRaceGroup(secondMiddleCommand, new WaitCommand(1.0).andThen(new IntakeCommand(intake, 2.3)).andThen(new Revv(shooter, drive, controller, vision)))).
                       andThen(new Shooting(shooter, drive, indexer, intake, controller, null, null, null, 0, 0, vision));
     
       }
@@ -316,21 +321,21 @@ public class RobotContainer {
          controller.button(8).onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), DriverStation.getAlliance().get().equals(Alliance.Blue) ? Rotation2d.kZero : Rotation2d.fromDegrees(180))), drive)
                  .ignoringDisable(true));
 
-
-
       //  timeout_shuffle = new Timer();
        //Trigger timeoutshuffle_trigger = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {timeout_shuffle.restart();}));
-       Trigger shuffle_trigger = new Trigger(() -> (RobotContainer.isShooting  && !intake.is_busy && DriverStation.isTeleop())).onTrue(
+       Trigger shuffle_trigger = new Trigger(() -> (RobotContainer.isShooting  && !intake.is_busy && DriverStation.isTeleop())).whileTrue(
         new WaitCommand(1).andThen(
 
        
-       (new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.4);}, intake).
+       (new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.6);}, intake).
        andThen(new WaitCommand(0.5)).
        andThen(new InstantCommand(() -> {intake.Extend();}, intake)).
        andThen(new WaitCommand(0.3))).repeatedly()
       // andThen(new InstantCommand(() -> {intake.Shuffle();}, intake))
 
        ));
+
+       controller2.x().whileTrue(new InstantCommand(() -> {intake.setIntakeDutyCycle(-0.5); intake.is_busy = true;}, intake)).onFalse(new InstantCommand(() -> {intake.setIntakeDutyCycle(0); intake.is_busy = false;}, intake));
 
       //Trigger IRsensorTimerResetter = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {intake.readyToClose1_timer.restart();}));
 
@@ -345,26 +350,30 @@ public class RobotContainer {
       
           
         
-      
+      Shooting shooting = new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, vision);
        //  controller.leftTrigger().whileTrue(new Revv(shooter, drive, controller));
         controller.rightTrigger()
        
-        .whileTrue(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, vision))
-        .onFalse(new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; RobotContainer.isShooting = false; intake.setIntakeDutyCycle(0.0);}, intake));
+        .whileTrue(shooting)
+        .onFalse(new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; RobotContainer.isShooting = false; 
+          intake.setIntakeDutyCycle(0.0);}, intake));
+
+
+        controller.rightTrigger().and(()->(!shooting.readyToShoot)).whileTrue(new InstantCommand(()-> {controller.setRumble(RumbleType.kBothRumble, 0.35);}))
+        .onFalse(new InstantCommand(() -> {controller.setRumble(RumbleType.kBothRumble, 0);}));
        
+        
+
 
         controller.leftTrigger().or(controller2.leftTrigger()).whileTrue(new Revv(shooter, drive, controller, vision));
         controller.y().whileTrue(new AutoBumping(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
+        controller.b().whileTrue(new AutomaticPushingP1(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
+        controller.a().whileTrue(new AutomaticPushingP2(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
+
 
 
        // controller.leftTrigger().whileTrue(new RevvTest(shooter, controller));
        // controller.rightTrigger().whileTrue(new ShootingTest(indexer, shooter));
-
-
-
-
-
-
 
 
 
@@ -423,7 +432,7 @@ public class RobotContainer {
 
       //intake overrides/fixes
      // controller.x().whileTrue(kACharacterization.feedforwardCommand(drive, co4Controller));
-      controller2.rightTrigger().or(controller.x()).whileTrue(new StartEndCommand(() -> {intake.Retract(); intake.is_busy = true;}, () -> {intake.Extend(); intake.is_busy = false;}, intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+      controller2.rightTrigger().or(controller.x()).whileTrue(new StartEndCommand(() -> {intake.Retract(); intake.is_busy = true; intake.setIntakeDutyCycle(0.4);}, () -> {intake.Extend(); intake.is_busy = false;}, intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
       //controller2.b().onTrue(new InstantCommand(() -> {intake.Retract(); intake.is_busy = true;}, intake));
 
       controller3.x().whileTrue(new StartEndCommand(() -> {vision.ruin = true;}, () -> {vision.ruin = false;}).ignoringDisable(true));
@@ -474,24 +483,24 @@ public class RobotContainer {
        }));
 
       //  //decide auto winner
-      //  controller2.y().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.US; Robot.winner_selection_done = true;}));
-      //  controller2.a().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.ENEMY; Robot.winner_selection_done = true;}));
+       controller2.y().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.US; Robot.winner_selection_done = true;}));
+       controller2.a().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.ENEMY; Robot.winner_selection_done = true;}));
 
        //resets of encoders
       // controller2.b().onTrue(new InstantCommand(() -> {intake.resetPivotPosition();}));
       // controller2.x().onTrue(new ResetHood(shooter));
 
-      //  Timer when_to_signal_disconnectedFMS = new Timer();
-      //  RobotModeTriggers.teleop().onTrue(Commands.runOnce(() -> {when_to_signal_disconnectedFMS.restart();}));
-      //  RobotModeTriggers.teleop().and(() -> {return when_to_signal_disconnectedFMS.hasElapsed(2);}).and(() -> (!Robot.winner_selection_done)).whileTrue(Commands.startEnd(
-      //           () -> {
-      //             SmartDashboard.putBoolean("controller was told to rumble", true);
-      //             controller2.setRumble(RumbleType.kBothRumble, 1);
-      //           },
-      //           () -> {
-      //             SmartDashboard.putBoolean("controller was told to rumble", false);
-      //             controller2.setRumble(RumbleType.kBothRumble, 0);
-      //           }));
+       Timer when_to_signal_disconnectedFMS = new Timer();
+       RobotModeTriggers.teleop().onTrue(Commands.runOnce(() -> {when_to_signal_disconnectedFMS.restart();}));
+       RobotModeTriggers.teleop().and(() -> {return when_to_signal_disconnectedFMS.hasElapsed(2);}).and(() -> (!Robot.winner_selection_done)).whileTrue(Commands.startEnd(
+                () -> {
+                  SmartDashboard.putBoolean("controller was told to rumble", true);
+                  controller2.setRumble(RumbleType.kBothRumble, 1);
+                },
+                () -> {
+                  SmartDashboard.putBoolean("controller was told to rumble", false);
+                  controller2.setRumble(RumbleType.kBothRumble, 0);
+                }));
         
       }
   
@@ -507,7 +516,9 @@ public class RobotContainer {
 
 
   public Command getAutonomousCommand() {
+    vision.disableVision();
     drive.resetPosition(firstMiddlePath.getStartingHolonomicPose().get());
+
 
    return autoCommand;
    

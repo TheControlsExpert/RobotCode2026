@@ -56,7 +56,7 @@ public class Robot extends LoggedRobot {
   private final RobotContainer m_robotContainer;
   public static ShootingState shootingState = ShootingState.SHOOTING;
   public static double combinedTimeLeft = 0;
-  public static boolean isActive = true;
+  public static boolean isActive = false;
   public static LocalizationState localizationState = LocalizationState.OPERATIONAL;
 
   public static AutoWinner autoWinner = AutoWinner.US;
@@ -199,7 +199,10 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopInit() {
     m_robotContainer.drive.lowerCurrentLimits();
-;   
+    m_robotContainer.vision.enableVision();
+
+
+   
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
@@ -223,8 +226,8 @@ public class Robot extends LoggedRobot {
       actualTimeRemaining = shiftInfo.remainingTime() - m_robotContainer.shooter.getMinTOF();
     }
     isActive = shiftInfo.active();
-   // SmartDashboard.putBoolean("has chosen", winner_selection_done);
-    SmartDashboard.putString("Current Shift", (shiftInfo.active() ? "ACTIVE: " : "INACTIVE:")  + "\n" + shiftInfo.currentShift().name() + "\n" + String.format("%.1f", actualTimeRemaining));
+    SmartDashboard.putBoolean("has chosen", winner_selection_done);
+    SmartDashboard.putString("Current Shift", (shiftInfo.active() ? "ACTIVE: " : "INACTIVE:")  + "\n" + shiftInfo.currentShift().name() + "\n" + String.format("%.1f", shiftInfo.remainingTime()));
     SmartDashboard.putString("Shooting State", shootingState.toString());
     SmartDashboard.putString("Localization State", localizationState.toString());
     String autoWinnerText = "";
