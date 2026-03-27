@@ -36,6 +36,8 @@ public class DriveCommand extends Command {
     public void execute() {
         Translation2d linearVelocity;
 
+        if (controller.isConnected()) {
+
         if (controller.rightStick().getAsBoolean()) {
           linearVelocity =
                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble() / 12, ySupplier.getAsDouble() / 12);
@@ -66,13 +68,19 @@ public class DriveCommand extends Command {
                       linearVelocity.getX() * swervyyy.getMaxLinearSpeedMetersPerSec(),
                       linearVelocity.getY() * swervyyy.getMaxLinearSpeedMetersPerSec(),
                       omega * swervyyy.getMaxAngularSpeedRadPerSec());
-             
+            
               swervyyy.runVelocity(
                   ChassisSpeeds.fromFieldRelativeSpeeds(
                       speeds,
                       isFlipped
                           ? swervyyy.getRotation().plus(new Rotation2d(Math.PI))
                           : swervyyy.getRotation()));
+
+        }
+
+        else {
+            swervyyy.runVelocity(new ChassisSpeeds());
+        }
     }
 
 

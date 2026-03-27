@@ -31,6 +31,8 @@ public class AutomaticPushingP2 extends Command {
     double half_y_field = 4.021328;
     double deltaRotationABS = 99999;
 
+    boolean goingUp;
+
 
     public AutomaticPushingP2(Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, double kP_rotation, CommandXboxController controller) {
         this.drive = drive;
@@ -45,6 +47,13 @@ public class AutomaticPushingP2 extends Command {
     @Override
     public void initialize() {
        // intake.retractBump();
+        if (drive.getFieldRelativeSpeeds().vyMetersPerSecond > 0) {
+            goingUp = true;
+        } 
+
+        else {
+            goingUp = false;
+        }
 
     }
 
@@ -52,13 +61,37 @@ public class AutomaticPushingP2 extends Command {
     @Override
     public void execute() {
         double rotation;
-        rotation = DriverStation.getAlliance().get().equals(Alliance.Blue) ? Units.degreesToRadians(150) : Units.degreesToRadians(30);
-        
-        if (drive.getEstimatedPosition().getY() < half_y_field) {
-            rotation = -1 * rotation;
+
+        if (goingUp && drive.getFieldRelativeSpeeds().vyMetersPerSecond < -0.25) {
+            goingUp = false;
         }
 
- 
+        if (!goingUp && drive.getFieldRelativeSpeeds().vyMetersPerSecond > 0.25) {
+            goingUp = true;
+        }
+
+        if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
+            if (goingUp) {
+                rotation = Units.degreesToRadians(90-15);
+            }
+
+            else {
+                rotation = Units.degreesToRadians(180+15);
+            }
+        }
+
+        else {
+            if (goingUp) {
+                rotation = Units.degreesToRadians(90+15);
+
+
+            }
+
+            else {
+                rotation = Units.degreesToRadians(180 - 15);
+            }
+        }
+        
         double currentAngle = drive.getEstimatedPosition().getRotation().getRadians();
         double delta = MathUtil.angleModulus(rotation - currentAngle);
         double deltaDegrees = Math.toDegrees(delta);

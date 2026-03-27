@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.ActivePeriodTracker.ShiftInfo;
 import frc.robot.AutoEnums.PositionEnums;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.Subsystems.Drive.GyroIOPigeon2;
 import frc.robot.Subsystems.Drive.PhoenixOdometryThread;
 
@@ -200,9 +201,9 @@ public class Robot extends LoggedRobot {
   public void teleopInit() {
     m_robotContainer.drive.lowerCurrentLimits();
     m_robotContainer.vision.enableVision();
+    m_robotContainer.shooter.setShooterVelocity(0);
+    m_robotContainer.shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
 
-
-   
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }

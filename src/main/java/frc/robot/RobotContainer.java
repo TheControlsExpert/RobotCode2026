@@ -317,25 +317,25 @@ public class RobotContainer {
                 controller));
 
 
-         controller.leftBumper().whileTrue(new InstantCommand(() -> {intake.is_busy = true; }).andThen(new IntakeCommand(intake))).onFalse(new InstantCommand(() -> {intake.is_busy = false;}));
+         controller.leftBumper().and(controller::isConnected).whileTrue(new InstantCommand(() -> {intake.is_busy = true; }).andThen(new IntakeCommand(intake)).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)).onFalse(new InstantCommand(() -> {intake.is_busy = false;}));
          controller.button(8).onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), DriverStation.getAlliance().get().equals(Alliance.Blue) ? Rotation2d.kZero : Rotation2d.fromDegrees(180))), drive)
                  .ignoringDisable(true));
 
       //  timeout_shuffle = new Timer();
-       //Trigger timeoutshuffle_trigger = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {timeout_shuffle.restart();}));
-       Trigger shuffle_trigger = new Trigger(() -> (RobotContainer.isShooting  && !intake.is_busy && DriverStation.isTeleop())).whileTrue(
-        new WaitCommand(1).andThen(
+      //  //Trigger timeoutshuffle_trigger = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {timeout_shuffle.restart();}));
+      //  Trigger shuffle_trigger = new Trigger(() -> (RobotContainer.isShooting  && !intake.is_busy && DriverStation.isTeleop())).whileTrue(
+      //   new WaitCommand(1).andThen(
 
        
-       (new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.6);}, intake).
-       andThen(new WaitCommand(0.5)).
-       andThen(new InstantCommand(() -> {intake.Extend();}, intake)).
-       andThen(new WaitCommand(0.3))).repeatedly()
-      // andThen(new InstantCommand(() -> {intake.Shuffle();}, intake))
+      //  (new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.6);}, intake).
+      //  andThen(new WaitCommand(0.5)).
+      //  andThen(new InstantCommand(() -> {intake.Extend();}, intake)).
+      //  andThen(new WaitCommand(0.3))).repeatedly()
+      // // andThen(new InstantCommand(() -> {intake.Shuffle();}, intake))
 
-       ));
+      //  ));
 
-       controller2.x().whileTrue(new InstantCommand(() -> {intake.setIntakeDutyCycle(-0.5); intake.is_busy = true;}, intake)).onFalse(new InstantCommand(() -> {intake.setIntakeDutyCycle(0); intake.is_busy = false;}, intake));
+       controller2.x().and(controller2::isConnected).whileTrue(new InstantCommand(() -> {intake.setIntakeDutyCycle(-0.5); intake.is_busy = true;}, intake)).onFalse(new InstantCommand(() -> {intake.setIntakeDutyCycle(0); intake.is_busy = false;}, intake));
 
       //Trigger IRsensorTimerResetter = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {intake.readyToClose1_timer.restart();}));
 
@@ -352,14 +352,17 @@ public class RobotContainer {
         
       Shooting shooting = new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, vision);
        //  controller.leftTrigger().whileTrue(new Revv(shooter, drive, controller));
-        controller.rightTrigger()
+        controller.rightTrigger().and(controller::isConnected)
        
         .whileTrue(shooting)
-        .onFalse(new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; RobotContainer.isShooting = false; 
+        .onFalse(
+          
+        
+        new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; RobotContainer.isShooting = false; 
           intake.setIntakeDutyCycle(0.0);}, intake));
 
 
-        controller.rightTrigger().and(()->(!shooting.readyToShoot)).whileTrue(new InstantCommand(()-> {controller.setRumble(RumbleType.kBothRumble, 0.35);}))
+        controller.rightTrigger().and(()->(!shooting.readyToShoot || !ActivePeriodTracker.getShiftedShiftInfo().active())).whileTrue(new InstantCommand(()-> {controller.setRumble(RumbleType.kBothRumble, 0.35);}))
         .onFalse(new InstantCommand(() -> {controller.setRumble(RumbleType.kBothRumble, 0);}));
        
         
@@ -421,18 +424,25 @@ public class RobotContainer {
      //   controller.a().whileTrue(new AutoBumping(drive, intake, () -> -controller.getLeftY(), () -> -controller.getLeftX(), 0.08, controller));
          
        
-        controller.rightBumper().whileTrue(autoTrenching.andThen(
+      //   controller.rightBumper().whileTrue(autoTrenching.andThen(
         
-      Commands.defer(() -> autoTrenching.getPathingCommand().until(
+      // Commands.defer(() -> autoTrenching.getPathingCommand().until(
         
-       () -> (autoTrenching.passedTrench() && 
-       (Math.abs(controller.getLeftY()) > 0.1 || Math.abs(controller.getLeftX()) > 0.1 || Math.abs(controller.getRightX()) > 0.1))), Set.of(drive))));
+      //  () -> (autoTrenching.passedTrench() && 
+      //  (Math.abs(controller.getLeftY()) > 0.1 || Math.abs(controller.getLeftX()) > 0.1 || Math.abs(controller.getRightX()) > 0.1))), Set.of(drive))));
 
       //COPILOT
 
       //intake overrides/fixes
      // controller.x().whileTrue(kACharacterization.feedforwardCommand(drive, co4Controller));
-      controller2.rightTrigger().or(controller.x()).whileTrue(new StartEndCommand(() -> {intake.Retract(); intake.is_busy = true; intake.setIntakeDutyCycle(0.4);}, () -> {intake.Extend(); intake.is_busy = false;}, intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+      controller2.x().and(controller2::isConnected).and(() -> (shooter.isShooting)).whileTrue((new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.6);}, intake).
+       andThen(new WaitCommand(0.5)).
+       andThen(new InstantCommand(() -> {intake.Extend();}, intake)).
+       andThen(new WaitCommand(0.3))).repeatedly());
+
+
+
+      controller.x().and(controller::isConnected).onTrue(new StartEndCommand(() -> {intake.Retract(); intake.is_busy = true; intake.setIntakeDutyCycle(0.4);}, () -> {intake.Extend(); intake.is_busy = false;}, intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
       //controller2.b().onTrue(new InstantCommand(() -> {intake.Retract(); intake.is_busy = true;}, intake));
 
       controller3.x().whileTrue(new StartEndCommand(() -> {vision.ruin = true;}, () -> {vision.ruin = false;}).ignoringDisable(true));
@@ -485,6 +495,15 @@ public class RobotContainer {
       //  //decide auto winner
        controller2.y().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.US; Robot.winner_selection_done = true;}));
        controller2.a().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.ENEMY; Robot.winner_selection_done = true;}));
+
+
+
+
+
+
+
+
+
 
        //resets of encoders
       // controller2.b().onTrue(new InstantCommand(() -> {intake.resetPivotPosition();}));

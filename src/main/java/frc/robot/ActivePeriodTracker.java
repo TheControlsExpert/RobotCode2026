@@ -8,6 +8,11 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 public class ActivePeriodTracker {
+
+//  private static double bps = 8;
+ private static double endingActiveFudge = -0.8;
+ private static double approachingActiveFudge = -1.25;
+
   public enum ShiftEnum {
     TRANSITION,
     SHIFT1,
@@ -135,6 +140,49 @@ public class ActivePeriodTracker {
 
   public static ShiftInfo getOfficialShiftInfo() {
     return getShiftInfo(getSchedule(), shiftStartTimes, shiftEndTimes);
+  }
+
+
+  public static ShiftInfo getShiftedShiftInfo() {
+    boolean[] shiftSchedule = getSchedule();
+    // Starting active
+    if (shiftSchedule[1] == true) {
+      double[] shiftedShiftStartTimes = {
+        0.0,
+        10.0,
+        35.0 + endingActiveFudge,
+        60.0 + approachingActiveFudge,
+        85.0 + endingActiveFudge,
+        110.0 + approachingActiveFudge
+      };
+      double[] shiftedShiftEndTimes = {
+        10.0,
+        35.0 + endingActiveFudge,
+        60.0 + approachingActiveFudge,
+        85.0 + endingActiveFudge,
+        110.0 + approachingActiveFudge,
+        140.0
+      };
+      return getShiftInfo(shiftSchedule, shiftedShiftStartTimes, shiftedShiftEndTimes);
+    }
+    double[] shiftedShiftStartTimes = {
+      0.0,
+      10.0 + endingActiveFudge,
+      35.0 + approachingActiveFudge,
+      60.0 + endingActiveFudge,
+      85.0 + approachingActiveFudge,
+      110.0
+    };
+    double[] shiftedShiftEndTimes = {
+      10.0 + endingActiveFudge,
+      35.0 + approachingActiveFudge,
+      60.0 + endingActiveFudge,
+      85.0 + approachingActiveFudge,
+      110.0,
+      140.0
+    };
+    return getShiftInfo(shiftSchedule, shiftedShiftStartTimes, shiftedShiftEndTimes);
+    // }
   }
 
 }

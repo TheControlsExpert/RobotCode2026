@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -31,6 +32,9 @@ public class AutomaticPushingP1 extends Command {
     double half_x_field = 8.219694;
     double deltaRotationABS = 99999;
 
+    boolean goingUp;
+    boolean isOnBlueSide;
+
 
     public AutomaticPushingP1(Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, double kP_rotation, CommandXboxController controller) {
         this.drive = drive;
@@ -43,7 +47,23 @@ public class AutomaticPushingP1 extends Command {
 
 
     @Override
-    public void initialize() {
+    public void initialize() {    
+
+        if (drive.getEstimatedPosition().getX() < half_x_field) {
+            isOnBlueSide = true;
+        }
+
+        else {
+            isOnBlueSide = false;
+        }
+
+        if (drive.getFieldRelativeSpeeds().vyMetersPerSecond > 0) {
+            goingUp = true;
+        } 
+
+        else {
+            goingUp = false;
+        }
        // intake.retractBump();
 
     }
@@ -51,7 +71,47 @@ public class AutomaticPushingP1 extends Command {
     
     @Override
     public void execute() {
-        double rotation = drive.getEstimatedPosition().getX() > half_x_field ? 0 : Math.PI;
+
+        if (isOnBlueSide && drive.getEstimatedPosition().getX() > (half_x_field + 2.0)) {
+            isOnBlueSide = false;
+        }
+
+        if (!isOnBlueSide && drive.getEstimatedPosition().getX() < (half_x_field - 2.0)) {
+            isOnBlueSide = true;
+        }
+
+        if (goingUp && drive.getFieldRelativeSpeeds().vyMetersPerSecond < -0.25) {
+            goingUp = false;
+        }
+
+        if (!goingUp && drive.getFieldRelativeSpeeds().vyMetersPerSecond > 0.25) {
+            goingUp = true;
+        }
+
+        double rotation;
+
+       if (goingUp && isOnBlueSide) {
+        rotation = Units.degreesToRadians(200);
+
+       }
+
+       else if (goingUp && !isOnBlueSide) {
+        rotation = Units.degreesToRadians(20);
+       }
+
+       else if (!goingUp && isOnBlueSide) {
+        rotation = Units.degreesToRadians(160);
+       }
+
+       else  {
+        rotation = Units.degreesToRadians(-20);
+       }
+
+       if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
+        rotation = rotation * -1;
+       }
+
+
 
         double currentAngle = drive.getEstimatedPosition().getRotation().getRadians();
         double delta = MathUtil.angleModulus(rotation - currentAngle);

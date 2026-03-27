@@ -2,6 +2,8 @@ package frc.robot.Commands.IntakeCommands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotContainer;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.Subsystems.Indexer.Indexer;
 import frc.robot.Subsystems.Intake.IntakeSubsystem;
 import frc.robot.Subsystems.Shooter.Shooter;
@@ -33,8 +35,8 @@ public class Jam extends Command {
     @Override
     public void initialize() {
         timer.restart();
-        indexer.setIndexerDutyCycle(-0.4);
-        shooter.setFeederVelocity(-0.8);
+        indexer.setIndexerDutyCycle(-0.35);
+        shooter.setFeederVelocity(-0.35);
       //  intake.setIntakeDutyCycle(-0.2);
  
     }
@@ -49,6 +51,11 @@ public class Jam extends Command {
     public void end(boolean interrupted) {
         indexer.setIndexerDutyCycle(0);
         shooter.setFeederVelocity(0);
+        shooter.setShooterVelocity(0);
+        shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
+
+        shooter.isShooting = false;
+        RobotContainer.isShooting = false;
       //  intake.setIntakeDutyCycle(0);
     }
     

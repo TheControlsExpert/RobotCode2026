@@ -215,10 +215,7 @@ public class Shooting extends Command {
     }
     
 
-    if ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - maxFuelCountDelay - shooter.getMaxTOF() - 1/bps) > 0) || 
-    (!Robot.isActive && (shooter.getMinTOF() +  minFuelCountDelay - Robot.combinedTimeLeft) > 0) || 
-    (Robot.shootingState.equals(ShootingState.PASSING)) ||
-    (!Robot.winner_selection_done)) {
+    
     if (shooter.isAtShootingVelocity(ShooterConstants.ShootingManualDistance) && shooter.isAtPivotPosition(ShooterConstants.ShootingManualDistance)) {
         readyToShoot = true;
         RobotContainer.isShooting = true;
@@ -226,7 +223,7 @@ public class Shooting extends Command {
         SmartDashboard.putBoolean("Shooter is at Velocity", true);
     }
 
-    }
+    
 
 
 else {
@@ -362,9 +359,7 @@ else {
                           ? drive.getEstimatedPosition().getRotation().plus(new Rotation2d(Math.PI))
                           : drive.getEstimatedPosition().getRotation()));
     
-if ((Robot.shootingState.equals(ShootingState.SHOOTING) &&  ((Robot.isActive && (Robot.combinedTimeLeft + shiftEndFuelCountExtension - maxFuelCountDelay - shooter.getMaxTOF() - 1/bps) > 0) || 
-    (!Robot.isActive && (shooter.getMinTOF() +  minFuelCountDelay - Robot.combinedTimeLeft) > 0) || !Robot.winner_selection_done)) || 
-    (Robot.shootingState.equals(ShootingState.PASSING))) {
+
 
     //shooting parameters are close enough to START shooting
     if (!readyToShoot && (((shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance)) || Robot.shootingState.equals(ShootingState.PASSING)))  && (Math.abs(deltaRotation) < 7.5 && Robot.shootingState.equals(ShootingState.SHOOTING) || Math.abs(deltaRotation) < 7.5 && Robot.shootingState.equals(ShootingState.PASSING))) {
@@ -374,6 +369,8 @@ if ((Robot.shootingState.equals(ShootingState.SHOOTING) &&  ((Robot.isActive && 
         SmartDashboard.putBoolean("Shooter is at Velocity", true);
         
     }
+
+    
 //shooting parameters are too far, STOP shooting
     // if (shooter.isShooterVelocityLow(distance) && readyToShoot && DriverStation.isTeleop() && Robot.shootingState.equals(ShootingState.SHOOTING)) {
     //     readyToShoot = false;
@@ -381,11 +378,11 @@ if ((Robot.shootingState.equals(ShootingState.SHOOTING) &&  ((Robot.isActive && 
     // }
 
   
-        SmartDashboard.putBoolean("Shooter is at Velocity", readyToShoot);
+       // SmartDashboard.putBoolean("Shooter is at Velocity", readyToShoot);
  //   }
-}
 
-else {
+
+  else {
     readyToShoot = false;
 }
 
@@ -472,16 +469,17 @@ else {
 public void end(boolean interrupted) {
     // if (!DriverStation.isAutonomous()) {
     vision.ShootingMode(false);
-    shooter.setShooterVelocity(0);
-    shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
-    shooter.isShooting = false;
-    RobotContainer.isShooting = false;
+    //shooter.setShooterVelocity(0);
+   // shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
+   // shooter.isShooting = false;
+    //RobotContainer.isShooting = false;
  //   }
 
-    //CommandScheduler.getInstance().schedule(new Jam(indexer, shooter, 2.0)); //runs the indexer in the opposite direction to clear balls from the shooter
+    CommandScheduler.getInstance().schedule(new Jam(indexer, shooter, 0.35)); //runs the indexer in the opposite direction to clear balls from the shooter
    
-    indexer.setIndexerDutyCycle(0);
-    shooter.setFeederVelocity(0);
+    indexer.setIndexerDutyCycle(-0.35);
+    shooter.setFeederVelocity(-0.35);
+    
     //CommandScheduler.getInstance().cancel(shuffle);
 }
 
