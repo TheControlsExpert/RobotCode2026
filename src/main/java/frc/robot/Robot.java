@@ -39,6 +39,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.ActivePeriodTracker.ShiftInfo;
@@ -63,17 +64,11 @@ public class Robot extends LoggedRobot {
   public static AutoWinner autoWinner = AutoWinner.US;
   public static ArrayList<String> DisconnectedMotorNames = new ArrayList<String>();
 
+  //these decide whether we will disable a limelight
+  public static boolean useLimelightFour = true;
+  public static boolean useLimelightThreeGS = true;
+  public static boolean useLimelightThreeGF = true;
 
-  //creates the choosers that will hold possible enum states for each choice
-  // public static SendableChooser<AutoEnums.LoaderEnums> LoaderChooser = new SendableChooser<>();
-  // public static SendableChooser<AutoEnums.ClimbEnums> climbChooser = new SendableChooser<>();
-  // public static SendableChooser<AutoEnums.MiddleEnums> middleChooser = new SendableChooser<>();
- // public static SendableChooser<PositionEnums> positionChooser = new SendableChooser<>();
- public static SendableChooser<Boolean> Limelight4 = new SendableChooser<>();
- public static SendableChooser<Boolean> Limelight3GF = new SendableChooser<>();
- public static SendableChooser<Boolean> Limelight3GS = new SendableChooser<>();
-
-  //all our auto paths and commands
 
 
 
@@ -99,14 +94,10 @@ public class Robot extends LoggedRobot {
 
       // Logger.start();
       //sets the states for initial autos as part of the chooser options
-      Limelight4.setDefaultOption("Working", true);
-      Limelight4.addOption("Not working", false);
+      SmartDashboard.putData("Disable lime 4", new InstantCommand(() -> useLimelightFour = false));
+      SmartDashboard.putData("Disable lime 5", new InstantCommand(() -> useLimelightThreeGS = false));
+      SmartDashboard.putData("Disable lime 6", new InstantCommand(() -> useLimelightThreeGF = false));
 
-      Limelight3GF.setDefaultOption("Working", true);
-      Limelight3GF.addOption("Not working", false);
-
-      Limelight3GS.setDefaultOption("Working", true);
-      Limelight3GS.addOption("Not working", false);
       // LoaderChooser.setDefaultOption("Zero Loaders", AutoEnums.LoaderEnums.ZERO_LOADERS);
       // LoaderChooser.addOption("One Loader", AutoEnums.LoaderEnums.ONE_LOADER);
       // LoaderChooser.addOption("Two Loaders", AutoEnums.LoaderEnums.TWO_LOADERS);

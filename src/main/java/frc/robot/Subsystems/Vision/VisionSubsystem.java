@@ -104,7 +104,7 @@ public class VisionSubsystem extends SubsystemBase {
         }
 
 
-        if (inputs.isNew_LL4 && inputs.isConnected_LL4 && inputs.tagCount_LL4 > 0 && Robot.Limelight4.getSelected()) {
+        if (inputs.isNew_LL4 && inputs.isConnected_LL4 && inputs.tagCount_LL4 > 0 && Robot.useLimelightFour) {
             SmartDashboard.putBoolean("sensor receiving data", true);
             double std_LL4 = (inputs.avgDistance_LL4 * 0.02 ) / inputs.tagCount_LL4;
             SmartDashboard.putNumber("std_LL4", std_LL4);
@@ -120,7 +120,7 @@ public class VisionSubsystem extends SubsystemBase {
         // }
         if (DriverStation.isDisabled()) {}
  
-         if (inputs.isNew_LL3GS && inputs.isConnected_LL3GS && inputs.tagCount_LL3GS > 0 && !disable_other_cameras && Robot.Limelight3GS.getSelected()) {
+         if (inputs.isNew_LL3GS && inputs.isConnected_LL3GS && inputs.tagCount_LL3GS > 0 && !disable_other_cameras && Robot.useLimelightThreeGS) {
             double std_LL3GS = (inputs.avgDistance_LL3GS * 0.02 ) / inputs.tagCount_LL3GS;
             double[] stds_LL3GS = {std_LL3GS, std_LL3GS};
             if (std_LL3GS < 0.1) {
@@ -128,7 +128,7 @@ public class VisionSubsystem extends SubsystemBase {
             }
         }
 
-        if (inputs.isNew_LL3GF && inputs.isConnected_LL3GF && inputs.tagCount_LL3GF > 0 && !disable_other_cameras && Robot.Limelight3GF.getSelected()) {
+        if (inputs.isNew_LL3GF && inputs.isConnected_LL3GF && inputs.tagCount_LL3GF > 0 && !disable_other_cameras && Robot.useLimelightThreeGF) {
                 double std_LL3GF = (inputs.avgDistance_LL3GF * 0.02 ) / inputs.tagCount_LL3GF;
                 double[] stds_LL3GF = {std_LL3GF, std_LL3GF};
                 if (std_LL3GF < 0.1) {
