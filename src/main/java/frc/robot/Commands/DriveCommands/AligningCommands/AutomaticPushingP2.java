@@ -32,6 +32,7 @@ public class AutomaticPushingP2 extends Command {
     double deltaRotationABS = 99999;
 
     boolean goingUp;
+    double rotation;
 
 
     public AutomaticPushingP2(Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, double kP_rotation, CommandXboxController controller) {
@@ -55,28 +56,33 @@ public class AutomaticPushingP2 extends Command {
             goingUp = false;
         }
 
+
+         
+
+
+
     }
 
     
     @Override
     public void execute() {
-        double rotation;
-
-        if (goingUp && drive.getFieldRelativeSpeeds().vyMetersPerSecond < -0.25) {
+         if (goingUp && drive.getEstimatedPosition().getY() < half_y_field) {
             goingUp = false;
         }
 
-        if (!goingUp && drive.getFieldRelativeSpeeds().vyMetersPerSecond > 0.25) {
+        if (!goingUp && drive.getEstimatedPosition().getY() > half_y_field) {
             goingUp = true;
         }
 
+
+        
         if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
             if (goingUp) {
                 rotation = Units.degreesToRadians(90-15);
             }
 
             else {
-                rotation = Units.degreesToRadians(180+15);
+                rotation = Units.degreesToRadians(-90+15);
             }
         }
 
@@ -88,9 +94,12 @@ public class AutomaticPushingP2 extends Command {
             }
 
             else {
-                rotation = Units.degreesToRadians(180 - 15);
+                rotation = Units.degreesToRadians(-90 - 15);
             }
         }
+
+
+       
         
         double currentAngle = drive.getEstimatedPosition().getRotation().getRadians();
         double delta = MathUtil.angleModulus(rotation - currentAngle);

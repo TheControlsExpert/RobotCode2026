@@ -10,8 +10,8 @@ import java.util.function.Supplier;
 public class ActivePeriodTracker {
 
 //  private static double bps = 8;
- private static double endingActiveFudge = -0.8;
- private static double approachingActiveFudge = -1.25;
+ private static double endingActiveFudge = -0.85;
+ private static double approachingActiveFudge = -1.0;
 
   public enum ShiftEnum {
     TRANSITION,

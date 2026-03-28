@@ -72,13 +72,13 @@ public class AutomaticPushingP1 extends Command {
     @Override
     public void execute() {
 
-        if (isOnBlueSide && drive.getEstimatedPosition().getX() > (half_x_field + 2.0)) {
-            isOnBlueSide = false;
-        }
+        // if (isOnBlueSide && drive.getEstimatedPosition().getX() > (half_x_field + 2.0)) {
+        //     isOnBlueSide = false;
+        // }
 
-        if (!isOnBlueSide && drive.getEstimatedPosition().getX() < (half_x_field - 2.0)) {
-            isOnBlueSide = true;
-        }
+        // if (!isOnBlueSide && drive.getEstimatedPosition().getX() < (half_x_field - 2.0)) {
+        //     isOnBlueSide = true;
+        // }
 
         if (goingUp && drive.getFieldRelativeSpeeds().vyMetersPerSecond < -0.25) {
             goingUp = false;

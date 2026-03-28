@@ -67,10 +67,10 @@ public final class Constants {
 
     /* Steer Motor PID Values */
 
-    public static final double angleKP = 25;
+    public static final double angleKP = 50;
     public static final double angleKI = 0;
     public static final double angleKD = 0;
-    public static final double angleKS = 0.45;
+    public static final double angleKS = 0.0;
 
     /* Drive Motor PID Values */
     public static final double driveKP = 0.25; // TODO: This must be tuned to specific robot

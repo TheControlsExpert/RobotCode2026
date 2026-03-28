@@ -68,7 +68,10 @@ public class Robot extends LoggedRobot {
   // public static SendableChooser<AutoEnums.LoaderEnums> LoaderChooser = new SendableChooser<>();
   // public static SendableChooser<AutoEnums.ClimbEnums> climbChooser = new SendableChooser<>();
   // public static SendableChooser<AutoEnums.MiddleEnums> middleChooser = new SendableChooser<>();
-  public static SendableChooser<PositionEnums> positionChooser = new SendableChooser<>();
+ // public static SendableChooser<PositionEnums> positionChooser = new SendableChooser<>();
+ public static SendableChooser<Boolean> Limelight4 = new SendableChooser<>();
+ public static SendableChooser<Boolean> Limelight3GF = new SendableChooser<>();
+ public static SendableChooser<Boolean> Limelight3GS = new SendableChooser<>();
 
   //all our auto paths and commands
 
@@ -96,6 +99,14 @@ public class Robot extends LoggedRobot {
 
       // Logger.start();
       //sets the states for initial autos as part of the chooser options
+      Limelight4.setDefaultOption("Working", true);
+      Limelight4.addOption("Not working", false);
+
+      Limelight3GF.setDefaultOption("Working", true);
+      Limelight3GF.addOption("Not working", false);
+
+      Limelight3GS.setDefaultOption("Working", true);
+      Limelight3GS.addOption("Not working", false);
       // LoaderChooser.setDefaultOption("Zero Loaders", AutoEnums.LoaderEnums.ZERO_LOADERS);
       // LoaderChooser.addOption("One Loader", AutoEnums.LoaderEnums.ONE_LOADER);
       // LoaderChooser.addOption("Two Loaders", AutoEnums.LoaderEnums.TWO_LOADERS);

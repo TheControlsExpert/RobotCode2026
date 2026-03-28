@@ -152,24 +152,24 @@ public class AutomaticTrenching extends Command {
         .getTranslation();
   }
 
-  @Override
-  public boolean isFinished() {
-      return deltaRotationABS < 2;
-  }
+//   @Override
+//   public boolean isFinished() {
+//       return deltaRotationABS < 3;
+//   }
 
-  @Override
-  public void end(boolean interrupted) {
-    ChassisSpeeds speeds2 = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 0);
-          boolean isFlipped =
-                  DriverStation.getAlliance().isPresent()
-                      && DriverStation.getAlliance().get() == Alliance.Red;
-              swerve.runVelocity(
-                  ChassisSpeeds.fromFieldRelativeSpeeds(
-                      speeds2,
-                      isFlipped
-                          ? swerve.getEstimatedPosition().getRotation().plus(new Rotation2d(Math.PI))
-                          : swerve.getEstimatedPosition().getRotation()));
-  }
+//   @Override
+//   public void end(boolean interrupted) {
+//     ChassisSpeeds speeds2 = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 0);
+//           boolean isFlipped =
+//                   DriverStation.getAlliance().isPresent()
+//                       && DriverStation.getAlliance().get() == Alliance.Red;
+//               swerve.runVelocity(
+//                   ChassisSpeeds.fromFieldRelativeSpeeds(
+//                       speeds2,
+//                       isFlipped
+//                           ? swerve.getEstimatedPosition().getRotation().plus(new Rotation2d(Math.PI))
+//                           : swerve.getEstimatedPosition().getRotation()));
+//   }
 
     
     //This method finds the closest goal-point out of the 4 on the field: red, blue, top bottom

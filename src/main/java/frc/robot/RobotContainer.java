@@ -335,7 +335,7 @@ public class RobotContainer {
 
       //  ));
 
-       controller2.x().and(controller2::isConnected).whileTrue(new InstantCommand(() -> {intake.setIntakeDutyCycle(-0.5); intake.is_busy = true;}, intake)).onFalse(new InstantCommand(() -> {intake.setIntakeDutyCycle(0); intake.is_busy = false;}, intake));
+       controller2.povDown().and(controller2::isConnected).whileTrue(new InstantCommand(() -> {intake.setIntakeDutyCycle(-0.5); intake.is_busy = true;}, intake)).onFalse(new InstantCommand(() -> {intake.setIntakeDutyCycle(0); intake.is_busy = false;}, intake));
 
       //Trigger IRsensorTimerResetter = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {intake.readyToClose1_timer.restart();}));
 
@@ -368,10 +368,10 @@ public class RobotContainer {
         
 
 
-        controller.leftTrigger().or(controller2.leftTrigger()).whileTrue(new Revv(shooter, drive, controller, vision));
-        controller.y().whileTrue(new AutoBumping(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
-        controller.b().whileTrue(new AutomaticPushingP1(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
-        controller.a().whileTrue(new AutomaticPushingP2(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
+        (controller.leftTrigger().and(controller::isConnected)).or(controller2.leftTrigger().and(controller2::isConnected)).whileTrue(new Revv(shooter, drive, controller, vision));
+        controller.y().and(controller::isConnected).whileTrue(new AutoBumping(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
+        controller.b().and(controller::isConnected).whileTrue(new AutomaticPushingP1(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
+        controller.a().and(controller::isConnected).whileTrue(new AutomaticPushingP2(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
 
 
 
@@ -424,7 +424,9 @@ public class RobotContainer {
      //   controller.a().whileTrue(new AutoBumping(drive, intake, () -> -controller.getLeftY(), () -> -controller.getLeftX(), 0.08, controller));
          
        
-      //   controller.rightBumper().whileTrue(autoTrenching.andThen(
+       controller.rightBumper().and(controller::isConnected).whileTrue(autoTrenching);
+         
+         //.andThen(
         
       // Commands.defer(() -> autoTrenching.getPathingCommand().until(
         
@@ -435,7 +437,7 @@ public class RobotContainer {
 
       //intake overrides/fixes
      // controller.x().whileTrue(kACharacterization.feedforwardCommand(drive, co4Controller));
-      controller2.x().and(controller2::isConnected).and(() -> (shooter.isShooting)).whileTrue((new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.6);}, intake).
+      controller2.b().and(controller2::isConnected).and(() -> (shooter.isShooting)).whileTrue((new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.6);}, intake).
        andThen(new WaitCommand(0.5)).
        andThen(new InstantCommand(() -> {intake.Extend();}, intake)).
        andThen(new WaitCommand(0.3))).repeatedly());
@@ -493,8 +495,8 @@ public class RobotContainer {
        }));
 
       //  //decide auto winner
-       controller2.y().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.US; Robot.winner_selection_done = true;}));
-       controller2.a().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.ENEMY; Robot.winner_selection_done = true;}));
+       controller2.y().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.ENEMY; Robot.winner_selection_done = true;}));
+       controller2.a().onTrue(new InstantCommand(() -> {Robot.autoWinner = Robot.AutoWinner.US; Robot.winner_selection_done = true;}));
 
 
 
