@@ -107,6 +107,10 @@ public class Robot extends LoggedRobot {
 
       Limelight3GS.setDefaultOption("Working", true);
       Limelight3GS.addOption("Not working", false);
+
+      SmartDashboard.putData("Limelight3GF", Limelight3GF);
+      SmartDashboard.putData("Limelight3GS", Limelight3GS);
+      SmartDashboard.putData("Limelight4", Limelight4);
       // LoaderChooser.setDefaultOption("Zero Loaders", AutoEnums.LoaderEnums.ZERO_LOADERS);
       // LoaderChooser.addOption("One Loader", AutoEnums.LoaderEnums.ONE_LOADER);
       // LoaderChooser.addOption("Two Loaders", AutoEnums.LoaderEnums.TWO_LOADERS);
@@ -239,7 +243,7 @@ public class Robot extends LoggedRobot {
     }
     isActive = shiftInfo.active();
     SmartDashboard.putBoolean("has chosen", winner_selection_done);
-    SmartDashboard.putString("Current Shift", (shiftInfo.active() ? "ACTIVE: " : "INACTIVE:")  + "\n" + shiftInfo.currentShift().name() + "\n" + String.format("%.1f", shiftInfo.remainingTime()));
+    SmartDashboard.putString("Current Shift", shiftInfo.currentShift().name() + "\n" + String.format("%.1f", shiftInfo.remainingTime()));
     SmartDashboard.putString("Shooting State", shootingState.toString());
     SmartDashboard.putString("Localization State", localizationState.toString());
     String autoWinnerText = "";

@@ -358,12 +358,13 @@ public class RobotContainer {
         .onFalse(
           
         
+
         new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; RobotContainer.isShooting = false; 
           intake.setIntakeDutyCycle(0.0);}, intake));
 
 
-        controller.rightTrigger().and(()->(!shooting.readyToShoot || !ActivePeriodTracker.getShiftedShiftInfo().active())).whileTrue(new InstantCommand(()-> {controller.setRumble(RumbleType.kBothRumble, 0.35);}))
-        .onFalse(new InstantCommand(() -> {controller.setRumble(RumbleType.kBothRumble, 0);}));
+        // controller.rightTrigger().and(()->(!shooting.readyToShoot || !ActivePeriodTracker.getShiftedShiftInfo().active())).whileTrue(new InstantCommand(()-> {controller.setRumble(RumbleType.kBothRumble, 0.35);}))
+        // .onFalse(new InstantCommand(() -> {controller.setRumble(RumbleType.kBothRumble, 0);}));
        
         
 
@@ -444,7 +445,7 @@ public class RobotContainer {
 
 
 
-      controller.x().and(controller::isConnected).onTrue(new StartEndCommand(() -> {intake.Retract(); intake.is_busy = true; intake.setIntakeDutyCycle(0.4);}, () -> {intake.Extend(); intake.is_busy = false;}, intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+      controller.x().and(controller::isConnected).whileTrue(new StartEndCommand(() -> {intake.Retract(); intake.is_busy = true; intake.setIntakeDutyCycle(0.4);}, () -> {intake.Extend(); intake.is_busy = false; intake.setIntakeDutyCycle(0);}, intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
       //controller2.b().onTrue(new InstantCommand(() -> {intake.Retract(); intake.is_busy = true;}, intake));
 
       controller3.x().whileTrue(new StartEndCommand(() -> {vision.ruin = true;}, () -> {vision.ruin = false;}).ignoringDisable(true));
@@ -513,7 +514,7 @@ public class RobotContainer {
 
        Timer when_to_signal_disconnectedFMS = new Timer();
        RobotModeTriggers.teleop().onTrue(Commands.runOnce(() -> {when_to_signal_disconnectedFMS.restart();}));
-       RobotModeTriggers.teleop().and(() -> {return when_to_signal_disconnectedFMS.hasElapsed(2);}).and(() -> (!Robot.winner_selection_done)).whileTrue(Commands.startEnd(
+       RobotModeTriggers.teleop().and(() -> {return when_to_signal_disconnectedFMS.hasElapsed(3);}).and(() -> (!Robot.winner_selection_done)).whileTrue(Commands.startEnd(
                 () -> {
                   SmartDashboard.putBoolean("controller was told to rumble", true);
                   controller2.setRumble(RumbleType.kBothRumble, 1);

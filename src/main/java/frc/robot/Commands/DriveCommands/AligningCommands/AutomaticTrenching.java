@@ -44,7 +44,7 @@ public class AutomaticTrenching extends Command {
     boolean starting_from_middle = false;
     private final DoubleSupplier xSupplier;
     private final DoubleSupplier ySupplier;
-    double kp = 0.15;
+    double kp = 0.10;
     double deltaRotationABS = 99999;
 
     //these define the trench x distance, and the distance to the middle of the field in the x direction

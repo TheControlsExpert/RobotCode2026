@@ -127,7 +127,7 @@ public class IntakeIO {
     //    SmartDashboard.putNumber("target", target);
     //    SmartDashboard.putBoolean("up", Up);
     //    SmartDashboard.putBoolean("intake encoder connected", pivotEncoder.isConnected());
-    //    SmartDashboard.putNumber("intake encoder", pivotEncoder.get());
+     SmartDashboard.putNumber("intake encoder", pivotEncoder.get());
     //    SmartDashboard.putNumber("intake angle", pivotAngle.getValue().in(Rotations));
         inputs.isConnectedIntake = BaseStatusSignal.refreshAll(intakeVel).equals(com.ctre.phoenix6.StatusCode.OK);
         inputs.isConnectedPivot = BaseStatusSignal.refreshAll(pivotAngle, pivotVelocity, pivotAcceleration).equals(com.ctre.phoenix6.StatusCode.OK);

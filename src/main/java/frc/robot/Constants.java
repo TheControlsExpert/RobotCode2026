@@ -73,7 +73,7 @@ public final class Constants {
     public static final double angleKS = 0.0;
 
     /* Drive Motor PID Values */
-    public static final double driveKP = 0.25; // TODO: This must be tuned to specific robot
+    public static final double driveKP = 2; // TODO: This must be tuned to specific robot
     public static final double driveKI = 0.0;
     public static final double driveKD = 0.0;
 
@@ -288,7 +288,7 @@ public final class Constants {
     public static final double INTAKING_Position = 0.097;
     public static final double SHUFFLE_UP_POSITION = 0.28;
    // public static final double BUMPING_Position = 25;
-    public static final double perma_offset = 0.4311482857787071;
+    public static final double perma_offset = 0.9215727730393193;
     public static final double cf_spring = 0.15;
     public static final double MAX_ENCODER_VAL = 0.44;
     public static final double MIN_ENCODER_VAL = 0.097;

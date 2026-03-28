@@ -270,7 +270,7 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   public void lowerCurrentLimits() {
     driveConfig.CurrentLimits.SupplyCurrentLimit = 60;
-    driveConfig.CurrentLimits.StatorCurrentLimit = 70;
+    driveConfig.CurrentLimits.StatorCurrentLimit = 50;
     driveTalon.getConfigurator().apply(driveConfig, 0.25);
 
     turnConfig.CurrentLimits.SupplyCurrentLimit = 40;

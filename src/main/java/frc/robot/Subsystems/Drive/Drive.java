@@ -91,7 +91,7 @@ public class Drive extends SubsystemBase {
  public Pose2d lastodometrypose = new Pose2d();
  ReentrantLock visionLock = new ReentrantLock();
 public final double translationkP = 2.5;
-public final double rotationkP = 0.15;
+public final double rotationkP = 0.12;
 public PathConstraints constraints_auto = new PathConstraints(3, 3, 13, 26);
 public PathConstraints constraints_pathfinding = new PathConstraints(3, 3, 500, 500);
 
