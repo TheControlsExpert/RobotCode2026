@@ -265,16 +265,16 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void setTurnPosition(Rotation2d rotation) {
-    turnTalon.setControl(positionVoltageRequest.withPosition(rotation.getRotations()).withEnableFOC(false));
+    turnTalon.setControl(positionVoltageRequest.withPosition(rotation.getRotations()).withEnableFOC(true));
   }
 
   public void lowerCurrentLimits() {
     driveConfig.CurrentLimits.SupplyCurrentLimit = 60;
-    driveConfig.CurrentLimits.StatorCurrentLimit = 50;
+    driveConfig.CurrentLimits.StatorCurrentLimit = 80;
     driveTalon.getConfigurator().apply(driveConfig, 0.25);
 
-    turnConfig.CurrentLimits.SupplyCurrentLimit = 40;
-    turnConfig.CurrentLimits.StatorCurrentLimit = 50;
+    turnConfig.CurrentLimits.SupplyCurrentLimit = 30;
+    turnConfig.CurrentLimits.StatorCurrentLimit = 40;
     turnTalon.getConfigurator().apply(turnConfig, 0.25);
   }
 }

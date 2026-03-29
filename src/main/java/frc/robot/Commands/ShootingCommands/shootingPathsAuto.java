@@ -1,11 +1,13 @@
 package frc.robot.Commands.ShootingCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Robot.ShootingState;
 import frc.robot.RobotContainer;
+import frc.robot.Commands.IntakeCommands.Jam;
 import frc.robot.Subsystems.Drive.Drive;
 import frc.robot.Subsystems.Indexer.Indexer;
 import frc.robot.Subsystems.Shooter.Shooter;
@@ -30,7 +32,7 @@ public class shootingPathsAuto extends Command{
     Drive swerve;
     VisionSubsystem vision;
     Timer timer = new Timer();
-    double TimeToFinish = 4.5;
+    double TimeToFinish = 4.25;
     Translation2d velocityVector;
 
     public shootingPathsAuto(Shooter shooter, Drive drive, Indexer indexer,PathPlannerPath path,VisionSubsystem vision) {
@@ -54,7 +56,7 @@ public class shootingPathsAuto extends Command{
         if(speed > 3) {
             speed = 3;
         }
-        if(distance.getNorm() > 0.035) {
+        if(distance.getNorm() > 0.01) {
             velocityVector = distance.times(speed/distance.getNorm());
         }
         else {
@@ -128,9 +130,11 @@ public class shootingPathsAuto extends Command{
 
     }
     public void end(boolean interupted){
+        swerve.runVelocity(new ChassisSpeeds());
         vision.ShootingMode(  false);
-        shooter.setShooterVelocity(0);
-        shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
+       // shooter.setShooterVelocity(0);
+       // shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
+
 
     }
 }

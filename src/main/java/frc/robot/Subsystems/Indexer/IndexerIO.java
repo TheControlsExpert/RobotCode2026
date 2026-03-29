@@ -39,7 +39,7 @@ public class IndexerIO  {
         }
     
         public void setIndexerDutyCycle(double dutyCycle) {
-            indexerMotor.setControl(new DutyCycleOut(dutyCycle));
+            indexerMotor.setControl(new DutyCycleOut(dutyCycle).withEnableFOC(true));
     
         }
     

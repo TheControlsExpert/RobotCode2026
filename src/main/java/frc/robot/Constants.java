@@ -73,14 +73,14 @@ public final class Constants {
     public static final double angleKS = 0.0;
 
     /* Drive Motor PID Values */
-    public static final double driveKP = 2; // TODO: This must be tuned to specific robot
+    public static final double driveKP = 1; // TODO: This must be tuned to specific robot
     public static final double driveKI = 0.0;
     public static final double driveKD = 0.0;
 
     /* Drive Motor Characterization Values From SYSID */
     public static final double driveKS = 0.1996; // TODO: This must be tuned to specific robot
     public static final double driveKV = 0.6396;
-    public static final double driveKA = 0.1;
+    public static final double driveKA = 0.3;
     //public static final double driveKA = 0.3;
 
     public static final Slot0Configs intrinsicsD =
@@ -275,7 +275,7 @@ public final class Constants {
 
   public static class IntakeConstants {
     public static final double pivot_kP_up = 2.5;
-    public static final double pivot_kP_down = 1.15;
+    public static final double pivot_kP_down = 1.6;
     public static final double pivot_kG = -0.155;
     public static final double offset = 0.42;
     public static final double PivotGearRatio = 45;
@@ -288,10 +288,10 @@ public final class Constants {
     public static final double INTAKING_Position = 0.097;
     public static final double SHUFFLE_UP_POSITION = 0.28;
    // public static final double BUMPING_Position = 25;
-    public static final double perma_offset = 0.9215727730393193;
+    public static final double perma_offset = 0.9162113479052837;
     public static final double cf_spring = 0.15;
     public static final double MAX_ENCODER_VAL = 0.44;
-    public static final double MIN_ENCODER_VAL = 0.097;
+    public static final double MIN_ENCODER_VAL = 0.11;
     public static final double pivot_kI = 0;
   }
 

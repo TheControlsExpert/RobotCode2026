@@ -109,7 +109,8 @@ public class ShooterIO {
 
         TalonFXConfiguration feederConfig = new TalonFXConfiguration();
         feederConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        feederConfig.CurrentLimits.SupplyCurrentLimit = ShooterConstants.feederSupplyCurrentLimit;
+        feederConfig.CurrentLimits.SupplyCurrentLimit = 80;
+        feederConfig.CurrentLimits.StatorCurrentLimit = 85;
 
 
         feeder.getConfigurator().apply(feederConfig);
@@ -237,7 +238,7 @@ public class ShooterIO {
 
   public void setFeederVelocity(double velocity) {
   //  SmartDashboard.putNumber("feeder velocity", velocity);
-    feeder.setControl(feederDutyCycle.withOutput(velocity));
+    feeder.setControl(feederDutyCycle.withOutput(velocity).withEnableFOC(true));
   }
 
   public void setVelocityShooter(double velocity) {

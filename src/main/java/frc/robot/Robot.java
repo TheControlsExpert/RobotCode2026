@@ -201,14 +201,21 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-    m_robotContainer.drive.lowerCurrentLimits();
-    m_robotContainer.vision.enableVision();
-    m_robotContainer.shooter.setShooterVelocity(0);
-    m_robotContainer.shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
+ 
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
+    m_robotContainer.drive.lowerCurrentLimits();
+    m_robotContainer.vision.enableVision();
+    m_robotContainer.shooter.setShooterVelocity(0);
+    m_robotContainer.shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
+    m_robotContainer.shooter.setFeederVelocity(0);
+    m_robotContainer.indexer.setIndexerDutyCycle(0);
+    m_robotContainer.shooter.isShooting = false;
+    RobotContainer.isShooting = false;  
+    m_robotContainer.vision.ShootingMode(false);
 
     ActivePeriodTracker.initialize();
 

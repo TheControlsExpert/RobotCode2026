@@ -74,6 +74,7 @@ import frc.robot.Commands.IntakeCommands.Jam;
 import frc.robot.Commands.IntakeCommands.ShuffleCommand;
 import frc.robot.Commands.ShootingCommands.ResetHood;
 import frc.robot.Commands.ShootingCommands.Revv;
+import frc.robot.Commands.ShootingCommands.RevvJam;
 import frc.robot.Commands.ShootingCommands.RevvTest;
 import frc.robot.Commands.ShootingCommands.Shooting;
 import frc.robot.Commands.ShootingCommands.ShootingTest;
@@ -266,26 +267,35 @@ public class RobotContainer {
       FollowPathCommand.warmupCommand();
 
       try {
-         firstMiddlePath = PathPlannerPath.fromChoreoTrajectory("EllipseWay1").flipPath();
-         secondMiddlePath = PathPlannerPath.fromChoreoTrajectory("EllipseWay2").flipPath();
+         PathPlannerPath firstPath = PathPlannerPath.fromChoreoTrajectory("ShortSurf1").flipPath();
+         PathPlannerPath secondPath = PathPlannerPath.fromChoreoTrajectory("ShortSurf2").flipPath();
+         PathPlannerPath thirdPath = PathPlannerPath.fromChoreoTrajectory("ShortSurf3").flipPath();
+         PathPlannerPath fourthPath = PathPlannerPath.fromChoreoTrajectory("ShortSurf4").flipPath();
 
-        Command firstMiddleCommand = AutoBuilder.followPath(firstMiddlePath);
-        Command secondMiddleCommand = AutoBuilder.followPath(secondMiddlePath);
+         
+        Command firstPathCommand = AutoBuilder.followPath(firstPath);
+        Command secondPathCommand = AutoBuilder.followPath(secondPath);
+        Command thirdPathCommand = AutoBuilder.followPath(thirdPath);
+        Command fourthPathCommand = AutoBuilder.followPath(fourthPath);
+         autoCommand = new ParallelCommandGroup(new ParallelRaceGroup(firstPathCommand.andThen(secondPathCommand), new IntakeCommand(intake, 6).andThen(new RevvJam(shooter, drive, indexer, controller, vision))), new WaitCommand(1).andThen(new InstantCommand(() -> {vision.enableVision();}))).
 
-         autoCommand = new ParallelCommandGroup(new ParallelRaceGroup(firstMiddleCommand, new IntakeCommand(intake, 3).andThen(new Revv(shooter, drive, controller, vision))), new WaitCommand(1).andThen(new InstantCommand(() -> {vision.enableVision();}))).
 
 
-
-                      andThen(new ParallelRaceGroup(new shootingPathsAuto(shooter, drive, indexer, secondMiddlePath, vision), new WaitCommand(1).andThen(  
+                      andThen(new ParallelRaceGroup(new shootingPathsAuto(shooter, drive, indexer, thirdPath, vision), new WaitCommand(1).andThen(  
                       (new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.4);}, intake).
                       andThen(new WaitCommand(0.5)).
                       andThen(new InstantCommand(() -> {intake.Extend();}, intake)).
                       andThen(new WaitCommand(0.3))).repeatedly()
 
                       ))).
-                      andThen(new InstantCommand(() -> {intake.Retract();  }, intake)).
-                      andThen(new ParallelRaceGroup(secondMiddleCommand, new WaitCommand(1.0).andThen(new IntakeCommand(intake, 2.3)).andThen(new Revv(shooter, drive, controller, vision)))).
-                      andThen(new Shooting(shooter, drive, indexer, intake, controller, null, null, null, 0, 0, vision));
+                      andThen(new Jam(indexer, shooter, 0.4)).
+                     
+                      andThen(new ParallelRaceGroup(thirdPathCommand.andThen(fourthPathCommand), new IntakeCommand(intake, 5.5).andThen(new RevvJam(shooter, drive, indexer, controller, vision)))).
+                      andThen(new ParallelCommandGroup(new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, vision), new WaitCommand(1).andThen((
+                      (new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.4);}, intake).
+                      andThen(new WaitCommand(0.5)).
+                      andThen(new InstantCommand(() -> {intake.Extend();}, intake)).
+                      andThen(new WaitCommand(0.3)))).repeatedly())));
     
       }
 
@@ -369,7 +379,7 @@ public class RobotContainer {
         
 
 
-        (controller.leftTrigger().and(controller::isConnected)).or(controller2.leftTrigger().and(controller2::isConnected)).whileTrue(new Revv(shooter, drive, controller, vision));
+        (controller.leftTrigger().and(controller::isConnected)).or(controller2.leftTrigger().and(controller2::isConnected)).whileTrue(new RevvJam(shooter, drive, indexer, controller, vision));
         controller.y().and(controller::isConnected).whileTrue(new AutoBumping(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
         controller.b().and(controller::isConnected).whileTrue(new AutomaticPushingP1(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
         controller.a().and(controller::isConnected).whileTrue(new AutomaticPushingP2(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
@@ -442,7 +452,6 @@ public class RobotContainer {
        andThen(new WaitCommand(0.5)).
        andThen(new InstantCommand(() -> {intake.Extend();}, intake)).
        andThen(new WaitCommand(0.3))).repeatedly());
-
 
 
       controller.x().and(controller::isConnected).whileTrue(new StartEndCommand(() -> {intake.Retract(); intake.is_busy = true; intake.setIntakeDutyCycle(0.4);}, () -> {intake.Extend(); intake.is_busy = false; intake.setIntakeDutyCycle(0);}, intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));

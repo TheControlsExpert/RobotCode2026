@@ -1,5 +1,6 @@
 package frc.robot.Commands.IntakeCommands;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.Intake.IntakeSubsystem;
@@ -29,7 +30,12 @@ public class IntakeCommand extends Command{
 
     @Override
     public void end(boolean interrupted) {
-        intake.setIntakeDutyCycle(0.0);
+        // if (DriverStation.isTeleop()) {
+        // intake.setIntakeDutyCycle(0.0);
+        // }
+        // else {
+        intake.setIntakeDutyCycle(0.15);
+       // }
     }   
 
     @Override

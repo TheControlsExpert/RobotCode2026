@@ -53,6 +53,7 @@ public class Jam extends Command {
         shooter.setFeederVelocity(0);
         shooter.setShooterVelocity(0);
         shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
+        
 
         shooter.isShooting = false;
         RobotContainer.isShooting = false;

@@ -162,8 +162,21 @@ public class IntakeIO {
             SmartDashboard.putNumber("feedforward", 0);
         }
 
-        else if (!Up && pivotEncoder.get() < IntakeConstants.MIN_ENCODER_VAL) {
-            pivotMotor.set(0);
+        else if (!Up && pivotEncoder.get() < 0.2) {
+            // if (DriverStation.isTeleop()) {
+            //     pivotMotor.set(0);
+            // }
+            // else {
+                // if (DriverStation.isTeleop()) {
+                    pivotMotor.set(-0.15);
+                // }
+                // else {
+                //     pivotMotor.set(-0.35);
+                // }
+          //  }
+          //  pivotMotor.set(0);
+
+           
             SmartDashboard.putNumber("feedforward", 0);
         }
         
@@ -300,7 +313,7 @@ public class IntakeIO {
 
 
     public void setIntakeDutyCycle(double dutyCycle) {
-        intakeMotor.setControl(new DutyCycleOut(dutyCycle));
+        intakeMotor.setControl(new DutyCycleOut(dutyCycle).withEnableFOC(true));
     }
 
     public void setPivotDutyCycle(double dutyCycle) {

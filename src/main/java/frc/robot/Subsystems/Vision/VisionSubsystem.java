@@ -57,6 +57,9 @@ public class VisionSubsystem extends SubsystemBase {
                     this.drive = drive;
                    //SmartDashboard.putData("field", field);
                    getWebcamFeed(); //begins sending webcam video footage to smart dashboard
+                    LimelightHelpers.SetFiducialIDFiltersOverride("limelight-four", new int[]{1,2,3,4,5,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32});
+                    LimelightHelpers.SetFiducialIDFiltersOverride("limelight-threegs", new int[]{1,2,3,4,5,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32});
+                     LimelightHelpers.SetFiducialIDFiltersOverride("limelight-threegf", new int[]{1,2,3,4,5,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32});
     }
 
 
@@ -210,7 +213,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         else {
             disable_other_cameras = false;
-            LimelightHelpers.SetFiducialIDFiltersOverride("limelight-four", new int[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32});
+            LimelightHelpers.SetFiducialIDFiltersOverride("limelight-four", new int[]{1,2,3,4,5,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32});
         }
     }
     }

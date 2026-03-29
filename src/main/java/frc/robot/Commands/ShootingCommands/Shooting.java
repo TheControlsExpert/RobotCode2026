@@ -362,7 +362,7 @@ else {
 
 
     //shooting parameters are close enough to START shooting
-    if (!readyToShoot && (((shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance)) || Robot.shootingState.equals(ShootingState.PASSING)))  && (Math.abs(deltaRotation) < 7.5 && Robot.shootingState.equals(ShootingState.SHOOTING) || Math.abs(deltaRotation) < 7.5 && Robot.shootingState.equals(ShootingState.PASSING))) {
+    if (!readyToShoot && drive.getGyroSpeed() < 10 && (((shooter.isAtShootingVelocity(distance) && shooter.isAtPivotPosition(distance)) || Robot.shootingState.equals(ShootingState.PASSING)))  && (Math.abs(deltaRotation) < 7.5 && Robot.shootingState.equals(ShootingState.SHOOTING) || Math.abs(deltaRotation) < 7.5 && Robot.shootingState.equals(ShootingState.PASSING))) {
         readyToShoot = true;
         shooter.isShooting = true;
         RobotContainer.isShooting = true;
@@ -382,9 +382,9 @@ else {
  //   }
 
 
-  else {
-    readyToShoot = false;
-}
+//   else {
+//     readyToShoot = false;
+// }
 
 
     if (readyToShoot) {
@@ -475,10 +475,9 @@ public void end(boolean interrupted) {
     //RobotContainer.isShooting = false;
  //   }
 
-    CommandScheduler.getInstance().schedule(new Jam(indexer, shooter, 0.35)); //runs the indexer in the opposite direction to clear balls from the shooter
+    CommandScheduler.getInstance().schedule(new Jam(indexer, shooter, 0.65)); //runs the indexer in the opposite direction to clear balls from the shooter
    
-    indexer.setIndexerDutyCycle(-0.35);
-    shooter.setFeederVelocity(-0.35);
+
     
     //CommandScheduler.getInstance().cancel(shuffle);
 }
