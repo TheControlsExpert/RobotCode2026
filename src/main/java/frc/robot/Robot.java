@@ -54,7 +54,7 @@ import frc.robot.Subsystems.Shooter.ShooterIO;
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
   public static boolean winner_selection_done = false;
-  ShooterIO shooterIO = new ShooterIO();
+
   //private final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
   private final RobotContainer m_robotContainer;
   public static ShootingState shootingState = ShootingState.SHOOTING;
@@ -145,7 +145,6 @@ public class Robot extends LoggedRobot {
       SmartDashboard.putBoolean("ruin", m_robotContainer.vision.ruin);
         CommandScheduler.getInstance().run();
        // SmartDashboard.putNumber("timer for shooting", m_robotContainer.timeout_shuffle.get());
-       SmartDashboard.putNumber("shooterEncoderpose", shooterIO.absoluteEncoder.get());
 
     
     }

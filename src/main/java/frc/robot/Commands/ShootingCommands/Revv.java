@@ -46,7 +46,7 @@ public class Revv extends Command {
         double LeftTrigger = controller.getLeftTriggerAxis();
         boolean aButton = controller.a().getAsBoolean();
         boolean yButton = controller.y().getAsBoolean();
-        shooter.setManualControl(LeftTrigger, aButton, yButton);
+        shooter.setManualControl( aButton, yButton);
     //     if (Robot.localizationState.equals(LocalizationState.OPERATIONAL)) {
     //     if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
     //     shooter.LookupTable_Shooting(drive);

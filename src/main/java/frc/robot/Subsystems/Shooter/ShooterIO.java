@@ -33,7 +33,7 @@ public class ShooterIO {
     TalonFXS shooterPivot = new TalonFXS(20);
     TalonFX feeder = new TalonFX(17);
 
-    public DutyCycleEncoder absoluteEncoder = new DutyCycleEncoder(1, 1, ShooterConstants.abs_offset - 0.1);
+    DutyCycleEncoder absoluteEncoder = new DutyCycleEncoder(1, 1, ShooterConstants.abs_offset - 0.1);
 
     VelocityVoltage shooterLeftVoltage = new VelocityVoltage(0);
     VelocityVoltage shooterRightVoltage = new VelocityVoltage(0);
@@ -147,7 +147,7 @@ public class ShooterIO {
     public void updateInputs(ShooterIOInputs inputs) {
      
      SmartDashboard.putNumber("shooter i encoder", inputs.shooterPivotEncoderRotations);
-    // SmartDashboard.putNumber(" abs encoder for shooter", absoluteEncoder.get());
+     SmartDashboard.putNumber(" abs encoder for shooter", absoluteEncoder.get());
      SmartDashboard.putBoolean("canMove shooter", canMove);
      SmartDashboard.putNumber("speed shooter", inputs.shooterLeftVelocityRPM);
      //SmartDashboard.putNumber("closed loop error", shooterPivot.getClosedLoopError().getValueAsDouble());

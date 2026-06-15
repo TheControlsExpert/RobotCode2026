@@ -320,7 +320,6 @@ public class RobotContainer {
         // Default command, normal field-relative drive
         shooter.setDefaultCommand(
           Commands.run(() -> shooter.setManualControl(
-            controller.getHID().isConnected() ? controller.getRightTriggerAxis() : 0,
             controller.getHID().isConnected() && controller.y().getAsBoolean(),
             controller.getHID().isConnected() && controller.a().getAsBoolean()), shooter));
         drive.setDefaultCommand(
