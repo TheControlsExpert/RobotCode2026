@@ -33,7 +33,7 @@ public class ShooterIO {
     TalonFXS shooterPivot = new TalonFXS(20);
     TalonFX feeder = new TalonFX(17);
 
-    DutyCycleEncoder absoluteEncoder = new DutyCycleEncoder(1, 1, ShooterConstants.abs_offset - 0.1);
+    public DutyCycleEncoder absoluteEncoder = new DutyCycleEncoder(1, 1, ShooterConstants.abs_offset - 0.1);
 
     VelocityVoltage shooterLeftVoltage = new VelocityVoltage(0);
     VelocityVoltage shooterRightVoltage = new VelocityVoltage(0);

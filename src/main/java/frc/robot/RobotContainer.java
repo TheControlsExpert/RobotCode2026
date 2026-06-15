@@ -318,6 +318,11 @@ public class RobotContainer {
        */
       private void configureButtonBindings() {
         // Default command, normal field-relative drive
+        shooter.setDefaultCommand(
+          Commands.run(() -> shooter.setManualControl(
+            controller.getHID().isConnected() ? controller.getRightTriggerAxis() : 0,
+            controller.getHID().isConnected() && controller.y().getAsBoolean(),
+            controller.getHID().isConnected() && controller.a().getAsBoolean()), shooter));
         drive.setDefaultCommand(
             new DriveCommand(
                 () -> -controller.getLeftY(),
@@ -380,9 +385,9 @@ public class RobotContainer {
 
 
         (controller.leftTrigger().and(controller::isConnected)).or(controller2.leftTrigger().and(controller2::isConnected)).whileTrue(new RevvJam(shooter, drive, indexer, controller, vision));
-        controller.y().and(controller::isConnected).whileTrue(new AutoBumping(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
+        //controller.y().and(controller::isConnected).whileTrue(new AutoBumping(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
         controller.b().and(controller::isConnected).whileTrue(new AutomaticPushingP1(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
-        controller.a().and(controller::isConnected).whileTrue(new AutomaticPushingP2(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
+        //controller.a().and(controller::isConnected).whileTrue(new AutomaticPushingP2(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
 
 
 

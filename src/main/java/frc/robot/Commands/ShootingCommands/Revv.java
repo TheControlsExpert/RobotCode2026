@@ -43,23 +43,27 @@ public class Revv extends Command {
   
     @Override
     public void execute() {
-        if (Robot.localizationState.equals(LocalizationState.OPERATIONAL)) {
-        if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
-        shooter.LookupTable_Shooting(drive);
-        }
-        else {
-        shooter.LookupTable_Passing(drive, 0);
-        }
-        }
+        double LeftTrigger = controller.getLeftTriggerAxis();
+        boolean aButton = controller.a().getAsBoolean();
+        boolean yButton = controller.y().getAsBoolean();
+        shooter.setManualControl(LeftTrigger, aButton, yButton);
+    //     if (Robot.localizationState.equals(LocalizationState.OPERATIONAL)) {
+    //     if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
+    //     shooter.LookupTable_Shooting(drive);
+    //     }
+    //     else {
+    //     shooter.LookupTable_Passing(drive, 0);
+    //     }
+    //     }
 
-        else {
-        if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
-        shooter.shootManual();
-        }
-        else {   
-        shooter.passManual();  
-        }
-    }
+    //     else {
+    //     if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
+    //     shooter.shootManual();
+    //     }
+    //     else {   
+    //     shooter.passManual();  
+    //     }
+    // }
         // if (Robot.localizationState.equals(LocalizationState.OPERATIONAL)) {
         //     double distance = drive.getEstimatedPosition().getTranslation().getDistance(drive.calculateShootingPosition());
         //     double[] shootingValues = shooter.LookupTable_Shooting(drive);

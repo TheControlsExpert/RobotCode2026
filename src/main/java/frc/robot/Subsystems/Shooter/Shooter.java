@@ -457,5 +457,34 @@ public class Shooter extends SubsystemBase {
         return io.getPivotVelocity();
      }
 
+    public void setManualControl(double rightTrigger, boolean yButton, boolean aButton) {
+
+        double HoodStep; 
+        if(yButton && aButton) {
+        HoodStep = 0; //if both buttons are pressed, don't move the hood
+        }
+        else {
+        HoodStep = 0.03; //tune this 
+        }
+        double velocity = rightTrigger * 4000; //check if this is too high
+        setShooterVelocity(velocity / 60);
+
+
+
+        double newPosition = lastPivotAngle;
+
+        if (yButton) {
+            newPosition += HoodStep;
+        } else if (aButton) {
+            newPosition -= HoodStep;
+        }
+
+        // Clamp to safe physical limits
+        newPosition = Math.max(0, Math.min(0, newPosition));//find these with the encoder
+        setPositionPivot(newPosition); // this already updates lastPivotAngle
+}
+
+
+
      
 }
