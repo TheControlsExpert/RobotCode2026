@@ -111,6 +111,7 @@ public class ShooterIO {
         feederConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         feederConfig.CurrentLimits.SupplyCurrentLimit = 80;
         feederConfig.CurrentLimits.StatorCurrentLimit = 85;
+        feederConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
 
         feeder.getConfigurator().apply(feederConfig);

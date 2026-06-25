@@ -16,7 +16,7 @@ public class IndexerIO  {
 
         public IndexerIO() {
             TalonFXConfiguration indexerConfig = new TalonFXConfiguration();
-            indexerConfig.MotorOutput.Inverted = com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
+            indexerConfig.MotorOutput.Inverted = com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive;
             indexerConfig.MotorOutput.NeutralMode = com.ctre.phoenix6.signals.NeutralModeValue.Coast;
 
             indexerConfig.CurrentLimits.SupplyCurrentLimit = IndexerConstants.supplyCurrentLimit;

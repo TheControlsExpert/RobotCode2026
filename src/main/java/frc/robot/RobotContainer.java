@@ -366,9 +366,6 @@ public class RobotContainer {
        
         .whileTrue(shooting)
         .onFalse(
-          
-        
-
         new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; RobotContainer.isShooting = false; 
           intake.setIntakeDutyCycle(0.0);}, intake));
 
@@ -380,9 +377,21 @@ public class RobotContainer {
 
 
         (controller.leftTrigger().and(controller::isConnected)).or(controller2.leftTrigger().and(controller2::isConnected)).whileTrue(new RevvJam(shooter, drive, indexer, controller, vision));
-        controller.y().and(controller::isConnected).whileTrue(new AutoBumping(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
-        controller.b().and(controller::isConnected).whileTrue(new AutomaticPushingP1(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
-        controller.a().and(controller::isConnected).whileTrue(new AutomaticPushingP2(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
+          double[] i = {0};
+
+controller.a().and(controller::isConnected).whileTrue(
+    Commands.run(() -> {
+        if (i[0] < 90) {
+            shooter.setPositionPivot(i[0]);
+            i[0] += 0.3;
+        }
+    }, shooter)
+    .beforeStarting(() -> i[0] = 0)
+);
+        
+        // controller.y().and(controller::isConnected).whileTrue(new AutoBumping(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
+        // controller.b().and(controller::isConnected).whileTrue(new AutomaticPushingP1(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
+        // controller.a().and(controller::isConnected).whileTrue(new AutomaticPushingP2(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
 
 
 
