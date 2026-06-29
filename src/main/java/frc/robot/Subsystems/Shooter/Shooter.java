@@ -1,5 +1,7 @@
 package frc.robot.Subsystems.Shooter;
 
+import java.lang.ModuleLayer.Controller;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -29,6 +31,9 @@ public class Shooter extends SubsystemBase {
 
     public double lastPivotAngle = 0;
     public double lastShooterV = 0;
+    public double ShootingManualHoodPosition = -1.5;
+    public double manualCommandedRPM = 0;     // tracks what shootManual last commanded
+    public double interpolationHoodOffset = 0; // Y/A button offset applied on top of lookup table
     
            StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault()
   .getStructTopic("lookahead pose", Pose2d.struct).publish(); 
@@ -212,7 +217,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("launcher to target distance", launcherToTargetDistance);
 
     setShooterVelocity(shooterV/60);
-    setPositionPivot(pivotAngle);
+    setPositionPivot(pivotAngle + interpolationHoodOffset); // + Y/A button offset
 
 
     // Calculate field relative launcher velocity
@@ -398,7 +403,7 @@ public class Shooter extends SubsystemBase {
         publisher.set(new Pose2d(drive.getEstimatedPosition().getTranslation(), lookaheadPose.minus(drive.getEstimatedPosition().getTranslation()).getAngle()));
 
         setShooterVelocity(shooterV/60, deltaTime);
-        setPositionPivot(pivotAngle, deltaTime);
+        setPositionPivot(pivotAngle + interpolationHoodOffset, deltaTime); // + Y/A button offset
 
         return (lookaheadPose.minus(drive.getEstimatedPosition().getTranslation()).getAngle());
 
@@ -434,13 +439,24 @@ public class Shooter extends SubsystemBase {
         return Math.abs(inputs.shooterPivotEncoderRotations - position) < (Robot.shootingState.equals(ShootingState.SHOOTING) ? 0.75 : ShooterConstants.PassingPivotTolerance);
     }
 
-    public void shootManual() {
-        double distance = ShooterConstants.ShootingManualDistance; //default to some value so that it doesn't break when you switch to manual mode    
-        double velocity =1832.83 + 271.41197 * distance;
-        double position = -0.36754 * distance*distance - 1.16034 * distance + 22.92513;
-        setShooterVelocity(velocity/60);
-        setPositionPivot(position);
-    }
+public void shootManual(double triggerAxis) {
+    double distance = ShooterConstants.ShootingManualDistance;
+    double fullSpeedRPM = 1832.83 + 271.41197 * distance;
+    manualCommandedRPM = fullSpeedRPM * triggerAxis; // store so Shooting.java can check it
+    setShooterVelocity(manualCommandedRPM / 60);
+    setPositionPivot(ShootingManualHoodPosition);
+}
+
+/** True when shooter RPM is within 200 of the last shootManual target. */
+public boolean isAtManualVelocity() {
+    double avgRPM = (inputs.shooterLeftVelocityRPM + inputs.shooterRightVelocityRPM) / 2.0;
+    return Math.abs(avgRPM - manualCommandedRPM) < 200;
+}
+
+/** True when pivot is within tolerance of ShootingManualHoodPosition. */
+public boolean isAtManualPivotPosition() {
+    return Math.abs(inputs.shooterPivotEncoderRotations - ShootingManualHoodPosition) < 0.75;
+}
 
     public void passManual() {
         double distance = ShooterConstants.PassingManualDistance;

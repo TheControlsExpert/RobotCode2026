@@ -57,6 +57,7 @@ public class Robot extends LoggedRobot {
   //private final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
   private final RobotContainer m_robotContainer;
   public static ShootingState shootingState = ShootingState.SHOOTING;
+  public static ElmoState elmoState = ElmoState.InterpolatonShooting;
   public static double combinedTimeLeft = 0;
   public static boolean isActive = false;
   public static LocalizationState localizationState = LocalizationState.OPERATIONAL;
@@ -236,9 +237,11 @@ public class Robot extends LoggedRobot {
       actualTimeRemaining = shiftInfo.remainingTime() - m_robotContainer.shooter.getMinTOF();
     }
     isActive = shiftInfo.active();
+    SmartDashboard.putString("elmostate", Robot.elmoState.toString());
     SmartDashboard.putBoolean("has chosen", winner_selection_done);
     SmartDashboard.putString("Current Shift", shiftInfo.currentShift().name() + "\n" + String.format("%.1f", shiftInfo.remainingTime()));
     SmartDashboard.putString("Shooting State", shootingState.toString());
+    SmartDashboard.putString("ElmoState", elmoState.toString());
     SmartDashboard.putString("Localization State", localizationState.toString());
     String autoWinnerText = "";
 
@@ -284,6 +287,11 @@ if (!winner_selection_done) {
   public enum ShootingState {
     PASSING,
     SHOOTING
+  }
+  
+  public enum ElmoState {
+    ManualControl,
+    InterpolatonShooting
   }
 
   public enum LocalizationState {

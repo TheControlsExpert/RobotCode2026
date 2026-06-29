@@ -111,7 +111,7 @@ public class ShooterIO {
         feederConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         feederConfig.CurrentLimits.SupplyCurrentLimit = 80;
         feederConfig.CurrentLimits.StatorCurrentLimit = 85;
-        feederConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        feederConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
 
         feeder.getConfigurator().apply(feederConfig);
@@ -226,15 +226,15 @@ public class ShooterIO {
   //  // 
   //  }
 
-   public void setPivotPosition(double position, double feedforward) {
-   SmartDashboard.putNumber("shooter pivot target", position);
-  // if (resetCorrectly && canMove && absoluteEncoder.isConnected()) {
+public void setPivotPosition(double position, double feedforward) {
+     SmartDashboard.putNumber("shooter pivot target", position);
+    double minPos = (ShooterConstants.MIN_ENCODER_VAL - ShooterConstants.abs_offset) * ShooterConstants.pivot_gear_ratio;
+    double maxPos = (ShooterConstants.MAX_ENCODER_VAL - ShooterConstants.abs_offset) * ShooterConstants.pivot_gear_ratio;
+    position = Math.max(minPos, Math.min(maxPos, position));
+
     this.feedforwardPivot = feedforward;
-  
     target = position;
-  
-   // 
-   }
+}
   
 
   public void setFeederVelocity(double velocity) {

@@ -111,6 +111,11 @@ public class VisionSubsystem extends SubsystemBase {
             SmartDashboard.putBoolean("sensor receiving data", true);
             double std_LL4 = (inputs.avgDistance_LL4 * 0.02 ) / inputs.tagCount_LL4;
             SmartDashboard.putNumber("std_LL4", std_LL4);
+            SmartDashboard.putNumber("LL4 std", std_LL4);
+            SmartDashboard.putBoolean("LL4 accepted", std_LL4 < 0.1);
+            SmartDashboard.putNumber("pose diff", 
+            drive.getEstimatedPosition().getTranslation()
+                .getDistance(inputs.MT2pose_LL4.getTranslation()));
             double[] stds_LL4 = {std_LL4, std_LL4};
             if (std_LL4 < 0.1) {
                visionMeasurements.add(new VisionMeasurement(inputs.MT2pose_LL4, inputs.rotation_LL4, inputs.time_LL4, stds_LL4, inputs.tagCount_LL4, inputs.avgDistance_LL4));

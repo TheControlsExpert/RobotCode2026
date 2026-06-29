@@ -1,4 +1,4 @@
-// Copyright 2021-2025 FRC 6328
+// Copyright 2021-2025 FRC 6328 blah blah blah
 // http://github.com/Mechanical-Advantage
 //
 // This program is free software; you can redistribute it and/or
@@ -53,6 +53,7 @@ import frc.robot.Constants.SwerveConstants.Mod0;
 import frc.robot.Constants.SwerveConstants.Mod1;
 import frc.robot.Constants.SwerveConstants.Mod2;
 import frc.robot.Constants.SwerveConstants.Mod3;
+import frc.robot.Robot.ElmoState;
 import frc.robot.Robot.LocalizationState;
 import frc.robot.Robot.ShootingState;
 import frc.robot.Commands.ClimbCommands.ClimbDown;
@@ -331,38 +332,22 @@ public class RobotContainer {
          controller.button(8).onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getEstimatedPosition().getTranslation(), DriverStation.getAlliance().get().equals(Alliance.Blue) ? Rotation2d.kZero : Rotation2d.fromDegrees(180))), drive)
                  .ignoringDisable(true));
 
-      //  timeout_shuffle = new Timer();
-      //  //Trigger timeoutshuffle_trigger = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {timeout_shuffle.restart();}));
-      //  Trigger shuffle_trigger = new Trigger(() -> (RobotContainer.isShooting  && !intake.is_busy && DriverStation.isTeleop())).whileTrue(
-      //   new WaitCommand(1).andThen(
-
-       
-      //  (new InstantCommand(() -> {intake.Shuffle(); intake.setIntakeDutyCycle(0.6);}, intake).
-      //  andThen(new WaitCommand(0.5)).
-      //  andThen(new InstantCommand(() -> {intake.Extend();}, intake)).
-      //  andThen(new WaitCommand(0.3))).repeatedly()
-      // // andThen(new InstantCommand(() -> {intake.Shuffle();}, intake))
-
-      //  ));
 
        controller2.povDown().and(controller2::isConnected).whileTrue(new InstantCommand(() -> {intake.setIntakeDutyCycle(-0.5); intake.is_busy = true;}, intake)).onFalse(new InstantCommand(() -> {intake.setIntakeDutyCycle(0); intake.is_busy = false;}, intake));
-
-      //Trigger IRsensorTimerResetter = new Trigger(() -> (shooter.isShooting)).onTrue(new InstantCommand(() -> {intake.readyToClose1_timer.restart();}));
-
-
-
-      //    .andThen(new WaitUntilCommand(() -> {return !intake.is_busy
-        
-      //  && (intake.isReadyToClose() || timeout_shuffle.hasElapsed(2.0)))).onTrue(new InstantCommand(() -> {intake.Shuffle();}));
-      //    .andThen(new WaitUntilCommand(() -> {return !intake.is_busy && (intake.isReadyToClose() || timeout_shuffle.hasElapsed(2.0));}))
-      //    .andThen(new InstantCommand(() -> {intake.Shuffle(); shooter.needsShuffling = false;}, intake)));
-        
+    
       
           
         
       Shooting shooting = new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, vision);
        //  controller.leftTrigger().whileTrue(new Revv(shooter, drive, controller));
-        controller.rightTrigger().and(controller::isConnected)
+        controller.rightTrigger().and(controller::isConnected).and(() -> Robot.elmoState.equals(ElmoState.InterpolatonShooting))
+       
+        .whileTrue(shooting)
+        .onFalse(
+        new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; RobotContainer.isShooting = false; 
+          intake.setIntakeDutyCycle(0.0);}, intake));
+
+        controller.rightTrigger().and(controller::isConnected).and(() -> Robot.elmoState.equals(ElmoState.ManualControl))
        
         .whileTrue(shooting)
         .onFalse(
@@ -377,72 +362,21 @@ public class RobotContainer {
 
 
         (controller.leftTrigger().and(controller::isConnected)).or(controller2.leftTrigger().and(controller2::isConnected)).whileTrue(new RevvJam(shooter, drive, indexer, controller, vision));
-          double[] i = {0};
+        // Y/A in ManualControl mode: adjust ShootingManualHoodPosition (base for shootManual)
+        controller.y().and(controller::isConnected)
+            .and(() -> Robot.elmoState.equals(ElmoState.ManualControl))
+            .whileTrue(Commands.run(() ->
+                { shooter.ShootingManualHoodPosition = Math.min(shooter.ShootingManualHoodPosition + 0.5, 17.5); }));
 
-controller.a().and(controller::isConnected).whileTrue(
-    Commands.run(() -> {
-        if (i[0] < 90) {
-            shooter.setPositionPivot(i[0]);
-            i[0] += 0.3;
-        }
-    }, shooter)
-    .beforeStarting(() -> i[0] = 0)
-);
-        
-        // controller.y().and(controller::isConnected).whileTrue(new AutoBumping(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
-        // controller.b().and(controller::isConnected).whileTrue(new AutomaticPushingP1(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
-        // controller.a().and(controller::isConnected).whileTrue(new AutomaticPushingP2(drive, () -> (-controller.getLeftY()), () -> (-controller.getLeftX()), drive.rotationkP, controller));
+        controller.a().and(controller::isConnected)
+            .and(() -> Robot.elmoState.equals(ElmoState.ManualControl))
+            .whileTrue(Commands.run(() ->
+                { shooter.ShootingManualHoodPosition = Math.max(shooter.ShootingManualHoodPosition - 0.5, -17.5); }));
 
-
-
-       // controller.leftTrigger().whileTrue(new RevvTest(shooter, controller));
-       // controller.rightTrigger().whileTrue(new ShootingTest(indexer, shooter));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        //                                                              new WaitUntilCommand(() -> {return intake.isReadyToClose() && !intake.is_busy;}).andThen(new ShuffleCommand(intake).getShuffleCommand())))
-        //                          .onFalse(new Jam(indexer, shooter, 1.0));                                 
         
 
-        //automatic climbing and climb up in teleop, with potential for overridng
-        // controller.x().whileTrue(Commands.defer(() -> autoClimbing.getClimbingCommand(true).until( //stops the command when:
-        //   () -> autoClimbing.isOverridePossible() && //overriding is possible
-        //   (Math.abs(controller.getLeftY()) > 0.1 || Math.abs(controller.getLeftX()) > 0.1)), //driver moves the controller enough
-        //   Set.of(climb, drive))); 
+        
 
-
-
-        //shouldn't use any localization, so only encoder values
-        // controller.button(7).onTrue(Commands.defer(() -> {
-        //   if (!climb.isClimbGoalUp()) {
-        //     return new ClimbUp(climb);
-        //   } else {
-        //     return new ClimbDown(climb, drive);
-        //   }
-        // }, Set.of( climb)
-        // ));
-
-     //   controller.a().whileTrue(new AutoBumping(drive, intake, () -> -controller.getLeftY(), () -> -controller.getLeftX(), 0.08, controller));
-         
        
        controller.rightBumper().and(controller::isConnected).whileTrue(autoTrenching);
          
@@ -504,12 +438,12 @@ controller.a().and(controller::isConnected).whileTrue(
         }
        }));
 
-       controller2.rightBumper().onTrue(new InstantCommand(() -> {
-        if (Robot.localizationState.equals(LocalizationState.OPERATIONAL)) {
-          Robot.localizationState = LocalizationState.DISABLED;
+       controller.b().onTrue(new InstantCommand(() -> {
+        if (Robot.elmoState.equals(ElmoState.ManualControl)) {
+          Robot.elmoState = ElmoState.InterpolatonShooting;
         }
         else {
-          Robot.localizationState = LocalizationState.OPERATIONAL;
+          Robot.elmoState = ElmoState.ManualControl;
         }
        }));
 

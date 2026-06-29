@@ -239,7 +239,7 @@ public final class Constants {
     public static final double shooterPivot_kD = 0.0;
 
 
-    public static final double Pivot_HOME = 17.8;
+    public static final double Pivot_HOME = -2.5;
     public static final double YawAngleTolerance = 2;
     public static final double ShooterVelocityTolerance = 75;
 
@@ -266,7 +266,7 @@ public final class Constants {
     public static final double abs_offset = 0.132714;
     public static final double MAX_ENCODER_VAL = 0.91;
     public static final double MIN_ENCODER_VAL = 0.15;
-    public static final double ShootingManualDistance = 2.05;
+    public static final double ShootingManualDistance = 5.0;
     public static final double PassingManualDistance = 5.0;
     public static final double PassingVelocityTolerance = 0;
     public static final double PassingPivotTolerance = 0;
