@@ -208,16 +208,9 @@ public void execute() {
 
     // ── READY TO SHOOT CHECK ─────────────────────────────────────────────
     if (isManual) {
-        // BUG FIX: use isAtManualVelocity() (checks against manualCommandedRPM = fullSpeed*triggerAxis)
-        // and isAtManualPivotPosition() (checks against ShootingManualHoodPosition, not interpolated formula)
-        if (shooter.isAtManualVelocity() && shooter.isAtManualPivotPosition()) {
-            readyToShoot = true;
-            shooter.isShooting = true;
-            RobotContainer.isShooting = true;
-            SmartDashboard.putBoolean("Shooter is at Velocity", true);
-        } else {
-            readyToShoot = false;
-        }
+
+        readyToShoot = true;
+
     } else {
         double deltaRotation = isManual ? 0 :
                 Math.toDegrees(MathUtil.angleModulus(

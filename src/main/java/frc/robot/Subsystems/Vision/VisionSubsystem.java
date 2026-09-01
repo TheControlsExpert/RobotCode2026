@@ -117,7 +117,7 @@ public class VisionSubsystem extends SubsystemBase {
             drive.getEstimatedPosition().getTranslation()
                 .getDistance(inputs.MT2pose_LL4.getTranslation()));
             double[] stds_LL4 = {std_LL4, std_LL4};
-            if (std_LL4 < 0.1) {
+            if (std_LL4 < 0.5) {
                visionMeasurements.add(new VisionMeasurement(inputs.MT2pose_LL4, inputs.rotation_LL4, inputs.time_LL4, stds_LL4, inputs.tagCount_LL4, inputs.avgDistance_LL4));
             }
         }

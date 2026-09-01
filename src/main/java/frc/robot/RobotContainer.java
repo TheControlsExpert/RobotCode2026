@@ -339,20 +339,19 @@ public class RobotContainer {
           
         
       Shooting shooting = new Shooting(shooter, drive, indexer, intake, controller, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX(), drive.rotationkP, vision);
-       //  controller.leftTrigger().whileTrue(new Revv(shooter, drive, controller));
-        controller.rightTrigger().and(controller::isConnected).and(() -> Robot.elmoState.equals(ElmoState.InterpolatonShooting))
-       
+        controller.leftTrigger().whileTrue(new Revv(shooter, drive, controller, vision));
+        controller.rightTrigger().and(controller::isConnected)
         .whileTrue(shooting)
         .onFalse(
         new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; RobotContainer.isShooting = false; 
           intake.setIntakeDutyCycle(0.0);}, intake));
 
-        controller.rightTrigger().and(controller::isConnected).and(() -> Robot.elmoState.equals(ElmoState.ManualControl))
+        // controller.rightTrigger().and(controller::isConnected).and(() -> Robot.elmoState.equals(ElmoState.ManualControl))
        
-        .whileTrue(shooting)
-        .onFalse(
-        new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; RobotContainer.isShooting = false; 
-          intake.setIntakeDutyCycle(0.0);}, intake));
+        // .whileTrue(shooting)
+        // .onFalse(
+        // new InstantCommand(() -> {intake.Extend(); shooter.isShooting = false; RobotContainer.isShooting = false; 
+        //   intake.setIntakeDutyCycle(0.0);}, intake));
 
 
         // controller.rightTrigger().and(()->(!shooting.readyToShoot || !ActivePeriodTracker.getShiftedShiftInfo().active())).whileTrue(new InstantCommand(()-> {controller.setRumble(RumbleType.kBothRumble, 0.35);}))
@@ -361,7 +360,7 @@ public class RobotContainer {
         
 
 
-        (controller.leftTrigger().and(controller::isConnected)).or(controller2.leftTrigger().and(controller2::isConnected)).whileTrue(new RevvJam(shooter, drive, indexer, controller, vision));
+        //(controller.leftTrigger().and(controller::isConnected)).or(controller2.leftTrigger().and(controller2::isConnected)).whileTrue(new RevvJam(shooter, drive, indexer, controller, vision));
         // Y/A in ManualControl mode: adjust ShootingManualHoodPosition (base for shootManual)
         controller.y().and(controller::isConnected)
             .and(() -> Robot.elmoState.equals(ElmoState.ManualControl))

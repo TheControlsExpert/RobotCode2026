@@ -21,7 +21,6 @@ public class RevvJam extends Command {
     private final Shooter shooter;
     private final Drive drive;
     private final CommandXboxController controller;
-    private double when_to_start = -1000;
     VisionSubsystem vision;
     Indexer indexer;
 
@@ -33,7 +32,7 @@ public class RevvJam extends Command {
         this.controller = controller;
         this.vision = vision;
 
-        addRequirements(shooter, indexer);
+        addRequirements(indexer);
     }
 
     @Override
@@ -84,13 +83,8 @@ public class RevvJam extends Command {
             @Override
     public void end(boolean interrupted) {
         if (!controller.rightTrigger().getAsBoolean() && DriverStation.isTeleop()) {
-            shooter.setShooterVelocity(0);
-            shooter.setPositionPivot(ShooterConstants.Pivot_HOME);
-
             vision.ShootingMode(false);
         }
-
-        shooter.setFeederVelocity(0);
         indexer.setIndexerDutyCycle(0); 
     }
 
