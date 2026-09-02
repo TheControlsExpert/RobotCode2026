@@ -20,7 +20,6 @@ public class Revv extends Command {
     private final Shooter shooter;
     private final Drive drive;
     private final CommandXboxController controller;
-    private double when_to_start = -1000;
     VisionSubsystem vision;
 
 
@@ -55,7 +54,7 @@ public void execute() {
         }
     } else {
         if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
-            shooter.shootManual(1); // always 100% during revv
+            shooter.shootManual(controller.getLeftTriggerAxis()); // always 100% during revv
         } else {
             shooter.passManual();
         }

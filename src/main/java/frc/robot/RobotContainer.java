@@ -367,7 +367,7 @@ public class RobotContainer {
             .whileTrue(Commands.run(() ->
                 { shooter.ShootingManualHoodPosition = Math.min(shooter.ShootingManualHoodPosition + 0.5, 17.5); }));
 
-        controller.b().and(controller::isConnected)
+        controller.y().and(controller::isConnected)
             .and(() -> Robot.elmoState.equals(ElmoState.ManualControl))
             .whileTrue(Commands.run(() ->
                 { shooter.ShootingManualHoodPosition = Math.max(shooter.ShootingManualHoodPosition - 0.5, -17.5); }));

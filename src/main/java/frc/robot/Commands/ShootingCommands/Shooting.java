@@ -127,7 +127,7 @@ public void execute() {
     // ── SHOOTER / HOOD ──────────────────────────────────────────────────
     if (isManual) {
         if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
-            shooter.shootManual(controller.getRightTriggerAxis()); //changed to right
+            shooter.shootManual(controller.getLeftTriggerAxis()); //changed to Left
         } else {
             shooter.passManual();
         }
@@ -231,10 +231,11 @@ public void execute() {
     }
 
     // ── FEED ─────────────────────────────────────────────────────────────
-    if (readyToShoot) {
+    if (readyToShoot || isManual) {
         indexer.setIndexerDutyCycle(1);
         shooter.setFeederVelocity(1);
-    } else {
+    }
+     else {
         indexer.setIndexerDutyCycle(0);
         shooter.setFeederVelocity(0);
     }
