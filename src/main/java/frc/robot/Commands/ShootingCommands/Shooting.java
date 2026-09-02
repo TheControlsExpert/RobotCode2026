@@ -127,7 +127,7 @@ public void execute() {
     // ── SHOOTER / HOOD ──────────────────────────────────────────────────
     if (isManual) {
         if (Robot.shootingState.equals(ShootingState.SHOOTING)) {
-            shooter.shootManual(controller.getLeftTriggerAxis());
+            shooter.shootManual(controller.getRightTriggerAxis()); //changed to right
         } else {
             shooter.passManual();
         }

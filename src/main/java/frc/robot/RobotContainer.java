@@ -362,12 +362,12 @@ public class RobotContainer {
 
         //(controller.leftTrigger().and(controller::isConnected)).or(controller2.leftTrigger().and(controller2::isConnected)).whileTrue(new RevvJam(shooter, drive, indexer, controller, vision));
         // Y/A in ManualControl mode: adjust ShootingManualHoodPosition (base for shootManual)
-        controller.y().and(controller::isConnected)
+        controller.a().and(controller::isConnected)
             .and(() -> Robot.elmoState.equals(ElmoState.ManualControl))
             .whileTrue(Commands.run(() ->
                 { shooter.ShootingManualHoodPosition = Math.min(shooter.ShootingManualHoodPosition + 0.5, 17.5); }));
 
-        controller.a().and(controller::isConnected)
+        controller.b().and(controller::isConnected)
             .and(() -> Robot.elmoState.equals(ElmoState.ManualControl))
             .whileTrue(Commands.run(() ->
                 { shooter.ShootingManualHoodPosition = Math.max(shooter.ShootingManualHoodPosition - 0.5, -17.5); }));
